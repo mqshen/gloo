@@ -52,6 +52,11 @@ func Main(opts SetupOpts) error {
 	if ctx == nil {
 		ctx = context.Background()
 	}
+
+	var logLv = zap.NewAtomicLevel()
+	logLv.UnmarshalText([]byte(logLevel))
+	contextutils.SetLogLevel(logLv.Level())
+
 	ctx = contextutils.WithLogger(ctx, opts.LoggerName)
 	loggingContext := append([]interface{}{"version", opts.Version}, opts.LoggingPrefixVals...)
 	ctx = contextutils.WithLoggerValues(ctx, loggingContext...)
