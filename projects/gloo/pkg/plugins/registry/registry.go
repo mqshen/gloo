@@ -62,7 +62,8 @@ var globalRegistry = func(opts bootstrap.Opts, pluginExtensions ...func() plugin
 		pipe.NewPlugin(),
 		tcp.NewPlugin(utils.NewSslConfigTranslator()),
 		static.NewPlugin(),
-		transformationPlugin,
+		//TODO IFP3 删除 gloo 自定义的plugin
+		//transformationPlugin,
 		grpcweb.NewPlugin(),
 		grpc.NewPlugin(&transformationPlugin.RequireTransformationFilter),
 		faultinjection.NewPlugin(),

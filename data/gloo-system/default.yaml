@@ -1,0 +1,22 @@
+
+gloo:
+  xdsBindAddr: 0.0.0.0:9977
+consul:
+  address: ifp3-dev1:8500
+  serviceDiscovery: {}
+consulKvSource: {}
+consulKvArtifactSource: {}
+discoveryNamespace: gloo-system
+metadata:
+  name: default
+  namespace: gloo-system
+refreshRate: 15s
+watchNamespaces:
+  - gloo-system
+ratelimitServer:
+  ratelimitServerRef:
+    name: ratelimiter
+    namespace: gloo-system
+  requestTimeout: 30s
+  denyOnFail: false
+  rateLimitBeforeAuth: true
