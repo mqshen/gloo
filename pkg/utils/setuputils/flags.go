@@ -15,6 +15,7 @@ var (
 	setupNamespace string
 	setupName      string
 	setupDir       string
+	logLevel       string
 )
 
 // TODO (ilackarms): move to a flags package
@@ -30,4 +31,5 @@ func init() {
 	flag.StringVar(&setupName, "name", defaults.SettingsName, "name of settings crd/file to use")
 	flag.StringVar(&setupDir, "dir", "",
 		"directory to find bootstrap settings if not using kubernetes crds")
+	flag.StringVar(&logLevel, "loglevel", "info", "setup zap log level")
 }

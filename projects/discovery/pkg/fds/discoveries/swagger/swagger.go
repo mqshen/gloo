@@ -25,6 +25,7 @@ import (
 )
 
 var commonSwaggerURIs = []string{
+	"/v3/api-docs",
 	"/swagger.json",
 	"/swagger/docs/v1",
 	"/swagger/docs/v2",

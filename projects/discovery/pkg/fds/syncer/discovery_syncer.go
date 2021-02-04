@@ -2,6 +2,7 @@ package syncer
 
 import (
 	"context"
+	"strings"
 
 	"github.com/solo-io/go-utils/hashutils"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -136,8 +137,9 @@ func selectUpstreamsWhitelist(upstreams v1.UpstreamList, whitelistedNamespaces, 
 		//   - the upstream itself is explicitly whitelisted
 		shouldIncludeAwsUpstream := us.GetAws() != nil && shouldIncludeUpstreamInBlacklistMode(us, blacklistedNamespaces)
 		shouldIncludeNonAwsUpstream := us.GetAws() == nil && ((inWhitelistedNamespace && !blacklisted) || whitelisted)
+		var shouldIncludeConsulUpstream = us.GetConsul() != nil && containsOpenAPI(us.GetConsul().ServiceTags)
 
-		if shouldIncludeAwsUpstream || shouldIncludeNonAwsUpstream {
+		if shouldIncludeAwsUpstream || shouldIncludeNonAwsUpstream || shouldIncludeConsulUpstream {
 			selected = append(selected, us)
 		}
 	}
@@ -150,4 +152,14 @@ func getUpstreamNamespace(us *v1.Upstream) string {
 		return kubeSpec.ServiceNamespace
 	}
 	return us.Metadata.Namespace
+}
+
+func containsOpenAPI(array []string) bool {
+	var x = "openapi"
+	for _, n := range array {
+		if strings.EqualFold(x, n) {
+			return true
+		}
+	}
+	return false
 }
