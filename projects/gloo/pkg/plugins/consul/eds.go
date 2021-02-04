@@ -291,6 +291,10 @@ func getIpAddresses(ctx context.Context, address string, resolver DnsResolver) (
 		return []string{address}, nil
 	}
 
+	if "localhost" == address {
+		return []string{"127.0.0.1"}, nil
+	}
+
 	// we're assuming the consul service returned a hostname instead of an IP
 	// we need to resolve this here so EDS can be given IPs (EDS can't resolve hostnames)
 	if resolver == nil {
@@ -304,7 +308,13 @@ func getIpAddresses(ctx context.Context, address string, resolver DnsResolver) (
 
 	var ipAddresses []string
 	for _, ipAddr := range ipAddrs {
-		ipAddresses = append(ipAddresses, ipAddr.String())
+		if ipAddr.IP.IsLoopback()  {
+			if len(ipAddresses) == 0 {
+				ipAddresses = append(ipAddresses, "127.0.0.1")
+			}
+		} else {
+			ipAddresses = append(ipAddresses, ipAddr.String())
+		}
 	}
 	return ipAddresses, nil
 }
