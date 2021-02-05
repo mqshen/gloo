@@ -329,11 +329,15 @@ func buildEndpoint(namespace, address, ipAddress string, service *consulapi.Cata
 			Hostname: hostname,
 		}
 	}
+	labels := service.ServiceMeta
+	if labels == nil {
+		labels = buildLabels(service.ServiceTags, []string{service.Datacenter}, upstreams)
+	}
 	return &v1.Endpoint{
 		Metadata: &core.Metadata{
 			Namespace:       namespace,
 			Name:            buildEndpointName(ipAddress, service),
-			Labels:          buildLabels(service.ServiceTags, []string{service.Datacenter}, upstreams),
+			Labels:          labels, //buildLabels(service.ServiceTags, []string{service.Datacenter}, upstreams),
 			ResourceVersion: strconv.FormatUint(service.ModifyIndex, 10),
 		},
 		Upstreams:   toResourceRefs(upstreams, service.ServiceTags),

@@ -4,9 +4,11 @@ import (
 	envoy_config_core_v3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	envoy_config_endpoint_v3 "github.com/envoyproxy/go-control-plane/envoy/config/endpoint/v3"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins"
 	"github.com/solo-io/solo-kit/pkg/api/v2/reporter"
 	"go.opencensus.io/trace"
+	"strconv"
 
 	v1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 )
@@ -61,6 +63,7 @@ func loadAssignmentForUpstream(
 				Hostname: host,
 			}
 		}
+		weight := getLbWeight(addr.Metadata.Labels)
 		lbEndpoint := envoy_config_endpoint_v3.LbEndpoint{
 			Metadata: metadata,
 			HostIdentifier: &envoy_config_endpoint_v3.LbEndpoint_Endpoint{
@@ -79,6 +82,9 @@ func loadAssignmentForUpstream(
 					HealthCheckConfig: healthCheckConfig,
 					Hostname:          addr.GetHostname(),
 				},
+			},
+			LoadBalancingWeight: &wrappers.UInt32Value{
+				Value: uint32(weight),
 			},
 		}
 		endpoints = append(endpoints, &lbEndpoint)
@@ -136,6 +142,17 @@ func addAnnotations(metadata *envoy_config_core_v3.Metadata, annotations map[str
 		Fields: fields,
 	}
 	return metadata
+}
+
+func getLbWeight(labels map[string]string) int {
+	if val, ok := labels["weight"]; ok {
+		weight, err := strconv.Atoi(val)
+		if err != nil {
+			return 1
+		}
+		return weight
+	}
+	return 1
 }
 
 func getLbMetadata(upstream *v1.Upstream, labels map[string]string, zeroValue string) *envoy_config_core_v3.Metadata {
