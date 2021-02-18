@@ -2,6 +2,7 @@ package v1
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/solo-io/gloo/projects/gloo/constants"
 	plugins "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/options"
@@ -46,6 +47,8 @@ func (us *Upstream_Consul) GetSubsetSpec() *plugins.SubsetSpec {
 		Keys: dataCenterMetadataKeys,
 	})
 
+	//us.Consul.
+
 	tags := us.Consul.SubsetTags
 	if len(tags) == 0 {
 		tags = us.Consul.ServiceTags
@@ -57,7 +60,9 @@ func (us *Upstream_Consul) GetSubsetSpec() *plugins.SubsetSpec {
 		// This will cause Envoy to partition the endpoints (service instances) by their tags
 		var tagMetadataKeys []string
 		for _, tag := range tags {
-			tagMetadataKeys = append(tagMetadataKeys, constants.ConsulTagKeyPrefix+tag)
+			if !strings.Contains(tag, "=") {
+				tagMetadataKeys = append(tagMetadataKeys, tag)
+			}
 		}
 		sort.Strings(tagMetadataKeys)
 

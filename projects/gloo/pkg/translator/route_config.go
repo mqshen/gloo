@@ -357,7 +357,8 @@ func (t *translatorInstance) setRouteAction(params plugins.RouteParams, in *v1.R
 
 		out.MetadataMatch = getSubsetMatch(dest.Single)
 
-		return checkThatSubsetMatchesUpstream(params.Params, dest.Single)
+		//return checkThatSubsetMatchesUpstream(params.Params, dest.Single)
+		return nil
 	case *v1.RouteAction_Multi:
 		return t.setWeightedClusters(params, dest.Multi, out, routeReport)
 	case *v1.RouteAction_UpstreamGroup:
