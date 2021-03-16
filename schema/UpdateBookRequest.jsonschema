@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "shelf": {
+            "type": "string",
+            "description": "The ID of the shelf from which to retrieve a book."
+        },
+        "book": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "A unique book id."
+                },
+                "author": {
+                    "type": "string",
+                    "description": "An author of the book."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "A book title."
+                },
+                "quotes": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Quotes from the book."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "A book resource to update on the shelf."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Request message for UpdateBook method"
+}

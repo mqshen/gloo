@@ -308,7 +308,7 @@ func getIpAddresses(ctx context.Context, address string, resolver DnsResolver) (
 
 	var ipAddresses []string
 	for _, ipAddr := range ipAddrs {
-		if ipAddr.IP.IsLoopback()  {
+		if ipAddr.IP.IsLoopback() {
 			if len(ipAddresses) == 0 {
 				ipAddresses = append(ipAddresses, "127.0.0.1")
 			}

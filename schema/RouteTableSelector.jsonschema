@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "namespaces": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Delegate to Route Tables in these namespaces. If omitted, Gloo will only select Route Tables in the same namespace\n as the resource (Virtual Service or Route Table) that owns this selector. The reserved value \"*\" can be used to\n select Route Tables in all namespaces watched by Gloo."
+        },
+        "labels": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object",
+            "description": "Delegate to Route Tables whose labels match the ones specified here."
+        },
+        "expressions": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "Kubernetes label key, must conform to Kubernetes syntax requirements\n https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set"
+                    },
+                    "operator": {
+                        "enum": [
+                            "Equals",
+                            0,
+                            "DoubleEquals",
+                            1,
+                            "NotEquals",
+                            2,
+                            "In",
+                            3,
+                            "NotIn",
+                            4,
+                            "Exists",
+                            5,
+                            "DoesNotExist",
+                            6,
+                            "GreaterThan",
+                            7,
+                            "LessThan",
+                            8
+                        ],
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            }
+                        ],
+                        "description": "The operator can only be in, notin, =, ==, !=, exists, ! (DoesNotExist), gt (GreaterThan), lt (LessThan)."
+                    },
+                    "values": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "Expressions allow for more flexible Route Tables label matching, such as equality-based requirements, set-based requirements, or a combination of both.\n https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#equality-based-requirement"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Select route tables for delegation by namespace, labels, or both."
+}

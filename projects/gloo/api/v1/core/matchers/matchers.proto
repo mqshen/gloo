@@ -8,6 +8,8 @@ import "extproto/ext.proto";
 option (extproto.equal_all) = true;
 option (extproto.hash_all) = true;
 
+import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto";
+
 // Parameters for matching routes to requests received by a Gloo-managed proxy
 message Matcher {
     oneof path_specifier {
@@ -57,6 +59,7 @@ message Matcher {
 
     // HTTP Method/Verb(s) to match on. If none specified, the matcher will ignore the HTTP Method
     repeated string methods = 8;
+    .solo.io.envoy.config.core.v3.RuntimeFractionalPercent runtime_fraction = 9;
 }
 
 // Internally, Gloo always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host* header.

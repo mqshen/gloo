@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "labels": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object",
+            "description": "Labels inherited from the original upstream (e.g. Kubernetes labels)"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "created by discovery services"
+}

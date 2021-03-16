@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "hash_policies": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "header": {
+                        "type": "string",
+                        "description": "Use a given header's value as a component of the hashing load balancer's hash key"
+                    },
+                    "cookie": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "required, the name of the cookie to be used to obtain the hash key"
+                            },
+                            "ttl": {
+                                "properties": {
+                                    "seconds": {
+                                        "type": "string",
+                                        "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                    },
+                                    "nanos": {
+                                        "type": "integer",
+                                        "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "If specified, a cookie with the TTL will be generated if the cookie is not present. If the TTL is present and zero, the generated cookie will be a session cookie."
+                            },
+                            "path": {
+                                "type": "string",
+                                "description": "The name of the path for the cookie. If no path is specified here, no path will be set for the cookie."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Use a given cookie as a component of the hashing load balancer's hash key"
+                    },
+                    "source_ip": {
+                        "type": "boolean",
+                        "description": "Use the request's source IP address as a component of the hashing load balancer's hash key"
+                    },
+                    "terminal": {
+                        "type": "boolean",
+                        "description": "If set, and a hash key is available after evaluating this policy, Envoy will skip the subsequent policies and\n use the key as it is.\n This is useful for defining \"fallback\" policies and limiting the time Envoy spends generating hash keys."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "Specifies an element of Envoy's hashing policy for hashing load balancers"
+            },
+            "type": "array",
+            "description": "The list of policies Envoy will use when generating a hash key for a hashing load balancer"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Specifies the route’s hashing policy if the upstream cluster uses a hashing load balancer.\n https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/route/route.proto#envoy-api-msg-route-routeaction-hashpolicy"
+}

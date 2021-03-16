@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "host": {
+            "type": "string",
+            "description": "address of the redis. can be address:port or unix://path/to/unix.sock"
+        },
+        "db": {
+            "type": "integer",
+            "description": "db to use. can leave unset for db 0."
+        },
+        "pool_size": {
+            "type": "integer",
+            "description": "size of the connection pool. can leave unset for default.\n defaults to 10 connections per every CPU"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

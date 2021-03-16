@@ -302,7 +302,7 @@ message RouteOptions {
         // Only one of `ratelimit` or `rate_limit_configs` can be set.
         ratelimit.options.gloo.solo.io.RateLimitRouteExtension ratelimit = 140;
 
-        // References to RateLimitConfig resources. This is used to configure the GlooE rate limit server.
+        // References to RateLimiRateLimitRouteExtensiontConfig resources. This is used to configure the GlooE rate limit server.
         // Only one of `ratelimit` or `rate_limit_configs` can be set.
         ratelimit.options.gloo.solo.io.RateLimitConfigRefs rate_limit_configs = 141;
     }

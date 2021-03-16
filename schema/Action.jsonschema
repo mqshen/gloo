@@ -1,0 +1,77 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "action_type": {
+            "enum": [
+                "CUSTOM",
+                0,
+                "SSN",
+                1,
+                "MASTERCARD",
+                2,
+                "VISA",
+                3,
+                "AMEX",
+                4,
+                "DISCOVER",
+                5,
+                "JCB",
+                6,
+                "DINERS_CLUB",
+                7,
+                "CREDIT_CARD_TRACKERS",
+                8,
+                "ALL_CREDIT_CARDS",
+                9
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "The action type to implement."
+        },
+        "custom_action": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the custom action.\n This name is used for logging and debugging purposes."
+                },
+                "regex": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "The list of regex strings which will be applied in order."
+                },
+                "mask_char": {
+                    "type": "string",
+                    "description": "The masking character for the sensitive data.\n default value: X"
+                },
+                "percent": {
+                    "properties": {
+                        "value": {
+                            "type": "number"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "The percent of the string which will be masked by the mask_char\n default value: 75%\n rounds ratio (percent/100) by std::round http://www.cplusplus.com/reference/cmath/round/"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "The custom user action to be applied.\n This field will only be used if the custom action type is specified above."
+        },
+        "shadow": {
+            "type": "boolean",
+            "description": "Shadow represents whether the action should be taken, or just recorded."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "A single action meant to mask sensitive data.\nThe action type represents a set of pre configured actions,\nas well as the ability to create custom actions.\nThese actions can also be shadowed, a shadowed action will be recorded\nin the statistics, and debug logs, but not actually committed in the response body.\n\nTo use a pre-made action simply set the action type to anything other than `CUSTOM`\n\n``` yaml\nactionType: VISA\n```\n\nTo create a custom action set the custom action field. The default enum value\nis custom, so that can be left empty.\n\n``` yaml\ncustomAction:\nname: test\nregex:\n- \"hello\"\n- \"world\"\nmaskChar: Y\npercent: 60\n```"
+}

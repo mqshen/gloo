@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "path_prefix": {
+            "type": "string",
+            "description": "Sets a prefix to the value of authorization request header *Path*."
+        },
+        "request": {
+            "properties": {
+                "allowed_headers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "These headers will be copied from the incoming request to the request going\n to the auth server. Note that in addition to the user's supplied matchers:\n\n 1. *Host*, *Method*, *Path* and *Content-Length* are automatically included to the list.\n\n 2. *Content-Length* will be set to 0 and the request to the authorization service will not have\n a message body."
+                },
+                "headers_to_add": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "These headers that will be included to the request to authorization service. Note that\n client request of the same key will be overridden."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "response": {
+            "properties": {
+                "allowed_upstream_headers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "When this is set, authorization response headers that have a will be added to the original client request and sent to the upstream.\n Note that coexistent headers will be overridden."
+                },
+                "allowed_client_headers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "When this. is set, authorization response headers that will be added to the client's response when auth request is denied.\n Note that when this list is *not* set, all the authorization response headers, except *Authority\n (Host)* will be in the response to the client. When a header is included in this list, *Path*,\n *Status*, *Content-Length*, *WWW-Authenticate* and *Location* are automatically added."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

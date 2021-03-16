@@ -1,0 +1,115 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "access_logging_service": {
+            "properties": {
+                "access_log": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "file_sink": {
+                                "properties": {
+                                    "path": {
+                                        "type": "string",
+                                        "description": "the file path to which the file access logging service will sink"
+                                    },
+                                    "string_format": {
+                                        "type": "string",
+                                        "description": "the format string by which envoy will format the log lines\n https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/observability/access_log#config-access-log-format-strings"
+                                    },
+                                    "json_format": {
+                                        "properties": {
+                                            "fields": {
+                                                "additionalProperties": {
+                                                    "additionalProperties": true,
+                                                    "type": "object"
+                                                },
+                                                "type": "object",
+                                                "description": "Unordered map of dynamically typed values."
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "the format object by which to envoy will emit the logs in a structured way.\n https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/observability/access_log#format-dictionaries"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Output access logs to local file"
+                            },
+                            "grpc_service": {
+                                "properties": {
+                                    "log_name": {
+                                        "type": "string",
+                                        "description": "name of log stream"
+                                    },
+                                    "static_cluster_name": {
+                                        "type": "string"
+                                    },
+                                    "additional_request_headers_to_log": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "additional_response_headers_to_log": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "additional_response_trailers_to_log": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Send access logs to gRPC service"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "extensions": {
+            "properties": {
+                "configs": {
+                    "additionalProperties": {
+                        "properties": {
+                            "fields": {
+                                "additionalProperties": {
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                },
+                                "type": "object",
+                                "description": "Unordered map of dynamically typed values."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Extensions will be passed along from Listeners, Gateways, VirtualServices, Routes, and Route tables to the\n underlying Proxy, making them useful for controllers, validation tools, etc. which interact with kubernetes yaml.\n\n Some sample use cases:\n * controllers, deployment pipelines, helm charts, etc. which wish to use extensions as a kind of opaque metadata.\n * In the future, Gloo may support gRPC-based plugins which communicate with the Gloo translator out-of-process.\n Opaque Extensions enables development of out-of-process plugins without requiring recompiling \u0026 redeploying Gloo's API."
+        },
+        "per_connection_buffer_limit_bytes": {
+            "additionalProperties": true,
+            "type": "integer",
+            "description": "Soft limit on size of the listener's new connection read and write buffers. If unspecified, defaults to 1MiB\n For more info, check out the [Envoy docs](https://www.envoyproxy.io/docs/envoy/v1.14.1/api-v2/api/v2/listener.proto)"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Optional, feature-specific configuration that lives on gateways.\n Each ListenerOption object contains configuration for a specific feature.\n Note to developers: new Listener plugins must be added to this struct\n to be usable by Gloo. (plugins currently need to be compiled into Gloo)"
+}

@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "host_redirect": {
+            "type": "string",
+            "description": "The host portion of the URL will be swapped with this value."
+        },
+        "path_redirect": {
+            "type": "string",
+            "description": "The path portion of the URL will be swapped with this value."
+        },
+        "prefix_rewrite": {
+            "type": "string",
+            "description": "Indicates that during redirection, the matched prefix (or path)\n should be swapped with this value. This option allows redirect URLs be dynamically created\n based on the request.\n\n   Pay attention to the use of trailing slashes as mentioned in\n   `RouteAction`'s `prefix_rewrite`."
+        },
+        "response_code": {
+            "enum": [
+                "MOVED_PERMANENTLY",
+                0,
+                "FOUND",
+                1,
+                "SEE_OTHER",
+                2,
+                "TEMPORARY_REDIRECT",
+                3,
+                "PERMANENT_REDIRECT",
+                4
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "The HTTP status code to use in the redirect response. The default response\n code is MOVED_PERMANENTLY (301)."
+        },
+        "https_redirect": {
+            "type": "boolean",
+            "description": "The scheme portion of the URL will be swapped with \"https\"."
+        },
+        "strip_query": {
+            "type": "boolean",
+            "description": "Indicates that during redirection, the query portion of the URL will\n be removed. Default value is false."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Notice: RedirectAction is copied directly from https://github.com/envoyproxy/envoy/blob/master/api/envoy/api/v2/route/route.proto"
+}

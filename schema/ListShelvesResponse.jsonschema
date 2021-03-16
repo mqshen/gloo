@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "shelves": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "A unique shelf id."
+                    },
+                    "theme": {
+                        "type": "string",
+                        "description": "A theme of the shelf (fiction, poetry, etc)."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "A shelf resource."
+            },
+            "type": "array",
+            "description": "Shelves in the bookstore."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Response to ListShelves call."
+}

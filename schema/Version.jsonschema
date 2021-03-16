@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "client": {
+            "properties": {
+                "version": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "server": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "Unknown",
+                            0,
+                            "Gateway",
+                            1,
+                            "Ingress",
+                            2,
+                            "Knative",
+                            3
+                        ],
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            }
+                        ]
+                    },
+                    "enterprise": {
+                        "type": "boolean",
+                        "description": "Whether or not this is an enterprise distribution"
+                    },
+                    "kubernetes": {
+                        "properties": {
+                            "containers": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "Tag": {
+                                            "type": "string"
+                                        },
+                                        "Name": {
+                                            "type": "string"
+                                        },
+                                        "Registry": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object"
+                                },
+                                "type": "array",
+                                "description": "Array of containers comprising a single distribution of gloo"
+                            },
+                            "namespace": {
+                                "type": "string",
+                                "description": "namespace gloo is running in"
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "This field is an array of server versions because although there can only be 1 client version, there can\n potentially be many instances of gloo running on a single cluster"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

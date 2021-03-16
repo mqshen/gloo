@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "label_selector": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object",
+            "description": "Identify all valid API key secrets that match the provided label selector.\u003cbr/\u003e\n API key secrets must be in one of the watch namespaces for gloo to locate them."
+        },
+        "api_key_secret_refs": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "namespace": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "A way to reference resources across namespaces"
+            },
+            "type": "array",
+            "description": "A way to directly reference API key secrets. This configuration can be useful for testing,\n but in general the more flexible label selector should be preferred."
+        },
+        "header_name": {
+            "type": "string",
+            "description": "When receiving a request, the Gloo Enterprise external auth server will look for an API key in a header\n with this name. This field is optional; if not provided it defaults to `api-key`."
+        },
+        "headers_from_metadata": {
+            "additionalProperties": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "(Required) The key of the secret data entry to inspect."
+                    },
+                    "required": {
+                        "type": "boolean",
+                        "description": "If this field is set to `true`, Gloo will reject an API key secret that does not contain the given key.\n Defaults to `false`. In this case, if a secret does not contain the requested data, no header will be added\n to the request."
+                    }
+                },
+                "additionalProperties": true,
+                "type": "object"
+            },
+            "type": "object",
+            "description": "API key secrets might contain additional data (e.g. the ID of the user that the API key belongs to)\n in the form of extra keys included in the secret's `data` field.\n This configuration can be used to add this data to the headers of successfully authenticated requests.\n Each key in the map represents the name of header to be added; the corresponding value determines the key\n in the secret data that will be inspected to determine the value for the header."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "rename": {
+            "type": "string",
+            "description": "Rename the message/enum/enum value in next version."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

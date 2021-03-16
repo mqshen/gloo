@@ -1,0 +1,232 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "match": {
+            "properties": {
+                "prefix": {
+                    "type": "string",
+                    "description": "If specified, the route is a prefix rule meaning that the prefix must\n match the beginning of the *:path* header."
+                },
+                "path": {
+                    "type": "string",
+                    "description": "If specified, the route is an exact path rule meaning that the path must\n exactly match the *:path* header once the query string is removed."
+                },
+                "regex": {
+                    "type": "string",
+                    "description": "If specified, the route is a regular expression rule meaning that the\n regex must match the *:path* header once the query string is removed. The entire path\n (without the query string) must match the regex. The rule will not match if only a\n subsequence of the *:path* header matches the regex. The regex grammar is defined `here\n \u003chttps://en.cppreference.com/w/cpp/regex/ecmascript\u003e`_.\n\n Examples:\n\n * The regex */b[io]t* matches the path */bit*\n * The regex */b[io]t* matches the path */bot*\n * The regex */b[io]t* does not match the path */bite*\n * The regex */b[io]t* does not match the path */bit/bot*"
+                },
+                "case_sensitive": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Indicates that prefix/path matching should be case insensitive. The default\n is true."
+                },
+                "runtime_fraction": {
+                    "properties": {
+                        "default_value": {
+                            "properties": {
+                                "numerator": {
+                                    "type": "integer",
+                                    "description": "Specifies the numerator. Defaults to 0."
+                                },
+                                "denominator": {
+                                    "enum": [
+                                        "HUNDRED",
+                                        0,
+                                        "TEN_THOUSAND",
+                                        1,
+                                        "MILLION",
+                                        2
+                                    ],
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "integer"
+                                        }
+                                    ],
+                                    "description": "Specifies the denominator. If the denominator specified is less than the numerator, the final\n fractional percentage is capped at 1 (100%)."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Default value if the runtime value's for the numerator/denominator keys are not available."
+                        },
+                        "runtime_key": {
+                            "type": "string",
+                            "description": "Runtime key for a YAML representation of a FractionalPercent."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Indicates that the route should additionally match on a runtime key. Every time the route\n is considered for a match, it must also fall under the percentage of matches indicated by\n this field. For some fraction N/D, a random number in the range [0,D) is selected. If the\n number is \u003c= the value of the numerator N, or if the key is not present, the default\n value, the router continues to evaluate the remaining match criteria. A runtime_fraction\n route configuration can be used to roll out route changes in a gradual manner without full\n code/config deploys. Refer to the `traffic shifting\n (config_http_conn_man_route_table_traffic_splitting_shift)` docs for additional documentation.\n\n\n    Parsing this field is implemented such that the runtime key's data may be represented\n    as a FractionalPercent proto represented as JSON/YAML and may also be represented as an\n    integer with the assumption that the value is an integral percentage out of 100. For\n    instance, a runtime key lookup returning the value \"42\" would parse as a FractionalPercent\n    whose numerator is 42 and denominator is HUNDRED. This preserves legacy semantics."
+                },
+                "headers": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Specifies the name of the header in the request."
+                            },
+                            "exact_match": {
+                                "type": "string",
+                                "description": "If specified, header match will be performed based on the value of the header."
+                            },
+                            "regex_match": {
+                                "type": "string",
+                                "description": "If specified, this regex string is a regular expression rule which implies the entire request\n header value must match the regex. The rule will not match if only a subsequence of the\n request header value matches the regex. The regex grammar used in the value field is defined\n `here \u003chttps://en.cppreference.com/w/cpp/regex/ecmascript\u003e`_.\n\n Examples:\n\n * The regex *\\d{3}* matches the value *123*\n * The regex *\\d{3}* does not match the value *1234*\n * The regex *\\d{3}* does not match the value *123.456*"
+                            },
+                            "range_match": {
+                                "properties": {
+                                    "start": {
+                                        "type": "string",
+                                        "description": "start of the range (inclusive)"
+                                    },
+                                    "end": {
+                                        "type": "string",
+                                        "description": "end of the range (exclusive)"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "If specified, header match will be performed based on range.\n The rule will match if the request header value is within this range.\n The entire request header value must represent an integer in base 10 notation: consisting of\n an optional plus or minus sign followed by a sequence of digits. The rule will not match if\n the header value does not represent an integer. Match will fail for empty values, floating\n point numbers or if only a subsequence of the header value is an integer.\n\n Examples:\n\n * For range [-10,0), route will match for header value -1, but not for 0, \"somestring\", 10.9,\n   \"-1somestring\""
+                            },
+                            "present_match": {
+                                "type": "boolean",
+                                "description": "If specified, header match will be performed based on whether the header is in the\n request."
+                            },
+                            "prefix_match": {
+                                "type": "string",
+                                "description": "If specified, header match will be performed based on the prefix of the header value.\n Note: empty prefix is not allowed, please use present_match instead.\n\n Examples:\n\n * The prefix *abcd* matches the value *abcdxyz*, but not for *abcxyz*."
+                            },
+                            "suffix_match": {
+                                "type": "string",
+                                "description": "If specified, header match will be performed based on the suffix of the header value.\n Note: empty suffix is not allowed, please use present_match instead.\n\n Examples:\n\n * The suffix *abcd* matches the value *xyzabcd*, but not for *xyzbcd*."
+                            },
+                            "invert_match": {
+                                "type": "boolean",
+                                "description": "If specified, the match result will be inverted before checking. Defaults to false.\n\n Examples:\n\n * The regex *\\d{3}* does not match the value *1234*, so it will match when inverted.\n * The range [-10,0) will match the value -1, so it will not match when inverted."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Internally, Envoy always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host*\n   header. Thus, if attempting to match on *Host*, match on *:authority* instead.\n\n\n   To route on HTTP method, use the special HTTP/2 *:method* header. This works for both\n   HTTP/1 and HTTP/2 as Envoy normalizes headers. E.g.,\n\n   ```\n     {\n       \"name\": \":method\",\n       \"exact_match\": \"POST\"\n     }\n   ```\n\n   In the absence of any header match specifier, match will default to `present_match\n   (envoy_api_field_route.HeaderMatcher.present_match)`. i.e, a request that has the `name\n   (envoy_api_field_route.HeaderMatcher.name)` header will match, regardless of the header's\n   value."
+                    },
+                    "type": "array",
+                    "description": "Specifies a set of headers that the route should match on. The router will\n check the request’s headers against all the specified headers in the route\n config. A match will happen if all the headers in the route are present in\n the request with the same values (or based on presence if the value field\n is not in the config)."
+                },
+                "query_parameters": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Specifies the name of a key that must be present in the requested\n *path*'s query string."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Specifies the value of the key. If the value is absent, a request\n that contains the key in its query string will match, whether the\n key appears with a value (e.g., \"?debug=true\") or not (e.g., \"?debug\")"
+                            },
+                            "regex": {
+                                "additionalProperties": true,
+                                "type": "boolean",
+                                "description": "Specifies whether the query parameter value is a regular expression.\n Defaults to false. The entire query parameter value (i.e., the part to\n the right of the equals sign in \"key=value\") must match the regex.\n E.g., the regex \"\\d+$\" will match \"123\" but not \"a123\" or \"123a\"."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Query parameter matching treats the query string of a request's :path header\n as an ampersand-separated list of keys and/or key=value elements."
+                    },
+                    "type": "array",
+                    "description": "Specifies a set of URL query parameters on which the route should\n match. The router will check the query string from the *path* header\n against all the specified query parameters. If the number of specified\n query parameters is nonzero, they all must match the *path* header's\n query string for a match to occur."
+                },
+                "grpc": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "If specified, only gRPC requests will be matched. The router will check\n that the content-type header has a application/grpc or one of the various\n application/grpc+ values."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "The route matching parameter. Only when the match is satisfied, the \"requires\" field will\n apply.\n\n For example: following match will match all requests.\n\n .. code-block:: yaml\n\n    match:\n      prefix: /"
+        },
+        "route_transformations": {
+            "properties": {
+                "request_transformation": {
+                    "$ref": "#/definitions/envoy.config.filter.http.transformation_ee.v2.Transformation",
+                    "additionalProperties": true
+                },
+                "clear_route_cache": {
+                    "type": "boolean",
+                    "description": "clear the route cache if the request transformation was applied"
+                },
+                "response_transformation": {
+                    "$ref": "#/definitions/envoy.config.filter.http.transformation_ee.v2.Transformation",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "transformation to perform"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "definitions": {
+        "envoy.config.filter.http.transformation_ee.v2.Transformation": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "dlp_transformation": {
+                    "properties": {
+                        "actions": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Identifier for this action.\n Used mostly to help ID specific actions in logs.\n If left null will default to unknown"
+                                    },
+                                    "regex": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "List of regexes to apply to the response body to match data which should be masked\n They will be applied iteratively in the order which they are specified"
+                                    },
+                                    "shadow": {
+                                        "type": "boolean",
+                                        "description": "If specified, this rule will not actually be applied, but only logged."
+                                    },
+                                    "percent": {
+                                        "properties": {
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "The percent of the string which should be masked.\n If not set, defaults to 75%"
+                                    },
+                                    "mask_char": {
+                                        "type": "string",
+                                        "description": "The character which should overwrite the masked data\n If left empty, defaults to \"X\""
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object"
+                            },
+                            "type": "array",
+                            "description": "list of actions to apply"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "id": "envoy.config.filter.http.transformation_ee.v2.Transformation"
+        }
+    }
+}

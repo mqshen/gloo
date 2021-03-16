@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "jwt_configs": {
+            "additionalProperties": {
+                "properties": {
+                    "requirement": {
+                        "type": "string"
+                    },
+                    "claims_to_headers": {
+                        "additionalProperties": {
+                            "properties": {
+                                "claims": {
+                                    "items": {
+                                        "$schema": "http://json-schema.org/draft-04/schema#",
+                                        "properties": {
+                                            "claim": {
+                                                "type": "string"
+                                            },
+                                            "header": {
+                                                "type": "string"
+                                            },
+                                            "append": {
+                                                "type": "boolean"
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "type": "object",
+                                        "description": "If this is specified, one of the claims will be copied to a header\n and the route cache will be cleared."
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "type": "object",
+                        "description": "Copy the claims from the payload field is the key.\n non-existant fields are ignored."
+                    },
+                    "clear_route_cache": {
+                        "type": "boolean",
+                        "description": "clear the route cache if claims were added to the header"
+                    },
+                    "payload_in_metadata": {
+                        "type": "string",
+                        "description": "To easly integrate with other filters, this will copy the payload to this\n name in the dynamic metadata. The payload will only be copied if one\n payload is present (i.e. or match)"
+                    }
+                },
+                "additionalProperties": true,
+                "type": "object"
+            },
+            "type": "object",
+            "description": "Map from stage number to jwt config\n This jwt config will only be processed by filters with the same stage number."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

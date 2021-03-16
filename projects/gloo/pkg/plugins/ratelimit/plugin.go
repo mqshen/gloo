@@ -17,8 +17,8 @@ import (
 const (
 	ExtensionName      = "rate-limit"
 	EnvoyExtensionName = "envoy-rate-limit"
-	CustomDomain       = "custom"
-	requestType        = "both"
+	CustomDomain       = "rl"
+	requestType        = "external"
 
 	CustomStage = 1
 )

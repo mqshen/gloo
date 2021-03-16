@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Specifies the name of the header in the request."
+        },
+        "value": {
+            "type": "string",
+            "description": "Specifies the value of the header. If the value is absent a request that\n has the name header will match, regardless of the header’s value."
+        },
+        "regex": {
+            "type": "boolean",
+            "description": "Specifies whether the header value should be treated as regex or not."
+        },
+        "invert_match": {
+            "type": "boolean",
+            "description": "If set to true, the result of the match will be inverted. Defaults to false.\n\n Examples:\n * name=foo, invert_match=true: matches if no header named `foo` is present\n * name=foo, value=bar, invert_match=true: matches if no header named `foo` with value `bar` is present\n * name=foo, value=``\\d{3}``, regex=true, invert_match=true: matches if no header named `foo` with a value consisting of three integers is present"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Internally, Gloo always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host* header.\n Thus, if attempting to match on *Host*, match on *:authority* instead."
+}

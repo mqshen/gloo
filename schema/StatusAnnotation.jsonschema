@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "work_in_progress": {
+            "type": "boolean",
+            "description": "The entity is work-in-progress and subject to breaking changes."
+        },
+        "package_version_status": {
+            "enum": [
+                "UNKNOWN",
+                0,
+                "FROZEN",
+                1,
+                "ACTIVE",
+                2,
+                "NEXT_MAJOR_VERSION_CANDIDATE",
+                3
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "The entity belongs to a package with the given version status."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

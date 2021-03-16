@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "fail_on_fetch_failure": {
+            "type": "boolean",
+            "description": "should we fail auth flow when failing to get a session from redis, or allow it to continue,\n potentially starting a new auth flow and setting a new session."
+        },
+        "cookie_options": {
+            "properties": {
+                "max_age": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "Max age for the cookie. Leave unset for a default of 30 days (2592000 seconds).\n To disable cookie expiry, set explicitly to 0."
+                },
+                "not_secure": {
+                    "type": "boolean",
+                    "description": "Use a non-secure cookie. Note - this should only be used for testing and in trusted \n environments."
+                },
+                "path": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "Path of the cookie. If unset, defaults to \"/\". Set it explicitly to \"\" to avoid setting a \n path."
+                },
+                "domain": {
+                    "type": "string",
+                    "description": "Cookie domain"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Set-Cookie options"
+        },
+        "cookie": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Set the tokens in the cookie itself. No need for server side state."
+        },
+        "redis": {
+            "properties": {
+                "options": {
+                    "properties": {
+                        "host": {
+                            "type": "string",
+                            "description": "address of the redis. can be address:port or unix://path/to/unix.sock"
+                        },
+                        "db": {
+                            "type": "integer",
+                            "description": "db to use. can leave unset for db 0."
+                        },
+                        "pool_size": {
+                            "type": "integer",
+                            "description": "size of the connection pool. can leave unset for default.\n defaults to 10 connections per every CPU"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Options to connect to redis"
+                },
+                "key_prefix": {
+                    "type": "string",
+                    "description": "Key prefix inside redis"
+                },
+                "cookie_name": {
+                    "type": "string",
+                    "description": "Cookie name to set and store the session id. If empty the default \"__session\" is used."
+                },
+                "allow_refreshing": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "When set, refresh expired id-tokens using the refresh-token. Defaults to true.\n Explicitly set to false to disable refreshing."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use redis to store the tokens and just store a random id in the cookie."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

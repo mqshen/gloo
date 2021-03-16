@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "refs": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "namespace": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "A reference to a `RateLimitConfig` resource."
+            },
+            "type": "array"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "A list of references to `RateLimitConfig` resources.\n Each resource represents a rate limit policy that will be independently enforced."
+}

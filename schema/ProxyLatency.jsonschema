@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "request": {
+            "enum": [
+                "LAST_INCOMING_FIRST_OUTGOING",
+                0,
+                "FIRST_INCOMING_FIRST_OUTGOING",
+                1,
+                "LAST_INCOMING_LAST_OUTGOING",
+                2,
+                "FIRST_INCOMING_LAST_OUTGOING",
+                3
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "How to measure the request."
+        },
+        "measure_request_internally": {
+            "type": "boolean",
+            "description": "When FIRST_OUTGOING (i.e. LAST_INCOMING_FIRST_OUTGOING or FIRST_INCOMING_FIRST_OUTGOING) is\n instead of when the first byte is sent upstream. This has the advantage of not measuring the time\n selected for request measurment, finish measuring proxy latency when decodeHeader for this \n it takes a connection to form, which may skew the P99.\n filter is hit instead of when the first byte is sent upstream. This has the advantage of not\n for this to work the filter should be inserted last, just before the router filter.\n measuring the time it takes a connection to form, which may skew the P99. For this to work\n this filter should be inserted last, just before the router filter. This has no effect if\n other measurement type is selected, and has no effect on how response is measured."
+        },
+        "response": {
+            "enum": [
+                "LAST_INCOMING_FIRST_OUTGOING",
+                0,
+                "FIRST_INCOMING_FIRST_OUTGOING",
+                1,
+                "LAST_INCOMING_LAST_OUTGOING",
+                2,
+                "FIRST_INCOMING_LAST_OUTGOING",
+                3
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "How measure the response."
+        },
+        "charge_cluster_stat": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Charge a stat per upstream cluster. If not specified, defaults to true."
+        },
+        "charge_listener_stat": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Charge a stat per listener. If not specified, defaults to true."
+        },
+        "emit_dynamic_metadata": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Should we emit request timing to dynamic metadata. defaults to true."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Configure the proxy latency filter. This filter measures the latency\n incurred by the filter chain in a histogram."
+}

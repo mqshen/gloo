@@ -1,0 +1,93 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "disabled": {
+            "type": "boolean",
+            "description": "Disable all rules on the current route"
+        },
+        "rule_sets": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "rule_str": {
+                        "type": "string",
+                        "description": "String of rules which are added directly"
+                    },
+                    "files": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "description": "Array of files to include"
+                    },
+                    "directory": {
+                        "type": "string",
+                        "description": "A directory to include. all *.conf files in this directory will be\n included. sub directories will NOT be checked."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "Global rule sets for the current http connection manager"
+        },
+        "custom_intervention_message": {
+            "type": "string",
+            "description": "Custom message to display when an intervention occurs"
+        },
+        "audit_logging": {
+            "properties": {
+                "action": {
+                    "enum": [
+                        "NEVER",
+                        0,
+                        "RELEVANT_ONLY",
+                        1,
+                        "ALWAYS",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "location": {
+                    "enum": [
+                        "FILTER_STATE",
+                        0,
+                        "DYNAMIC_METADATA",
+                        1
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "This instructs the filter what to do with the transaction's audit log."
+        },
+        "request_headers_only": {
+            "type": "boolean",
+            "description": "If set, the body will not be buffered and fed to ModSecurity. Only the headers will.\n This can help improve performance."
+        },
+        "response_headers_only": {
+            "type": "boolean"
+        },
+        "regression_logs": {
+            "type": "boolean",
+            "description": "log in a format suited for the OWASP regression tests.\n this format is a multiline log format, so it is disabled for regular use.\n do not enable this in production!"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

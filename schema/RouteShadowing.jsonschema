@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "upstream": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "The upstream to which the shadowed traffic should be sent."
+        },
+        "percentage": {
+            "type": "number",
+            "description": "This should be a value between 0.0 and 100.0, with up to 6 significant digits."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Specifies traffic shadowing configuration for the associated route.\n If set, Envoy will send a portion of the route's traffic to the shadowed upstream. This can be a useful way to\n preview a new service's behavior before putting the service in the critical path.\n Note that this plugin is only applicable to routes with upstream destinations (not redirect or direct response routes).\n See here for additional information on Envoy's shadowing capabilities: https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/route/route.proto#envoy-api-msg-route-routeaction-requestmirrorpolicy"
+}

@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "request_transformation": {
+            "$ref": "#/definitions/envoy.config.filter.http.transformation_ee.v2.Transformation",
+            "additionalProperties": true
+        },
+        "clear_route_cache": {
+            "type": "boolean",
+            "description": "clear the route cache if the request transformation was applied"
+        },
+        "response_transformation": {
+            "$ref": "#/definitions/envoy.config.filter.http.transformation_ee.v2.Transformation",
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "definitions": {
+        "envoy.config.filter.http.transformation_ee.v2.Transformation": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "dlp_transformation": {
+                    "properties": {
+                        "actions": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Identifier for this action.\n Used mostly to help ID specific actions in logs.\n If left null will default to unknown"
+                                    },
+                                    "regex": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "List of regexes to apply to the response body to match data which should be masked\n They will be applied iteratively in the order which they are specified"
+                                    },
+                                    "shadow": {
+                                        "type": "boolean",
+                                        "description": "If specified, this rule will not actually be applied, but only logged."
+                                    },
+                                    "percent": {
+                                        "properties": {
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "The percent of the string which should be masked.\n If not set, defaults to 75%"
+                                    },
+                                    "mask_char": {
+                                        "type": "string",
+                                        "description": "The character which should overwrite the masked data\n If left empty, defaults to \"X\""
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object"
+                            },
+                            "type": "array",
+                            "description": "list of actions to apply"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "id": "envoy.config.filter.http.transformation_ee.v2.Transformation"
+        }
+    }
+}

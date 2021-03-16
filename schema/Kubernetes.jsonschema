@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "containers": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "Tag": {
+                        "type": "string"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Registry": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "Array of containers comprising a single distribution of gloo"
+        },
+        "namespace": {
+            "type": "string",
+            "description": "namespace gloo is running in"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

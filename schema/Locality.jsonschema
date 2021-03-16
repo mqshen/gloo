@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "region": {
+            "type": "string",
+            "description": "Region this zone belongs to."
+        },
+        "zone": {
+            "type": "string",
+            "description": "Defines the local service zone where Envoy is running. The meaning of zone\n is context dependent, e.g. `Availability Zone (AZ)\n \u003chttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html\u003e`_\n on AWS, `Zone \u003chttps://cloud.google.com/compute/docs/regions-zones/\u003e`_ on\n GCP, etc."
+        },
+        "sub_zone": {
+            "type": "string",
+            "description": "When used for locality of upstream hosts, this field further splits zone\n into smaller chunks of sub-zones so they can be load balanced\n independently."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Identifies location of where either Envoy runs or where upstream hosts run."
+}

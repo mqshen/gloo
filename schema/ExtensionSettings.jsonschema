@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "disable": {
+            "type": "boolean",
+            "description": "Disable RBAC checks on this resource (default false). This is useful to allow access to static resources/login page without RBAC checks.\n If provided on a route, all route settings override any vhost settings"
+        },
+        "policies": {
+            "additionalProperties": {
+                "properties": {
+                    "principals": {
+                        "items": {
+                            "$schema": "http://json-schema.org/draft-04/schema#",
+                            "properties": {
+                                "jwt_principal": {
+                                    "properties": {
+                                        "claims": {
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            },
+                                            "type": "object",
+                                            "description": "Set of claims that make up this principal. Commonly, the 'iss' and 'sub' or 'email' claims are used.\n all claims must be present on the JWT."
+                                        },
+                                        "provider": {
+                                            "type": "string",
+                                            "description": "Verify that the JWT came from a specific provider. This usually can be left empty\n and a provider will be chosen automatically."
+                                        }
+                                    },
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "type": "object",
+                            "description": "An RBAC principal - the identity entity (usually a user or a service account)."
+                        },
+                        "type": "array",
+                        "description": "Principals in this policy."
+                    },
+                    "permissions": {
+                        "properties": {
+                            "path_prefix": {
+                                "type": "string",
+                                "description": "Paths that have this prefix will be allowed."
+                            },
+                            "methods": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array",
+                                "description": "What http methods (GET, POST, ...) are allowed."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Permissions granted to the principals."
+                    }
+                },
+                "additionalProperties": true,
+                "type": "object"
+            },
+            "type": "object",
+            "description": "Named policies to apply."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "RBAC settings for Virtual Hosts and Routes"
+}

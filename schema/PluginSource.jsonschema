@@ -1,0 +1,127 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "filters": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "description": "name of image which houses the compiled wasm filter"
+                    },
+                    "file_path": {
+                        "type": "string",
+                        "description": "path from which to load wasm filter from disk"
+                    },
+                    "config": {
+                        "properties": {
+                            "type_url": {
+                                "type": "string",
+                                "description": "A URL/resource name that uniquely identifies the type of the serialized\n protocol buffer message. This string must contain at least\n one \"/\" character. The last segment of the URL's path must represent\n the fully qualified name of the type (as in\n `path/google.protobuf.Duration`). The name should be in a canonical form\n (e.g., leading \".\" is not accepted).\n\n In practice, teams usually precompile into the binary all types that they\n expect it to use in the context of Any. However, for URLs which use the\n scheme `http`, `https`, or no scheme, one can optionally set up a type\n server that maps type URLs to message definitions as follows:\n\n * If no scheme is provided, `https` is assumed.\n * An HTTP GET on the URL must yield a [google.protobuf.Type][]\n   value in binary format, or produce an error.\n * Applications are allowed to cache lookup results based on the\n   URL, or have them precompiled into a binary to avoid any\n   lookup. Therefore, binary compatibility needs to be preserved\n   on changes to types. (Use versioned type names to manage\n   breaking changes.)\n\n Note: this functionality is not currently available in the official\n protobuf release, and it is not used for type URLs beginning with\n type.googleapis.com.\n\n Schemes other than `http`, `https` (or the empty scheme) might be\n used with implementation specific semantics."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Must be a valid serialized protocol buffer of the above specified type.",
+                                "format": "binary",
+                                "binaryEncoding": "base64"
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Filter/service configuration used to configure or reconfigure a plugin\n (proxy_on_configuration).\n `google.protobuf.Struct` is serialized as JSON before\n passing it to the plugin. `google.protobuf.BytesValue` and\n `google.protobuf.StringValue` are passed directly without the wrapper."
+                    },
+                    "filter_stage": {
+                        "properties": {
+                            "stage": {
+                                "enum": [
+                                    "FaultStage",
+                                    0,
+                                    "CorsStage",
+                                    1,
+                                    "WafStage",
+                                    2,
+                                    "AuthNStage",
+                                    3,
+                                    "AuthZStage",
+                                    4,
+                                    "RateLimitStage",
+                                    5,
+                                    "AcceptedStage",
+                                    6,
+                                    "OutAuthStage",
+                                    7,
+                                    "RouteStage",
+                                    8
+                                ],
+                                "oneOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "integer"
+                                    }
+                                ],
+                                "description": "stage of the filter chain in which the selected filter should be added"
+                            },
+                            "predicate": {
+                                "enum": [
+                                    "During",
+                                    0,
+                                    "Before",
+                                    1,
+                                    "After",
+                                    2
+                                ],
+                                "oneOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "integer"
+                                    }
+                                ],
+                                "description": "How this filter should be placed relative to the stage"
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "the stage in the filter chain where this filter should be placed"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "the name of the filter, used for logging"
+                    },
+                    "root_id": {
+                        "type": "string",
+                        "description": "the root_id of the filter which should be run, if this value is incorrect, or\n empty the filter will crash"
+                    },
+                    "vm_type": {
+                        "enum": [
+                            "V8",
+                            0,
+                            "WAVM",
+                            1
+                        ],
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            }
+                        ],
+                        "description": "selected VM type"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "This message defines a single Envoy WASM filter to be placed into the filter chain"
+            },
+            "type": "array",
+            "description": "list of WASM filters to be added into the filter chain"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Options config for WASM filters"
+}

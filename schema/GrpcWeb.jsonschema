@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "disable": {
+            "type": "boolean",
+            "description": "Disable grpc web support."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "GrpcWeb support is enabled be default. Use this extension to disable it."
+}

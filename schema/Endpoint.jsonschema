@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "upstreams": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "namespace": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "A way to reference resources across namespaces"
+            },
+            "type": "array",
+            "description": "List of the upstreams the endpoint belongs to"
+        },
+        "address": {
+            "type": "string",
+            "description": "Address of the endpoint (ip or hostname)"
+        },
+        "port": {
+            "type": "integer",
+            "description": "listening port for the endpoint"
+        },
+        "hostname": {
+            "type": "string",
+            "description": "hostname to use for the endpoint (e.g., auto host rewrite) if provided."
+        },
+        "health_check": {
+            "properties": {
+                "hostname": {
+                    "type": "string",
+                    "description": "hostname to use for the endpoint health checks if provided."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "configuration for health checking the endpoint."
+        },
+        "metadata": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the resource.\n\nNames must be unique and follow the following syntax rules:\n\nOne or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters."
+                },
+                "namespace": {
+                    "type": "string",
+                    "description": "Namespace is used for the namespacing of resources."
+                },
+                "cluster": {
+                    "type": "string",
+                    "description": "Cluster indicates the cluster this resource belongs to\n Cluster is only applicable in certain contexts, e.g. Kubernetes\n An empty string here refers to the local cluster"
+                },
+                "resource_version": {
+                    "type": "string",
+                    "description": "An opaque value that represents the internal version of this object that can\n be used by clients to determine when objects have changed."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Map of string keys and values that can be used to organize and categorize\n (scope and select) objects. Some resources contain `selectors` which\n can be linked with other resources by their labels"
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Annotations is an unstructured key value map stored with a resource that may be\n set by external tools to store and retrieve arbitrary metadata."
+                },
+                "generation": {
+                    "type": "string",
+                    "description": "A sequence number representing a specific generation of the desired state.\n Currently only populated for resources backed by Kubernetes"
+                },
+                "owner_references": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "api_version": {
+                                "type": "string"
+                            },
+                            "block_owner_deletion": {
+                                "additionalProperties": true,
+                                "type": "boolean"
+                            },
+                            "controller": {
+                                "additionalProperties": true,
+                                "type": "boolean"
+                            },
+                            "kind": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "uid": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "proto message representing kubernertes owner reference\n https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#ownerreference-v1-meta"
+                    },
+                    "type": "array",
+                    "description": "List of objects depended by this object.\n Currently only populated for resources backed by Kubernetes"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Metadata contains the object metadata for this resource"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Endpoints represent dynamically discovered address/ports where an upstream service is listening"
+}

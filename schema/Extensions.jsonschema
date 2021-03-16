@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "configs": {
+            "additionalProperties": {
+                "properties": {
+                    "fields": {
+                        "additionalProperties": {
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "type": "object",
+                        "description": "Unordered map of dynamically typed values."
+                    }
+                },
+                "additionalProperties": true,
+                "type": "object"
+            },
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

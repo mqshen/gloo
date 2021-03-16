@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "key": {
+            "type": "string",
+            "description": "Header name."
+        },
+        "value": {
+            "type": "string",
+            "description": "Header value."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Header name/value pair."
+}

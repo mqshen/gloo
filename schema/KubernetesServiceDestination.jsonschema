@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "ref": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "The target service"
+        },
+        "port": {
+            "type": "integer",
+            "description": "The port attribute of the service"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Identifies a port on a kubernetes service to route traffic to."
+}

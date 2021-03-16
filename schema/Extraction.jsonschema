@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "header": {
+            "type": "string",
+            "description": "Extract information from headers"
+        },
+        "body": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Extract information from the request/response body"
+        },
+        "regex": {
+            "type": "string",
+            "description": "Only strings matching this regular expression will be part of the\n extraction. The most simple value for this field is '.*', which matches the\n whole source. The field is required. If extraction fails the result is an\n empty value."
+        },
+        "subgroup": {
+            "type": "integer",
+            "description": "If your regex contains capturing groups, use this field to determine which\n group should be selected."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Extractions can be used to extract information from the request/response.\n The extracted information can then be referenced in template fields."
+}

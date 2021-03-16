@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "addr": {
+            "type": "string",
+            "description": "Address (hostname or IP)"
+        },
+        "port": {
+            "type": "integer",
+            "description": "Port the instance is listening on"
+        },
+        "sni_addr": {
+            "type": "string",
+            "description": "Address to use for SNI if using ssl."
+        },
+        "health_check_config": {
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "(Enterprise Only): Path to use when health checking this specific host."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "(Enterprise Only): Host specific health checking configuration."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Represents a single instance of an upstream"
+}

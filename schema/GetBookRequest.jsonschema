@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "shelf": {
+            "type": "string",
+            "description": "The ID of the shelf from which to retrieve a book."
+        },
+        "book": {
+            "type": "string",
+            "description": "The ID of the book to retrieve."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Request message for GetBook method."
+}

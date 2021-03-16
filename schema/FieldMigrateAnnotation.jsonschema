@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "rename": {
+            "type": "string",
+            "description": "Rename the field in next version."
+        },
+        "oneof_promotion": {
+            "type": "string",
+            "description": "Add the field to a named oneof in next version. If this already exists, the\n field will join its siblings under the oneof, otherwise a new oneof will be\n created with the given name."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

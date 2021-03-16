@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "client_sample_percentage": {
+            "additionalProperties": true,
+            "type": "number",
+            "description": "Percentage of requests that should produce traces when the `x-client-trace-id` header is provided.\n optional, defaults to 100.0\n This should be a value between 0.0 and 100.0, with up to 6 significant digits."
+        },
+        "random_sample_percentage": {
+            "additionalProperties": true,
+            "type": "number",
+            "description": "Percentage of requests that should produce traces by random sampling.\n optional, defaults to 100.0\n This should be a value between 0.0 and 100.0, with up to 6 significant digits."
+        },
+        "overall_sample_percentage": {
+            "additionalProperties": true,
+            "type": "number",
+            "description": "Overall percentage of requests that should produce traces.\n optional, defaults to 100.0\n This should be a value between 0.0 and 100.0, with up to 6 significant digits."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Requests can produce traces by random sampling or when the `x-client-trace-id` header is provided.\n TracePercentages defines the limits for random, forced, and overall tracing percentages."
+}

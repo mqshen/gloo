@@ -1,0 +1,159 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "errors": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "ProcessingError",
+                            0
+                        ],
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "integer"
+                            }
+                        ],
+                        "description": "the type of the error"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "description": "any extra info as a string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "error types for top-level http listener config"
+            },
+            "type": "array"
+        },
+        "virtual_host_reports": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "errors": {
+                        "items": {
+                            "$schema": "http://json-schema.org/draft-04/schema#",
+                            "properties": {
+                                "type": {
+                                    "enum": [
+                                        "NameNotUniqueError",
+                                        0,
+                                        "DomainsNotUniqueError",
+                                        1,
+                                        "ProcessingError",
+                                        2,
+                                        "EmptyDomainError",
+                                        3
+                                    ],
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "integer"
+                                        }
+                                    ],
+                                    "description": "the type of the error"
+                                },
+                                "reason": {
+                                    "type": "string",
+                                    "description": "any extra info as a string"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "type": "object",
+                            "description": "error types for top-level virtual host config"
+                        },
+                        "type": "array",
+                        "description": "errors on top-level config of the virtual host"
+                    },
+                    "route_reports": {
+                        "items": {
+                            "$schema": "http://json-schema.org/draft-04/schema#",
+                            "properties": {
+                                "errors": {
+                                    "items": {
+                                        "$schema": "http://json-schema.org/draft-04/schema#",
+                                        "properties": {
+                                            "type": {
+                                                "enum": [
+                                                    "InvalidMatcherError",
+                                                    0,
+                                                    "ProcessingError",
+                                                    1
+                                                ],
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "integer"
+                                                    }
+                                                ],
+                                                "description": "the type of the error"
+                                            },
+                                            "reason": {
+                                                "type": "string",
+                                                "description": "any extra info as a string"
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "type": "object",
+                                        "description": "error types for the given route config"
+                                    },
+                                    "type": "array",
+                                    "description": "errors on the config of the route"
+                                },
+                                "warnings": {
+                                    "items": {
+                                        "$schema": "http://json-schema.org/draft-04/schema#",
+                                        "properties": {
+                                            "type": {
+                                                "enum": [
+                                                    "InvalidDestinationWarning",
+                                                    0
+                                                ],
+                                                "oneOf": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "type": "integer"
+                                                    }
+                                                ],
+                                                "description": "the type of the error"
+                                            },
+                                            "reason": {
+                                                "type": "string",
+                                                "description": "any extra info as a string"
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "type": "object",
+                                        "description": "warning types for the given route config"
+                                    },
+                                    "type": "array",
+                                    "description": "warnings on the config of the route"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "report for nested virtual hosts"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

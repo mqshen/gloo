@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "websocket": {
+            "properties": {
+                "enabled": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Whether the upgrade should be enabled. If left unset, Envoy will enable the protocol upgrade."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Specification for websocket upgrade requests."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

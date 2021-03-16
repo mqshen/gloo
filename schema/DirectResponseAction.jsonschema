@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "status": {
+            "type": "integer",
+            "description": "Specifies the HTTP response status to be returned."
+        },
+        "body": {
+            "type": "string",
+            "description": "Specifies the content of the response body. If this setting is omitted,\n no body is included in the generated response.\n\n   Note: Headers can be specified using the Header Modification feature in the enclosing\n   Route, Virtual Host, or Listener options."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "DirectResponseAction is copied directly from https://github.com/envoyproxy/envoy/blob/master/api/envoy/api/v2/route/route.proto"
+}

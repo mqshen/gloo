@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "auth_endpoint": {
+            "type": "string",
+            "description": "url of the provider authorization endpoint"
+        },
+        "token_endpoint": {
+            "type": "string",
+            "description": "url of the provider token endpoint"
+        },
+        "jwks_uri": {
+            "type": "string",
+            "description": "url of the provider json web key set"
+        },
+        "scopes": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "list of scope values that the provider supports"
+        },
+        "response_types": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "list of response types that the provider supports"
+        },
+        "subjects": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "list of subject identifier types that the provider supports"
+        },
+        "id_token_algs": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "list of json web signature signing algorithms that the provider supports for encoding claims in a jwt"
+        },
+        "auth_methods": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "list of client authentication methods supported by the provider token endpoint"
+        },
+        "claims": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "list of claim types that the provider supports"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "OIDC configuration is discovered at \u003cissuerUrl\u003e/.well-known/openid-configuration\n The discovery override defines any properties that should override this discovery configuration\n https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata"
+}

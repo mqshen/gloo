@@ -1,0 +1,303 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "request_transforms": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "matcher": {
+                        "properties": {
+                            "prefix": {
+                                "type": "string",
+                                "description": "If specified, the route is a prefix rule meaning that the prefix must\n match the beginning of the *:path* header."
+                            },
+                            "exact": {
+                                "type": "string",
+                                "description": "If specified, the route is an exact path rule meaning that the path must\n exactly match the *:path* header once the query string is removed."
+                            },
+                            "regex": {
+                                "type": "string",
+                                "description": "If specified, the route is a regular expression rule meaning that the\n regex must match the *:path* header once the query string is removed. The entire path\n (without the query string) must match the regex. The rule will not match if only a\n sub-sequence of the *:path* header matches the regex. The regex grammar is defined `here\n \u003chttp://en.cppreference.com/w/cpp/regex/ecmascript\u003e`_.\n\n Examples:\u003cbr/\u003e\n\n * The regex */b[io]t* matches the path */bit*\u003cbr/\u003e\n * The regex */b[io]t* matches the path */bot*\u003cbr/\u003e\n * The regex */b[io]t* does not match the path */bite*\u003cbr/\u003e\n * The regex */b[io]t* does not match the path */bit/bot*\u003cbr/\u003e\u003cbr/\u003e\n\n Note that the complexity of the regex is constrained by the regex engine's \"program size\" setting.\n If your regex is too complex, you may need to adjust the `regexMaxProgramSize` field\n in the `GlooOptions` section of your `Settings` resource"
+                            },
+                            "case_sensitive": {
+                                "additionalProperties": true,
+                                "type": "boolean",
+                                "description": "Indicates that prefix/path matching should be case sensitive. The default is true."
+                            },
+                            "headers": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "$ref": "#/definitions/matchers.core.gloo.solo.io.HeaderMatcher"
+                                },
+                                "type": "array",
+                                "description": "Specifies a set of headers that the route should match on. The router will\n check the request’s headers against all the specified headers in the route\n config. A match will happen if all the headers in the route are present in\n the request with the same values (or based on presence if the value field\n is not in the config)."
+                            },
+                            "query_parameters": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "Specifies the name of a key that must be present in the requested\n *path*'s query string."
+                                        },
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Specifies the value of the key. If the value is absent, a request\n that contains the key in its query string will match, whether the\n key appears with a value (e.g., \"?debug=true\") or not (e.g., \"?debug\")"
+                                        },
+                                        "regex": {
+                                            "type": "boolean",
+                                            "description": "Specifies whether the query parameter value is a regular expression.\n Defaults to false. The entire query parameter value (i.e., the part to\n the right of the equals sign in \"key=value\") must match the regex.\n E.g., the regex \"\\d+$\" will match \"123\" but not \"a123\" or \"123a\"."
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "Query parameter matching treats the query string of a request's :path header\n as an ampersand-separated list of keys and/or key=value elements."
+                                },
+                                "type": "array",
+                                "description": "Specifies a set of URL query parameters on which the route should\n match. The router will check the query string from the *path* header\n against all the specified query parameters. If the number of specified\n query parameters is nonzero, they all must match the *path* header's\n query string for a match to occur."
+                            },
+                            "methods": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array",
+                                "description": "HTTP Method/Verb(s) to match on. If none specified, the matcher will ignore the HTTP Method"
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Matches on the request properties."
+                    },
+                    "clear_route_cache": {
+                        "type": "boolean",
+                        "description": "Should we clear the route cache if a transformation was matched."
+                    },
+                    "request_transformation": {
+                        "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                        "additionalProperties": true,
+                        "description": "Transformation to apply on the request."
+                    },
+                    "response_transformation": {
+                        "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                        "additionalProperties": true,
+                        "description": "Transformation to apply on the response."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "Transformations to apply on the request. The first request that matches will apply."
+        },
+        "response_transforms": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "matchers": {
+                        "items": {
+                            "$schema": "http://json-schema.org/draft-04/schema#",
+                            "$ref": "#/definitions/matchers.core.gloo.solo.io.HeaderMatcher"
+                        },
+                        "type": "array",
+                        "description": "Response headers to match on."
+                    },
+                    "response_code_details": {
+                        "type": "string",
+                        "description": "Response code detail to match on. To see the response code details for your usecase,\n you can use the envoy access log %RESPONSE_CODE_DETAILS% formatter to log it."
+                    },
+                    "response_transformation": {
+                        "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                        "additionalProperties": true,
+                        "description": "Transformation to apply on the response."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "type": "array",
+            "description": "Transformations to apply on the response. This field is only consulted if there is no\n response transformation in the matched `request_transforms`. i.e. Only one response transformation\n will be executed. The first response transformation that matches will\n apply."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "definitions": {
+        "envoy.api.v2.filter.http.InjaTemplate": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Defines an [Inja template](https://github.com/pantor/inja) that will be\n rendered by Gloo. In addition to the core template functions, the Gloo\n transformation filter defines the following custom functions:\n - header(header_name): returns the value of the header with the given name\n - extraction(extractor_name): returns the value of the extractor with the\n given name\n - env(env_var_name): returns the value of the environment variable with the\n given name\n - body(): returns the request/response body\n - context(): returns the base JSON context (allowing for example to range on\n a JSON body that is an array)",
+            "id": "envoy.api.v2.filter.http.InjaTemplate"
+        },
+        "envoy.api.v2.filter.http.Transformation": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "transformation_template": {
+                    "properties": {
+                        "advanced_templates": {
+                            "type": "boolean",
+                            "description": "If set to true, use JSON pointer notation (e.g. \"time/start\") instead of\n dot notation (e.g. \"time.start\") to access JSON elements. Defaults to\n false.\n\n Please note that, if set to 'true', you will need to use the `extraction`\n function to access extractors in the template (e.g. '{{\n extraction(\"my_extractor\") }}'); if the default value of 'false' is used,\n extractors will simply be available by their name (e.g. '{{ my_extractor\n }}')."
+                        },
+                        "extractors": {
+                            "additionalProperties": {
+                                "properties": {
+                                    "header": {
+                                        "type": "string",
+                                        "description": "Extract information from headers"
+                                    },
+                                    "body": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Extract information from the request/response body"
+                                    },
+                                    "regex": {
+                                        "type": "string",
+                                        "description": "Only strings matching this regular expression will be part of the\n extraction. The most simple value for this field is '.*', which matches the\n whole source. The field is required. If extraction fails the result is an\n empty value."
+                                    },
+                                    "subgroup": {
+                                        "type": "integer",
+                                        "description": "If your regex contains capturing groups, use this field to determine which\n group should be selected."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object",
+                            "description": "Use this attribute to extract information from the request. It consists of\n a map of strings to extractors. The extractor will defines which\n information will be extracted, while the string key will provide the\n extractor with a name. You can reference extractors by their name in\n templates, e.g. \"{{ my-extractor }}\" will render to the value of the\n \"my-extractor\" extractor."
+                        },
+                        "headers": {
+                            "additionalProperties": {
+                                "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                "additionalProperties": true
+                            },
+                            "type": "object",
+                            "description": "Use this attribute to transform request/response headers. It consists of a\n map of strings to templates. The string key determines the name of the\n resulting header, the rendered template will determine the value. Any existing\n headers with the same header name will be replaced by the transformed header.\n If a header name is included in `headers` and `headers_to_append`, it will first\n be replaced the template in `headers`, then additional header values will be appended\n by the templates defined in `headers_to_append`.\n For example, the following header transformation configuration:\n\n ```yaml\n    headers:\n      x-header-one: {\"text\": \"first {{inja}} template\"}\n      x-header-one: {\"text\": \"second {{inja}} template\"}\n    headersToAppend:\n      - key: x-header-one\n        value: {\"text\": \"first appended {{inja}} template\"}\n      - key: x-header-one\n        value: {\"text\": \"second appended {{inja}} template\"}\n ```\n will result in the following headers on the HTTP message:\n\n ```\n x-header-one: first inja template\n x-header-one: first appended inja template\n x-header-one: second appended inja template\n ```"
+                        },
+                        "headers_to_append": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "Header name"
+                                    },
+                                    "value": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "Apply a template to the header value"
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Defines a header-template pair to be used in `headers_to_append`"
+                            },
+                            "type": "array",
+                            "description": "Use this attribute to transform request/response headers. It consists of\n an array of string/template objects. Use this attribute to define multiple\n templates for a single header. Header template(s) defined here will be appended to any\n existing headers with the same header name, not replace existing ones.\n See `headers` documentation to see an example of usage."
+                        },
+                        "body": {
+                            "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                            "additionalProperties": true,
+                            "description": "Apply a template to the body"
+                        },
+                        "passthrough": {
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "This will cause the transformation filter not to buffer the body.\n Use this setting if the response body is large and you don't need to\n transform nor extract information from it."
+                        },
+                        "merge_extractors_to_body": {
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Merge all defined extractors to the request/response body.\n If you want to nest elements inside the body, use dot separator in the\n extractor name."
+                        },
+                        "parse_body_behavior": {
+                            "enum": [
+                                "ParseAsJson",
+                                0,
+                                "DontParse",
+                                1
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "ignore_error_on_parse": {
+                            "type": "boolean",
+                            "description": "If set to true, Envoy will not throw an exception in case the body parsing\n fails."
+                        },
+                        "dynamic_metadata_values": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "metadata_namespace": {
+                                        "type": "string",
+                                        "description": "The metadata namespace. Defaults to the filter namespace."
+                                    },
+                                    "key": {
+                                        "type": "string",
+                                        "description": "The metadata key."
+                                    },
+                                    "value": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "A template that determines the metadata value."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Defines an [Envoy Dynamic\n Metadata](https://www.envoyproxy.io/docs/envoy/latest/configuration/advanced/well_known_dynamic_metadata)\n entry."
+                            },
+                            "type": "array",
+                            "description": "Use this field to set Dynamic Metadata."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Apply transformation templates."
+                },
+                "header_body_transform": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "This type of transformation will make all the headers available in the\n response body. The resulting JSON body will consist of two attributes:\n 'headers', containing the headers, and 'body', containing the original\n body."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "This message defines a transformation.",
+            "id": "envoy.api.v2.filter.http.Transformation"
+        },
+        "matchers.core.gloo.solo.io.HeaderMatcher": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Specifies the name of the header in the request."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Specifies the value of the header. If the value is absent a request that\n has the name header will match, regardless of the header’s value."
+                },
+                "regex": {
+                    "type": "boolean",
+                    "description": "Specifies whether the header value should be treated as regex or not."
+                },
+                "invert_match": {
+                    "type": "boolean",
+                    "description": "If set to true, the result of the match will be inverted. Defaults to false.\n\n Examples:\n * name=foo, invert_match=true: matches if no header named `foo` is present\n * name=foo, value=bar, invert_match=true: matches if no header named `foo` with value `bar` is present\n * name=foo, value=``\\d{3}``, regex=true, invert_match=true: matches if no header named `foo` with a value consisting of three integers is present"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Internally, Gloo always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host* header.\n Thus, if attempting to match on *Host*, match on *:authority* instead.",
+            "id": "matchers.core.gloo.solo.io.HeaderMatcher"
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "before_ext_auth": {
+            "$ref": "#/definitions/jwt.options.gloo.solo.io.RouteExtension",
+            "additionalProperties": true,
+            "description": "JWT route config for the JWT filter that runs after the extauth filter."
+        },
+        "after_ext_auth": {
+            "$ref": "#/definitions/jwt.options.gloo.solo.io.RouteExtension",
+            "additionalProperties": true,
+            "description": "JWT route config for the JWT filter that runs after the extauth filter."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "definitions": {
+        "jwt.options.gloo.solo.io.RouteExtension": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "disable": {
+                    "type": "boolean",
+                    "description": "Disable JWT checks on this route."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "id": "jwt.options.gloo.solo.io.RouteExtension"
+        }
+    }
+}

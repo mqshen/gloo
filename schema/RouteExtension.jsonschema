@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "disable": {
+            "type": "boolean",
+            "description": "Disable JWT checks on this route."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

@@ -3,9 +3,9 @@ package create
 import (
 	"context"
 	"strconv"
-	"strings"
 
 	"github.com/solo-io/gloo/projects/gloo/cli/pkg/prerun"
+	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 
 	"github.com/solo-io/gloo/projects/gloo/cli/pkg/argsutils"
 	"github.com/solo-io/gloo/projects/gloo/cli/pkg/cmd/options"
@@ -117,25 +117,29 @@ func upstreamGroupDestinationsFromOpts(ctx context.Context, input options.InputU
 	}
 
 	weightedDestinations := make([]*v1.WeightedDestination, 0)
-	for namespacedUpstream, usWeight := range input.WeightedDestinations.MustMap() {
+	for _, usWeight := range input.WeightedDestinations.MustMap() {
 		weight := uint32(1)
 		if providedWeight, err := strconv.ParseUint(usWeight, 10, 64); err == nil && providedWeight > 0 {
 			weight = uint32(providedWeight)
 		}
 
-		if _, ok := ussByKey[namespacedUpstream]; !ok {
-			splits := strings.SplitAfter(namespacedUpstream, ".")
-			if len(splits) != 2 {
-				return nil, errors.Errorf("invalid format: provide namespaced upstream names (namespace.upstreamName)")
-			}
-			ns := splits[0]
-			us := splits[1]
-			return nil, errors.Errorf("no upstream found with name %v in namespace %v", us, ns)
-		}
+		//if _, ok := ussByKey[namespacedUpstream]; !ok {
+		//	//splits := strings.SplitAfter(namespacedUpstream, ".")
+		//	//if len(splits) != 2 {
+		//	//	return nil, errors.Errorf("invalid format: provide namespaced upstream names (namespace.upstreamName)")
+		//	//}
+		//	ns := "test" //splits[0]
+		//	us := "test" //splits[1]
+		//	return nil, errors.Errorf("no upstream found with name %v in namespace %v", us, ns)
+		//}
 		wd := v1.WeightedDestination{
 			Destination: &v1.Destination{
 				DestinationType: &v1.Destination_Upstream{
-					Upstream: ussByKey[namespacedUpstream].Metadata.Ref(),
+					Upstream: &core.ResourceRef{
+						Namespace: "test",
+						Name:      "test",
+					},
+					//ussByKey[namespacedUpstream].Metadata.Ref(),
 				},
 			},
 			Weight: weight,

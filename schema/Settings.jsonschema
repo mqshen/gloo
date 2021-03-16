@@ -1,0 +1,1013 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "discovery_namespace": {
+            "type": "string",
+            "description": "This is the namespace to which Gloo controllers will write their own resources, e.g. discovered Upstreams or default Gateways.\n If empty, this will default to \"gloo-system\"."
+        },
+        "watch_namespaces": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Use this setting to restrict the namespaces that Gloo controllers take into consideration when watching for resources.In a\n usual production scenario, RBAC policies will limit the namespaces that Gloo has access to. If `watch_namespaces`\n contains namespaces outside of this whitelist, Gloo will fail to start.\n\n If not set, this defaults to all available namespaces. Please note that, the `discovery_namespace` will always\n be included in this list."
+        },
+        "kubernetes_config_source": {
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "directory_config_source": {
+            "$ref": "#/definitions/gloo.solo.io.Settings.Directory",
+            "additionalProperties": true
+        },
+        "consul_kv_source": {
+            "$ref": "#/definitions/gloo.solo.io.Settings.ConsulKv",
+            "additionalProperties": true
+        },
+        "kubernetes_secret_source": {
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "vault_secret_source": {
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "description": "the Token used to authenticate to Vault"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "address is the address of the Vault server. This should be a complete\n URL such as http://solo.io"
+                },
+                "ca_cert": {
+                    "type": "string",
+                    "description": "caCert is the path to a PEM-encoded CA cert file to use to verify the\n Vault server SSL certificate."
+                },
+                "ca_path": {
+                    "type": "string",
+                    "description": "caPath is the path to a directory of PEM-encoded CA cert files to verify\n the Vault server SSL certificate."
+                },
+                "client_cert": {
+                    "type": "string",
+                    "description": "clientCert is the path to the certificate for Vault communication"
+                },
+                "client_key": {
+                    "type": "string",
+                    "description": "clientKey is the path to the private key for Vault communication"
+                },
+                "tls_server_name": {
+                    "type": "string",
+                    "description": "tlsServerName, if set, is used to set the SNI host when connecting via\n TLS."
+                },
+                "insecure": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Insecure enables or disables SSL verification"
+                },
+                "root_key": {
+                    "type": "string",
+                    "description": "all keys stored in Vault will begin with this Vault\n this can be used to run multiple instances of Gloo against the same Consul cluster\n defaults to `gloo`"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "directory_secret_source": {
+            "$ref": "#/definitions/gloo.solo.io.Settings.Directory",
+            "additionalProperties": true
+        },
+        "kubernetes_artifact_source": {
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "directory_artifact_source": {
+            "$ref": "#/definitions/gloo.solo.io.Settings.Directory",
+            "additionalProperties": true
+        },
+        "consul_kv_artifact_source": {
+            "$ref": "#/definitions/gloo.solo.io.Settings.ConsulKv",
+            "additionalProperties": true
+        },
+        "refresh_rate": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "How frequently to resync watches, etc"
+        },
+        "dev_mode": {
+            "type": "boolean",
+            "description": "Enable serving debug data on port 9090"
+        },
+        "linkerd": {
+            "type": "boolean",
+            "description": "Enable automatic linkerd upstream header addition for easier routing to linkerd services"
+        },
+        "knative": {
+            "properties": {
+                "cluster_ingress_proxy_address": {
+                    "type": "string",
+                    "description": "Address of the clusteringress proxy.\n If empty, it will default to clusteringress-proxy.$POD_NAMESPACE.svc.cluster.local.\n Use if running Knative Version 0.7.X or less"
+                },
+                "knative_external_proxy_address": {
+                    "type": "string",
+                    "description": "Address of the externally-facing knative proxy.\n If empty, it will default to knative-external-proxy.$POD_NAMESPACE.svc.cluster.local.\n Use if running Knative Version 0.8.X or higher"
+                },
+                "knative_internal_proxy_address": {
+                    "type": "string",
+                    "description": "Address of the internally-facing knative proxy.\n If empty, it will default to knative-internal-proxy.$POD_NAMESPACE.svc.cluster.local.\n Use if running Knative Version 0.8.X or higher"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Configuration options for the Clusteringress Controller (for Knative)."
+        },
+        "discovery": {
+            "properties": {
+                "fds_mode": {
+                    "enum": [
+                        "BLACKLIST",
+                        0,
+                        "WHITELIST",
+                        1,
+                        "DISABLED",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Options for configuring Gloo's Discovery service"
+        },
+        "gloo": {
+            "properties": {
+                "xds_bind_addr": {
+                    "type": "string",
+                    "description": "Where the `gloo` xDS server should bind. Defaults to `0.0.0.0:9977`"
+                },
+                "validation_bind_addr": {
+                    "type": "string",
+                    "description": "Where the `gloo` validation server should bind. Defaults to `0.0.0.0:9988`"
+                },
+                "circuit_breakers": {
+                    "properties": {
+                        "max_connections": {
+                            "additionalProperties": true,
+                            "type": "integer"
+                        },
+                        "max_pending_requests": {
+                            "additionalProperties": true,
+                            "type": "integer"
+                        },
+                        "max_requests": {
+                            "additionalProperties": true,
+                            "type": "integer"
+                        },
+                        "max_retries": {
+                            "additionalProperties": true,
+                            "type": "integer"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Default circuit breaker configuration to use for upstream requests,\n when not provided by specific upstream."
+                },
+                "endpoints_warming_timeout": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Timeout to get initial snapshot of resources. If set to zero, Gloo will not wait for initial\n snapshot - if nonzero and gloo could not fetch it's initial snapshot before the timeout\n reached, gloo will panic. If unset, Gloo defaults to 5 minutes."
+                },
+                "aws_options": {
+                    "properties": {
+                        "enable_credentials_discovey": {
+                            "type": "boolean",
+                            "description": "Enable credential discovery via IAM; when this is set, there's no need provide a secret\n on the upstream when running on AWS environment.\n\n Note: This should **ONLY** be enabled when running in an AWS environment, as the AWS\n code blocks the envoy main thread. This should be negligible when running inside AWS."
+                        },
+                        "service_account_credentials": {
+                            "properties": {
+                                "cluster": {
+                                    "type": "string",
+                                    "description": "The name of the envoy cluster which represents the desired aws sts endpoint"
+                                },
+                                "uri": {
+                                    "type": "string",
+                                    "description": "The full uri of the aws sts endpoint"
+                                },
+                                "timeout": {
+                                    "properties": {
+                                        "seconds": {
+                                            "type": "string",
+                                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                        },
+                                        "nanos": {
+                                            "type": "integer",
+                                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                        }
+                                    },
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "description": "timeout for the request"
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Use projected service account token, and role arn to create temporary\n credentials with which to authenticate lambda requests.\n This functionality is meant to work along side EKS service account to IAM\n binding functionality as outlined here:\n https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html\n\n If the following environment values are not present in the gateway-proxy, this option cannot be used.\n   1. AWS_WEB_IDENTITY_TOKEN_FILE\n   2. AWS_ROLE_ARN\n\n The role which will be assumed by the credentials will be the one specified by AWS_ROLE_ARN, however, this\n can also be overwritten in the AWS Upstream spec via the role_arn field\n\n If they are not specified envoy will NACK the config update, which will show up in the logs when running OS Gloo.\n When running Gloo enterprise it will be reflected in the prometheus stat: \"glooe.solo.io/xds/nack\"\n\n In order to specify the aws sts endpoint, both the cluster and uri must be set.\n This is due to an envoy limitation which cannot infer the host or path from the cluster,\n and therefore must be explicitly specified via the uri"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "invalid_config_policy": {
+                    "properties": {
+                        "replace_invalid_routes": {
+                            "type": "boolean",
+                            "description": "if set to `true`, Gloo removes any routes from the provided configuration\n which point to a missing destination. Routes that are removed in this way\n will instead return a configurable direct response to clients. When routes are replaced,\n Gloo will configure Envoy with a special listener which serves direct responses.\n\n Note: enabling this option allows Gloo to accept partially valid proxy configurations."
+                        },
+                        "invalid_route_response_code": {
+                            "type": "integer",
+                            "description": "replaced routes reply to clients with this response code.\n default is 404."
+                        },
+                        "invalid_route_response_body": {
+                            "type": "string",
+                            "description": "replaced routes reply to clients with this response body.\n default is 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.'"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "set these options to fine-tune the way Gloo handles invalid user configuration"
+                },
+                "disable_kubernetes_destinations": {
+                    "type": "boolean",
+                    "description": "Gloo allows you to directly reference a Kubernetes service as a routing destination. To enable this feature,\n Gloo scans the cluster for Kubernetes services and creates a special type of in-memory Upstream to represent them.\n If the cluster contains a lot of services and you do not restrict the namespaces Gloo is watching, this can result\n in significant overhead. If you do not plan on using this feature, you can use this flag to turn it off."
+                },
+                "disable_grpc_web": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Default policy for grpc-web.\n set to true if you do not wish grpc-web to be automatically enabled.\n set to false if you wish grpc-web enabled unless disabled on the listener level.\n If not specified, defaults to `false`."
+                },
+                "disable_proxy_garbage_collection": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Set this option to determine the state of the envoy configuration when a virtual service is deleted, resulting in a\n proxy with no configured routes.\n set to true if you wish to keep envoy serving the routes from the latest valid configuration.\n set to false if you wish to reset the envoy configuration to a clean slate with no routes.\n If not specified, defaults to `false`."
+                },
+                "regex_max_program_size": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "Set this option to specify the default max program size for regexes. If not specified, \n defaults to 100."
+                },
+                "rest_xds_bind_addr": {
+                    "type": "string",
+                    "description": "Where the `gloo` REST xDS server should bind.\n Defaults to `0.0.0.0:9976`"
+                },
+                "enable_rest_eds": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Whether or not to use rest xds for all EDS by default. \n Set to true by default in versions \u003e `v1.6.0`.\n This setting is meant to solve the bug which causes updated upstreams to dissapear, or have 0 endpoints. \n Some examples are:\n 1. https://github.com/solo-io/gloo/issues/3673\n 2. https://github.com/solo-io/gloo/issues/3710\n 3. https://github.com/solo-io/gloo/issues/3219\n Rest XDS, as opposed to grpc, uses http polling rather than streaming"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Options for configuring `gloo`, the core Gloo controller,\n which serves dynamic configuration to Envoy"
+        },
+        "gateway": {
+            "properties": {
+                "validation_server_addr": {
+                    "type": "string",
+                    "description": "Address of the `gloo` config validation server. Defaults to `gloo:9988`."
+                },
+                "validation": {
+                    "properties": {
+                        "proxy_validation_server_addr": {
+                            "type": "string",
+                            "description": "Address of the `gloo` proxy validation grpc server. Defaults to `gloo:9988`.\n This field is required in order to enable fine-grained admission control."
+                        },
+                        "validation_webhook_tls_cert": {
+                            "type": "string",
+                            "description": "Path to TLS Certificate for Kubernetes Validating webhook. Defaults to `/etc/gateway/validation-certs/tls.crt`."
+                        },
+                        "validation_webhook_tls_key": {
+                            "type": "string",
+                            "description": "Path to TLS Private Key for Kubernetes Validating webhook. Defaults to `/etc/gateway/validation-certs/tls.key`."
+                        },
+                        "ignore_gloo_validation_failure": {
+                            "type": "boolean",
+                            "description": "When Gateway cannot communicate with Gloo (e.g. Gloo is offline)\n resources will be rejected by default.\n Enable the `ignoreGlooValidationFailure` to prevent the Validation server from rejecting\n resources due to network errors."
+                        },
+                        "always_accept": {
+                            "additionalProperties": true,
+                            "type": "boolean",
+                            "description": "Always accept resources even if validation produced an error.\n Validation will still log the error and increment the validation.gateway.solo.io/resources_rejected stat.\n Currently defaults to true - must be set to `false` to prevent writing invalid resources to storage."
+                        },
+                        "allow_warnings": {
+                            "additionalProperties": true,
+                            "type": "boolean",
+                            "description": "Accept resources if validation produced a warning (defaults to true).\n By setting to false, this means that validation will start rejecting resources that would result\n in warnings, rather than just those that would result in errors."
+                        },
+                        "warn_route_short_circuiting": {
+                            "additionalProperties": true,
+                            "type": "boolean",
+                            "description": "Write a warning to route resources if validation produced a route ordering warning (defaults to false).\n By setting to true, this means that Gloo will start assigning warnings to resources that would result\n in route short-circuiting within a virtual host, for example:\n   - prefix routes that make later routes unreachable\n   - regex routes that make later routes unreachable\n   - duplicate matchers"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "If provided, the Gateway will perform [Dynamic Admission Control](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/)\n of Gateways, Virtual Services, and Route Tables when running in Kubernetes."
+                },
+                "read_gateways_from_all_namespaces": {
+                    "type": "boolean",
+                    "description": "When true, the Gateway controller will consume Gateway custom resources from all watch namespaces, rather\n than just the Gateway CRDs in its own namespace."
+                },
+                "always_sort_route_table_routes": {
+                    "type": "boolean",
+                    "description": "Deprecated.\n This setting is ignored. Maintained for backwards compatibility with settings exposed on 1.2.x branch of Gloo."
+                },
+                "compressed_proxy_spec": {
+                    "type": "boolean",
+                    "description": "If set, compresses proxy space. This can help make the Proxy CRD smaller to fit in etcd.\n This is an advanced option. Use with care."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Options for configuring `gateway`, the Gateway Gloo controller,\n which enables the VirtualService/Gateway API in Gloo"
+        },
+        "consul": {
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "description": "Deprecated: prefer http_address.\n The address of the Consul HTTP server.\n Used by service discovery and key-value storage (if-enabled).\n Defaults to the value of the standard CONSUL_HTTP_ADDR env if set, otherwise to 127.0.0.1:8500."
+                },
+                "datacenter": {
+                    "type": "string",
+                    "description": "Datacenter to use. If not provided, the default agent datacenter is used."
+                },
+                "username": {
+                    "type": "string",
+                    "description": "Username to use for HTTP Basic Authentication"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Password to use for HTTP Basic Authentication"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "Token is used to provide a per-request ACL token\n which overrides the agent's default token."
+                },
+                "ca_file": {
+                    "type": "string",
+                    "description": "caFile is the optional path to the CA certificate used for Consul\n communication, defaults to the system bundle if not specified."
+                },
+                "ca_path": {
+                    "type": "string",
+                    "description": "caPath is the optional path to a directory of CA certificates to use for\n Consul communication, defaults to the system bundle if not specified."
+                },
+                "cert_file": {
+                    "type": "string",
+                    "description": "CertFile is the optional path to the certificate for Consul\n communication. If this is set then you need to also set KeyFile."
+                },
+                "key_file": {
+                    "type": "string",
+                    "description": "KeyFile is the optional path to the private key for Consul communication.\n If this is set then you need to also set CertFile."
+                },
+                "insecure_skip_verify": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "InsecureSkipVerify if set to true will disable TLS host verification."
+                },
+                "wait_time": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "WaitTime limits how long a watches for Consul resources will block.\n If not provided, the agent default values will be used."
+                },
+                "service_discovery": {
+                    "properties": {
+                        "data_centers": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array",
+                            "description": "Use this parameter to restrict the data centers that will be considered when discovering and routing to\n services. If not provided, Gloo will use all available data centers."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Enable Service Discovery via Consul with this field\n set to empty struct `{}` to enable with defaults"
+                },
+                "http_address": {
+                    "type": "string",
+                    "description": "The address of the Consul HTTP server.\n Used by service discovery and key-value storage (if-enabled).\n Defaults to the value of the standard CONSUL_HTTP_ADDR env if set, otherwise to 127.0.0.1:8500."
+                },
+                "dns_address": {
+                    "type": "string",
+                    "description": "The address of the DNS server used to resolve hostnames in the Consul service address.\n Used by service discovery (required when Consul service instances are stored as DNS names).\n Defaults to 127.0.0.1:8600. (the default Consul DNS server)"
+                },
+                "dns_polling_interval": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "The polling interval for the DNS server.\n If there is a Consul service address with a hostname instead of an IP, Gloo will resolve the\n hostname with the configured frequency to update endpoints with any changes to DNS resolution.\n Defaults to 5s."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Options to configure Gloo's integration with [HashiCorp Consul](https://www.consul.io/)."
+        },
+        "consulDiscovery": {
+            "properties": {
+                "useTlsTagging": {
+                    "type": "boolean",
+                    "description": "If true, then gloo will add TLS to upstreams created for any consul service that has the tag specified by\n tlsTagName. If splitTlsServices is true, then this tag is also used to identify serviceInstances that\n should be tied to the TLS upstream. Requires rootCa to be set if true."
+                },
+                "tlsTagName": {
+                    "type": "string",
+                    "description": "The tag that gloo should use to make TLS upstreams from consul services, and to partition consul\n serviceInstances between TLS/non-TLS upstreams. Defaults to 'glooUseTls'"
+                },
+                "rootCa": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "The reference for the root CA resource to be used by discovered consul TLS upstreams."
+                },
+                "splitTlsServices": {
+                    "type": "boolean",
+                    "description": "If true, then create two upstreams when the tlsTagName is found on a consul service,\n one with tls and one without. This requires a consul service's serviceInstances\n be individually tagged; servicesInstances with the tlsTagName tag are directed to the TLS upstream, while those\n without the tlsTagName tag are sorted into the non-TLS upstream."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "kubernetes": {
+            "properties": {
+                "rate_limits": {
+                    "properties": {
+                        "QPS": {
+                            "type": "number",
+                            "description": "The maximum queries-per-second Gloo can make to the Kubernetes API Server."
+                        },
+                        "burst": {
+                            "type": "integer",
+                            "description": "Maximum burst for throttle. When a steady state of QPS requests per second,\n this is an additional number of allowed, to allow for short bursts."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limits for the kubernetes clients"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Options to configure Gloo's integration with [Kubernetes](https://www.kubernetes.io/)."
+        },
+        "extensions": {
+            "properties": {
+                "configs": {
+                    "additionalProperties": {
+                        "properties": {
+                            "fields": {
+                                "additionalProperties": {
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                },
+                                "type": "object",
+                                "description": "Unordered map of dynamically typed values."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Extensions will be passed along from Listeners, Gateways, VirtualServices, Routes, and Route tables to the\n underlying Proxy, making them useful for controllers, validation tools, etc. which interact with kubernetes yaml.\n\n Some sample use cases:\n * controllers, deployment pipelines, helm charts, etc. which wish to use extensions as a kind of opaque metadata.\n * In the future, Gloo may support gRPC-based plugins which communicate with the Gloo translator out-of-process.\n Opaque Extensions enables development of out-of-process plugins without requiring recompiling \u0026 redeploying Gloo's API."
+        },
+        "ratelimit": {
+            "properties": {
+                "descriptors": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "$ref": "#/definitions/ratelimit.api.solo.io.Descriptor"
+                    },
+                    "type": "array"
+                },
+                "set_descriptors": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "simple_descriptors": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "key": {
+                                            "type": "string",
+                                            "description": "The key of the descriptor. This field is required."
+                                        },
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Optional value for the descriptor. If omitted, the server will create a rate limit for\n each value that is provided for this descriptor in rate limit requests."
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "A simpleDescriptor is a list of key/value pairs that the rate limit server uses to select\n the correct rate limit to use when limiting with the set style. Descriptors are case-sensitive.\n\n The format is:\n\n ```\n  simple_descriptors:\n    - key: \u003crule key: required\u003e\n      value: \u003crule value: optional\u003e\n    - ... (repetition of above)\n ```\n\n Each simpleDescriptor in a simpleDescriptor list must have a key. It can also optionally have a value to enable\n a more specific match."
+                                },
+                                "type": "array",
+                                "description": "Simple descriptor key/value pairs."
+                            },
+                            "rate_limit": {
+                                "$ref": "#/definitions/ratelimit.api.solo.io.RateLimit",
+                                "additionalProperties": true,
+                                "description": "Rate limit rule for the descriptor."
+                            },
+                            "always_apply": {
+                                "type": "boolean",
+                                "description": "Typically, rule priority is signalled by rule ordering, as the first rule match for\n the descriptor tuple generated by the rate limit actions is used.\n\n In some cases this is too restrictive; A boolean override can be specified. Any rule with `alwaysApply` set to `true` will\n always be considered for rate limiting, regardless of the rule's place in the ordered list of rules.\n The first rule to match will still be considered. (This can be a rule that also has `alwaysApply` set to `true`.)\n\n If any of these rules trigger rate limiting then the entire request will return a 429.\n Rules that are not considered for rate limiting are ignored in the\n rate limit server, and their request count is not incremented in the rate limit server cache.\n\n Defaults to false."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "A setDescriptor is a list of key/value pairs that the rate limit server uses to select\n the correct rate limit to use when limiting with the set style. Descriptors are case-sensitive.\n\n Each configuration contains a simpleDescriptor list and a rateLimit.\n The format is:\n\n ```\n set_descriptors:\n  - simple_descriptors: (optional block)\n      - key: \u003crule key: required\u003e\n        value: \u003crule value: optional\u003e\n      - ... (repetition of above)\n    rate_limit:\n      requests_per_unit: \u003csee below: required\u003e\n      unit: \u003csee below: required\u003e\n    always_apply: \u003cbool value: optional\u003e\n  - ... (repetition of above)\n ```\n\n Each SetDescriptor defines a new Rate Limit \"rule\". When a request comes in, rate limit\n actions are applied to the request to generate descriptor tuples that are sent to the rate limit\n server. If any rule is triggered then the entire request returns HTTP 429 Too Many Requests.\n\n The `rate_limit` block sets up an actual rate limit rule."
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Partial config for GlooE's rate-limiting service, based on Envoy's rate-limit service;\n supports Envoy's rate-limit service API. (reference here: https://github.com/lyft/ratelimit#configuration)\n Configure rate-limit *descriptors* here, which define the limits for requests based on their descriptors.\n Configure rate-limits (composed of *actions*, which define how request characteristics get translated into\n descriptors) on the VirtualHost or its routes"
+        },
+        "ratelimit_server": {
+            "properties": {
+                "ratelimit_server_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true
+                },
+                "request_timeout": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "deny_on_fail": {
+                    "type": "boolean"
+                },
+                "rate_limit_before_auth": {
+                    "type": "boolean",
+                    "description": "Set this is set to true if you would like to rate limit traffic before applying external auth to it.\n *Note*: When this is true, you will lose some features like being able to rate limit a request based on its auth state"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Settings for the rate limiting server itself"
+        },
+        "rbac": {
+            "properties": {
+                "require_rbac": {
+                    "type": "boolean",
+                    "description": "Require RBAC for all virtual hosts. A vhost without an RBAC policy set will fallback to a deny-all policy."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Settings for RBAC across all Gloo resources (VirtualServices, Routes, etc.)"
+        },
+        "extauth": {
+            "properties": {
+                "extauthz_server_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "The upstream to ask about auth decisions"
+                },
+                "http_service": {
+                    "properties": {
+                        "path_prefix": {
+                            "type": "string",
+                            "description": "Sets a prefix to the value of authorization request header *Path*."
+                        },
+                        "request": {
+                            "properties": {
+                                "allowed_headers": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array",
+                                    "description": "These headers will be copied from the incoming request to the request going\n to the auth server. Note that in addition to the user's supplied matchers:\n\n 1. *Host*, *Method*, *Path* and *Content-Length* are automatically included to the list.\n\n 2. *Content-Length* will be set to 0 and the request to the authorization service will not have\n a message body."
+                                },
+                                "headers_to_add": {
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    },
+                                    "type": "object",
+                                    "description": "These headers that will be included to the request to authorization service. Note that\n client request of the same key will be overridden."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object"
+                        },
+                        "response": {
+                            "properties": {
+                                "allowed_upstream_headers": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array",
+                                    "description": "When this is set, authorization response headers that have a will be added to the original client request and sent to the upstream.\n Note that coexistent headers will be overridden."
+                                },
+                                "allowed_client_headers": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array",
+                                    "description": "When this. is set, authorization response headers that will be added to the client's response when auth request is denied.\n Note that when this list is *not* set, all the authorization response headers, except *Authority\n (Host)* will be in the response to the client. When a header is included in this list, *Path*,\n *Status*, *Content-Length*, *WWW-Authenticate* and *Location* are automatically added."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "If this is set, communication to the upstream will be via HTTP and not GRPC."
+                },
+                "user_id_header": {
+                    "type": "string",
+                    "description": "If the auth server trusted id of the user, it will be set in this header.\n Specifically this means that this header will be sanitized form the incoming request."
+                },
+                "request_timeout": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Timeout for the ext auth service to respond. Defaults to 200ms"
+                },
+                "failure_mode_allow": {
+                    "type": "boolean",
+                    "description": "In case of a failure or timeout querying the auth server, normally a request is denied.\n if this is set to true, the request will be allowed."
+                },
+                "request_body": {
+                    "properties": {
+                        "max_request_bytes": {
+                            "type": "integer",
+                            "description": "Sets the maximum size of a message body that the filter will hold in memory. Envoy will return\n *HTTP 413* and will *not* initiate the authorization process when buffer reaches the number\n set in this field. Note that this setting will have precedence over failure_mode_allow.\n Defaults to 4KB."
+                        },
+                        "allow_partial_message": {
+                            "type": "boolean",
+                            "description": "When this field is true, Envoy will buffer the message until *max_request_bytes* is reached.\n The authorization request will be dispatched and no 413 HTTP error will be returned by the\n filter."
+                        },
+                        "pack_as_bytes": {
+                            "type": "boolean",
+                            "description": "When this field is true, Envoy will send the body sent to the external authorization service with raw bytes."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Set this if you also want to send the body of the request, and not just the headers."
+                },
+                "clear_route_cache": {
+                    "type": "boolean",
+                    "description": "Clears route cache in order to allow the external authorization service to correctly affect\n routing decisions. Filter clears all cached routes when:\n\n 1. The field is set to *true*.\n\n 2. The status returned from the authorization service is a HTTP 200 or gRPC 0.\n\n 3. At least one *authorization response header* is added to the client request, or is used for\n altering another client request header."
+                },
+                "status_on_error": {
+                    "type": "integer",
+                    "description": "Sets the HTTP status that is returned to the client when there is a network error between the\n filter and the authorization server. The default status is HTTP 403 Forbidden.\n If set, this must be one of the following:\n - 100\n - 200 201 202 203 204 205 206 207 208 226\n - 300 301 302 303 304 305 307 308\n - 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 421 422 423 424 426 428 429 431\n - 500 501 502 503 504 505 506 507 508 510 511"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: External auth related settings"
+        },
+        "metadata": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the resource.\n\nNames must be unique and follow the following syntax rules:\n\nOne or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters."
+                },
+                "namespace": {
+                    "type": "string",
+                    "description": "Namespace is used for the namespacing of resources."
+                },
+                "cluster": {
+                    "type": "string",
+                    "description": "Cluster indicates the cluster this resource belongs to\n Cluster is only applicable in certain contexts, e.g. Kubernetes\n An empty string here refers to the local cluster"
+                },
+                "resource_version": {
+                    "type": "string",
+                    "description": "An opaque value that represents the internal version of this object that can\n be used by clients to determine when objects have changed."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Map of string keys and values that can be used to organize and categorize\n (scope and select) objects. Some resources contain `selectors` which\n can be linked with other resources by their labels"
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Annotations is an unstructured key value map stored with a resource that may be\n set by external tools to store and retrieve arbitrary metadata."
+                },
+                "generation": {
+                    "type": "string",
+                    "description": "A sequence number representing a specific generation of the desired state.\n Currently only populated for resources backed by Kubernetes"
+                },
+                "owner_references": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "api_version": {
+                                "type": "string"
+                            },
+                            "block_owner_deletion": {
+                                "additionalProperties": true,
+                                "type": "boolean"
+                            },
+                            "controller": {
+                                "additionalProperties": true,
+                                "type": "boolean"
+                            },
+                            "kind": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "uid": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "proto message representing kubernertes owner reference\n https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#ownerreference-v1-meta"
+                    },
+                    "type": "array",
+                    "description": "List of objects depended by this object.\n Currently only populated for resources backed by Kubernetes"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Metadata contains the object metadata for this resource"
+        },
+        "status": {
+            "$ref": "#/definitions/core.solo.io.Status",
+            "additionalProperties": true,
+            "description": "Status indicates the validation status of this resource.\n Status is read-only by clients, and set by gloo during validation"
+        },
+        "observabilityOptions": {
+            "properties": {
+                "grafanaIntegration": {
+                    "properties": {
+                        "default_dashboard_folder_id": {
+                            "additionalProperties": true,
+                            "type": "integer",
+                            "description": "(UInt32Value) Grafana allows dashboards to be added to specific folders by specifying that folder's ID\n If unset, automatic upstream dashboards are generated in the general folder (folderId: 0).\n If set, the observability deployment will try to create/move all upstreams without their own folderId\n to the folder specified here, after verifying that a folder with such an ID exists.\n Be aware that grafana requires a folders ID, which\n should not be confused with the similarly-named and more easily accessible folder UID value.\n If individual upstream dashboards need to be placed specific granafa folders, they can be given their own\n folder IDs by annotating the upstreams. The annotation key must be\n 'observability.solo.io/dashboard_folder_id' and the value must be the folder ID.\n Folder IDs can be retrieved from grafana with a pair of terminal commands:\n 1. Port forward the grafana deployment to surface its API:\n kubectl -n gloo-system port-forward deployment/glooe-grafana 3000\n 2. Request all folder data (after admin:admin is replaced with the correct credentials):\n curl http://admin:admin@localhost:3000/api/folders"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Options to configure Gloo's integration with [Kubernetes](https://www.kubernetes.io/)."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Provides settings related to the observability deployment (enterprise only)"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Represents global settings for all the Gloo components.",
+    "definitions": {
+        "core.solo.io.ResourceRef": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A way to reference resources across namespaces",
+            "id": "core.solo.io.ResourceRef"
+        },
+        "core.solo.io.Status": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "state": {
+                    "enum": [
+                        "Pending",
+                        0,
+                        "Accepted",
+                        1,
+                        "Rejected",
+                        2,
+                        "Warning",
+                        3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "description": "State is the enum indicating the state of the resource"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Reason is a description of the error for Rejected resources. If the resource is pending or accepted, this field will be empty"
+                },
+                "reported_by": {
+                    "type": "string",
+                    "description": "Reference to the reporter who wrote this status"
+                },
+                "subresource_statuses": {
+                    "additionalProperties": {
+                        "$ref": "#/definitions/core.solo.io.Status",
+                        "additionalProperties": true
+                    },
+                    "type": "object",
+                    "description": "Reference to statuses (by resource-ref string: \"Kind.Namespace.Name\") of subresources of the parent resource"
+                },
+                "details": {
+                    "properties": {
+                        "fields": {
+                            "additionalProperties": {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object",
+                            "description": "Unordered map of dynamically typed values."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Opaque details about status results"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "*\n Status indicates whether a resource has been (in)validated by a reporter in the system.\n Statuses are meant to be read-only by users",
+            "id": "core.solo.io.Status"
+        },
+        "gloo.solo.io.Settings.ConsulKv": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "root_key": {
+                    "type": "string",
+                    "description": "all keys stored in Consul will begin with this prefix\n this can be used to run multiple instances of Gloo against the same Consul cluster\n defaults to `gloo`"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Use [HashiCorp Consul Key-Value](https://www.consul.io/api/kv.html/) as storage for config data.\n Configuration options for connecting to Consul can be configured in the Settings' root\n `consul` field",
+            "id": "gloo.solo.io.Settings.ConsulKv"
+        },
+        "gloo.solo.io.Settings.Directory": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "directory": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "As an alternative to Kubernetes CRDs, Gloo is able to store resources in a local file system.\n This option determines the root of the directory tree used to this end.",
+            "id": "gloo.solo.io.Settings.Directory"
+        },
+        "ratelimit.api.solo.io.Descriptor": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "description": "The key of the descriptor. This field is required."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Optional value for the descriptor. If omitted, the server will create a rate limit for\n each value that is provided for this descriptor in rate limit requests."
+                },
+                "rate_limit": {
+                    "$ref": "#/definitions/ratelimit.api.solo.io.RateLimit",
+                    "additionalProperties": true,
+                    "description": "Optional rate limit rule for the descriptor."
+                },
+                "descriptors": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "$ref": "#/definitions/ratelimit.api.solo.io.Descriptor"
+                    },
+                    "type": "array",
+                    "description": "Nested descriptors."
+                },
+                "weight": {
+                    "type": "integer",
+                    "description": "Each top-level Descriptor defines a new Rate Limit \"rule\". When a request comes in, rate limit\n actions are applied to the request to generate descriptor tuples that are sent to the rate limit\n server. If any rule is triggered then the entire request returns HTTP 429 Too Many Requests.\n\n Typically, rule priority is signalled by nesting descriptors, as the most specific rule match for\n the descriptor tuple generated by the rate limit actions is used. In rare cases this is too restrictive;\n instead you can set rule priority by setting weights on your descriptors.\n\n All rules with the highest weight are processed, if any of these rules trigger rate limiting then the\n entire request will return a 429. Rules that are not considered for rate limiting are ignored in the\n rate limit server, and their request count is not incremented in the rate limit server cache.\n\n Defaults to 0; thus all rules are evaluated by default."
+                },
+                "always_apply": {
+                    "type": "boolean",
+                    "description": "A boolean override for rule priority via weighted rules. Any rule with `alwaysApply` set to `true` will\n always be considered for rate limiting, regardless of the rule's weight. The rule with the highest weight\n will still be considered. (this can be a rule that also has `alwaysApply` set to `true`)\n\n Defaults to false."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A descriptor is a list of key/value pairs that the rate limit server uses to select\n the correct rate limit to use when limiting. Descriptors are case-sensitive.\n\n Each configuration contains a top level descriptor list and potentially multiple nested lists beneath that.\n The format is:\n\n ```\n descriptors:\n   - key: \u003crule key: required\u003e\n     value: \u003crule value: optional\u003e\n     rate_limit: (optional block)\n       unit: \u003csee below: required\u003e\n       requests_per_unit: \u003csee below: required\u003e\n     descriptors: (optional block)\n       - ... (nested repetition of above)\n ```\n\n Each descriptor in a descriptor list must have a key. It can also optionally have a value to enable\n a more specific match. The `rate_limit` block is optional and, if present, sets up an actual rate limit rule.\n If the rate limit is not present and there are no nested descriptors, then the descriptor is effectively whitelisted.\n Otherwise, nested descriptors allow more complex matching and rate limiting scenarios.",
+            "id": "ratelimit.api.solo.io.Descriptor"
+        },
+        "ratelimit.api.solo.io.RateLimit": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "unit": {
+                    "enum": [
+                        "UNKNOWN",
+                        0,
+                        "SECOND",
+                        1,
+                        "MINUTE",
+                        2,
+                        "HOUR",
+                        3,
+                        "DAY",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "requests_per_unit": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A `RateLimit` specifies the actual rate limit that will be used when there is a match.",
+            "id": "ratelimit.api.solo.io.RateLimit"
+        }
+    }
+}

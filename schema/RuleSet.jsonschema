@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "rule_str": {
+            "type": "string",
+            "description": "String of rules which are added directly"
+        },
+        "files": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Array of files to include"
+        },
+        "directory": {
+            "type": "string",
+            "description": "A directory to include. all *.conf files in this directory will be\n included. sub directories will NOT be checked."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

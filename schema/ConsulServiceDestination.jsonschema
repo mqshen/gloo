@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "service_name": {
+            "type": "string",
+            "description": "The name of the target service. This field is required."
+        },
+        "tags": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "If provided, load balance traffic only between services matching all the given tags."
+        },
+        "data_centers": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "If provided, load balance traffic only between services running in the given\n [data centers](https://www.consul.io/docs/internals/architecture.html)."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Identifies a [Consul](https://www.consul.io/) [service](https://www.consul.io/docs/agent/services.html) to route traffic to.\n Multiple Consul services with the same name can present distinct sets of tags, listen of different ports, and live in\n multiple data centers (see an example [here](https://www.consul.io/docs/agent/services.html#multiple-service-definitions)).\n You can target the desired subset of services via the fields in this configuration. Gloo will detect the correspondent\n IP addresses and ports and load balance traffic between them."
+}

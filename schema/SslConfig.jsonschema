@@ -1,0 +1,166 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "secret_ref": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "SecretRef contains the secret ref to a gloo tls secret or a kubernetes tls secret.\n gloo tls secret can contain a root ca as well if verification is needed."
+        },
+        "ssl_files": {
+            "properties": {
+                "tls_cert": {
+                    "type": "string"
+                },
+                "tls_key": {
+                    "type": "string"
+                },
+                "root_ca": {
+                    "type": "string",
+                    "description": "for client cert validation. optional"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "SSLFiles reference paths to certificates which are local to the proxy"
+        },
+        "sds": {
+            "properties": {
+                "target_uri": {
+                    "type": "string",
+                    "description": "Target uri for the sds channel. currently only a unix domain socket is supported."
+                },
+                "call_credentials": {
+                    "properties": {
+                        "file_credential_source": {
+                            "properties": {
+                                "token_file_name": {
+                                    "type": "string",
+                                    "description": "File containing auth token."
+                                },
+                                "header": {
+                                    "type": "string",
+                                    "description": "Header to carry the token."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Call credentials are coming from a file,"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Call credentials."
+                },
+                "cluster_name": {
+                    "type": "string",
+                    "description": "The name of the sds cluster in envoy"
+                },
+                "certificates_secret_name": {
+                    "type": "string",
+                    "description": "The name of the secret containing the certificate"
+                },
+                "validation_context_name": {
+                    "type": "string",
+                    "description": "The name of secret containing the validation context (i.e. root ca)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use secret discovery service."
+        },
+        "sni_domains": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "optional. the SNI domains that should be considered for TLS connections"
+        },
+        "verify_subject_alt_name": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Verify that the Subject Alternative Name in the peer certificate is one of the specified values.\n note that a root_ca must be provided if this option is used."
+        },
+        "parameters": {
+            "properties": {
+                "minimum_protocol_version": {
+                    "enum": [
+                        "TLS_AUTO",
+                        0,
+                        "TLSv1_0",
+                        1,
+                        "TLSv1_1",
+                        2,
+                        "TLSv1_2",
+                        3,
+                        "TLSv1_3",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "maximum_protocol_version": {
+                    "enum": [
+                        "TLS_AUTO",
+                        0,
+                        "TLSv1_0",
+                        1,
+                        "TLSv1_1",
+                        2,
+                        "TLSv1_2",
+                        3,
+                        "TLSv1_3",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "cipher_suites": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "ecdh_curves": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "alpn_protocols": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Set Application Level Protocol Negotiation\n If empty, defaults to [\"h2\", \"http/1.1\"]."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "SslConfig contains the options necessary to configure a virtual host or listener to use TLS"
+}

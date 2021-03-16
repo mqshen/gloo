@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "target_uri": {
+            "type": "string",
+            "description": "Target uri for the sds channel. currently only a unix domain socket is supported."
+        },
+        "call_credentials": {
+            "properties": {
+                "file_credential_source": {
+                    "properties": {
+                        "token_file_name": {
+                            "type": "string",
+                            "description": "File containing auth token."
+                        },
+                        "header": {
+                            "type": "string",
+                            "description": "Header to carry the token."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Call credentials are coming from a file,"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Call credentials."
+        },
+        "cluster_name": {
+            "type": "string",
+            "description": "The name of the sds cluster in envoy"
+        },
+        "certificates_secret_name": {
+            "type": "string",
+            "description": "The name of the secret containing the certificate"
+        },
+        "validation_context_name": {
+            "type": "string",
+            "description": "The name of secret containing the validation context (i.e. root ca)"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "text": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Defines an [Inja template](https://github.com/pantor/inja) that will be\n rendered by Gloo. In addition to the core template functions, the Gloo\n transformation filter defines the following custom functions:\n - header(header_name): returns the value of the header with the given name\n - extraction(extractor_name): returns the value of the extractor with the\n given name\n - env(env_var_name): returns the value of the environment variable with the\n given name\n - body(): returns the request/response body\n - context(): returns the base JSON context (allowing for example to range on\n a JSON body that is an array)"
+}

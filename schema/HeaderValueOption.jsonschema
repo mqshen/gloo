@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "header": {
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "description": "Header name."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Header value."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Header name/value pair that this option applies to."
+        },
+        "append": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Should the value be appended? If true (default), the value is appended to\n existing values."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Header name/value pair plus option to control append behavior."
+}

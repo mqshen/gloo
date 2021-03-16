@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "tls_cert": {
+            "type": "string"
+        },
+        "tls_key": {
+            "type": "string"
+        },
+        "root_ca": {
+            "type": "string",
+            "description": "for client cert validation. optional"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "SSLFiles reference paths to certificates which can be read by the proxy off of its local filesystem"
+}

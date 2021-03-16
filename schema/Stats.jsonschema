@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "virtual_clusters": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the virtual cluster. This value will be used together with the virtual host name to\n compute the name of the statistics emitted by this virtual cluster. Statistics names will be in the form:\n vhost.\u003cvirtual host name\u003e.vcluster.\u003cvirtual cluster name\u003e.\u003cstat name\u003e.\n See [the official Envoy documentation](https://www.envoyproxy.io/docs/envoy/v1.5.0/configuration/http_filters/router_filter#config-http-filters-router-stats)\n for more information about the statistics emitted when virtual cluster configurations are specified.\n\n Note: This string should not contain any dots (\".\"), as this is a reserved character for Envoy statistics names.\n Any dot present in the virtual cluster name will be replaced with an underscore (\"_\") character by Gloo."
+                    },
+                    "pattern": {
+                        "type": "string",
+                        "description": "The regex pattern used by Envoy to decide whether to expose statistics for a particular request.\n Please note that **the entire path** of the request must match the regex (e.g. the regex `/rides/d+` matches\n the path `/rides/0`, but not `/rides/123/456`).\n The regex grammar used is defined [here](https://en.cppreference.com/w/cpp/regex/ecmascript)."
+                    },
+                    "method": {
+                        "type": "string",
+                        "description": "If specified, statistics will be exposed only for requests matching the given HTTP method."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "Virtual clusters allow you to expose statistics for virtual host traffic that matches certain criteria.\n This is useful because what the application considers to be an endpoint does often not map directly to\n the routing configuration, so Envoy does not emit per endpoint statistics. Using virtual clusters you can define\n logical endpoints and have Envoy emit dedicated statistics for any matching request. Virtual cluster statistics\n are emitted on the downstream side and thus include network level failures.\n\n Please note that virtual clusters add overhead to the processing of each requests and should not be overused."
+            },
+            "type": "array",
+            "description": "Virtual clusters allow exposing additional statistics for traffic served by a Virtual Host."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "This plugin provides additional configuration options to expose statistics."
+}

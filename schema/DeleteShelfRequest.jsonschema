@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "shelf": {
+            "type": "string",
+            "description": "The ID of the shelf to delete."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Request message for DeleteShelf method."
+}

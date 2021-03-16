@@ -1,0 +1,197 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "address": {
+            "type": "string",
+            "description": "Address (hostname or IP)"
+        },
+        "port": {
+            "type": "integer",
+            "description": "Port the instance is listening on"
+        },
+        "health_check_config": {
+            "properties": {
+                "port_value": {
+                    "type": "integer",
+                    "description": "Optional alternative health check port value.\n\n By default the health check address port of an upstream host is the same\n as the host's serving address port. This provides an alternative health\n check port. Setting this with a non-zero value allows an upstream host\n to have different health check address port."
+                },
+                "hostname": {
+                    "type": "string",
+                    "description": "By default, the host header for L7 health checks is controlled by cluster level configuration. Setting this\n to a non-empty value allows overriding the cluster level configuration for a specific endpoint."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "The optional health check configuration is used as configuration for the\n health checker to contact the health checked host.\n This takes into effect only for upstreams with active health checking enabled"
+        },
+        "upstream_ssl_config": {
+            "properties": {
+                "secret_ref": {
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "namespace": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "SecretRef contains the secret ref to a gloo tls secret or a kubernetes tls secret.\n gloo tls secret can contain a root ca as well if verification is needed."
+                },
+                "ssl_files": {
+                    "properties": {
+                        "tls_cert": {
+                            "type": "string"
+                        },
+                        "tls_key": {
+                            "type": "string"
+                        },
+                        "root_ca": {
+                            "type": "string",
+                            "description": "for client cert validation. optional"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "SSLFiles reference paths to certificates which are local to the proxy"
+                },
+                "sds": {
+                    "properties": {
+                        "target_uri": {
+                            "type": "string",
+                            "description": "Target uri for the sds channel. currently only a unix domain socket is supported."
+                        },
+                        "call_credentials": {
+                            "properties": {
+                                "file_credential_source": {
+                                    "properties": {
+                                        "token_file_name": {
+                                            "type": "string",
+                                            "description": "File containing auth token."
+                                        },
+                                        "header": {
+                                            "type": "string",
+                                            "description": "Header to carry the token."
+                                        }
+                                    },
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "description": "Call credentials are coming from a file,"
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Call credentials."
+                        },
+                        "cluster_name": {
+                            "type": "string",
+                            "description": "The name of the sds cluster in envoy"
+                        },
+                        "certificates_secret_name": {
+                            "type": "string",
+                            "description": "The name of the secret containing the certificate"
+                        },
+                        "validation_context_name": {
+                            "type": "string",
+                            "description": "The name of secret containing the validation context (i.e. root ca)"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use secret discovery service."
+                },
+                "sni": {
+                    "type": "string",
+                    "description": "optional. the SNI domains that should be considered for TLS connections"
+                },
+                "verify_subject_alt_name": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Verify that the Subject Alternative Name in the peer certificate is one of the specified values.\n note that a root_ca must be provided if this option is used."
+                },
+                "parameters": {
+                    "properties": {
+                        "minimum_protocol_version": {
+                            "enum": [
+                                "TLS_AUTO",
+                                0,
+                                "TLSv1_0",
+                                1,
+                                "TLSv1_1",
+                                2,
+                                "TLSv1_2",
+                                3,
+                                "TLSv1_3",
+                                4
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "maximum_protocol_version": {
+                            "enum": [
+                                "TLS_AUTO",
+                                0,
+                                "TLSv1_0",
+                                1,
+                                "TLSv1_1",
+                                2,
+                                "TLSv1_2",
+                                3,
+                                "TLSv1_3",
+                                4
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "cipher_suites": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "ecdh_curves": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "alpn_protocols": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Set Application Level Protocol Negotiation.\n If empty, it is not set."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "load_balancing_weight": {
+            "additionalProperties": true,
+            "type": "integer",
+            "description": "The optional load balancing weight of the upstream host; at least 1.\n Envoy uses the load balancing weight in some of the built in load\n balancers. The load balancing weight for an endpoint is divided by the sum\n of the weights of all endpoints in the endpoint's locality to produce a\n percentage of traffic for the endpoint. This percentage is then further\n weighted by the endpoint's locality's load balancing weight from\n LocalityLbEndpoints. If unspecified, each host is presumed to have equal\n weight in a locality."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "An Endpoint that Envoy can route traffic to."
+}

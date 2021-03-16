@@ -1,0 +1,1650 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "status": {
+            "$ref": "#/definitions/core.solo.io.Status",
+            "additionalProperties": true,
+            "description": "Status indicates the validation status of the resource. Status is read-only by clients, and set by gloo during validation"
+        },
+        "metadata": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the resource.\n\nNames must be unique and follow the following syntax rules:\n\nOne or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters."
+                },
+                "namespace": {
+                    "type": "string",
+                    "description": "Namespace is used for the namespacing of resources."
+                },
+                "cluster": {
+                    "type": "string",
+                    "description": "Cluster indicates the cluster this resource belongs to\n Cluster is only applicable in certain contexts, e.g. Kubernetes\n An empty string here refers to the local cluster"
+                },
+                "resource_version": {
+                    "type": "string",
+                    "description": "An opaque value that represents the internal version of this object that can\n be used by clients to determine when objects have changed."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Map of string keys and values that can be used to organize and categorize\n (scope and select) objects. Some resources contain `selectors` which\n can be linked with other resources by their labels"
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Annotations is an unstructured key value map stored with a resource that may be\n set by external tools to store and retrieve arbitrary metadata."
+                },
+                "generation": {
+                    "type": "string",
+                    "description": "A sequence number representing a specific generation of the desired state.\n Currently only populated for resources backed by Kubernetes"
+                },
+                "owner_references": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "api_version": {
+                                "type": "string"
+                            },
+                            "block_owner_deletion": {
+                                "additionalProperties": true,
+                                "type": "boolean"
+                            },
+                            "controller": {
+                                "additionalProperties": true,
+                                "type": "boolean"
+                            },
+                            "kind": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "uid": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "proto message representing kubernertes owner reference\n https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#ownerreference-v1-meta"
+                    },
+                    "type": "array",
+                    "description": "List of objects depended by this object.\n Currently only populated for resources backed by Kubernetes"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Metadata contains the object metadata for this resource"
+        },
+        "discovery_metadata": {
+            "properties": {
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Labels inherited from the original upstream (e.g. Kubernetes labels)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Upstreams and their configuration can be automatically by Gloo Discovery\n if this upstream is created or modified by Discovery, metadata about the operation will be placed here."
+        },
+        "ssl_config": {
+            "$ref": "#/definitions/gloo.solo.io.UpstreamSslConfig",
+            "additionalProperties": true
+        },
+        "circuit_breakers": {
+            "properties": {
+                "max_connections": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                },
+                "max_pending_requests": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                },
+                "max_requests": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                },
+                "max_retries": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Circuit breakers for this upstream. if not set, the defaults ones from the Gloo settings will be used.\n if those are not set, [envoy's defaults](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/cluster/circuit_breaker.proto#envoy-api-msg-cluster-circuitbreakers)\n will be used."
+        },
+        "load_balancer_config": {
+            "properties": {
+                "healthy_panic_threshold": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "Configures envoy's panic threshold Percent between 0-100. Once the number of non health hosts\n reaches this percentage, envoy disregards health information.\n see more info [here](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/panic_threshold.html)."
+                },
+                "update_merge_window": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "This allows batch updates of endpoints health/weight/metadata that happen during a time window.\n this help lower cpu usage when endpoint change rate is high. defaults to 1 second.\n Set to 0 to disable and have changes applied immediately."
+                },
+                "round_robin": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use round robin for load balancing."
+                },
+                "least_request": {
+                    "properties": {
+                        "choice_count": {
+                            "type": "integer",
+                            "description": "How many choices to take into account. defaults to 2."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use least request for load balancing."
+                },
+                "random": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use random for load balancing."
+                },
+                "ring_hash": {
+                    "properties": {
+                        "ring_hash_config": {
+                            "properties": {
+                                "minimum_ring_size": {
+                                    "type": "string",
+                                    "description": "Minimum hash ring size. The larger the ring is (that is, the more hashes there are for each provided host)\n the better the request distribution will reflect the desired weights. Defaults to 1024 entries, and limited\n to 8M entries."
+                                },
+                                "maximum_ring_size": {
+                                    "type": "string",
+                                    "description": "Maximum hash ring size. Defaults to 8M entries, and limited to 8M entries, but can be lowered to further\n constrain resource use."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Optional, customizes the parameters used in the hashing algorithm"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use ring hash for load balancing."
+                },
+                "maglev": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use maglev for load balancing."
+                },
+                "locality_weighted_lb_config": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "(Enterprise Only)\n https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/locality_weight#locality-weighted-load-balancing\n Locality weighted load balancing enables weighting assignments across different zones and geographical locations by using explicit weights.\n This field is required to enable locality weighted load balancing"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "connection_config": {
+            "properties": {
+                "max_requests_per_connection": {
+                    "type": "integer",
+                    "description": "Maximum requests for a single upstream connection (unspecified or zero = no limit)"
+                },
+                "connect_timeout": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "The timeout for new network connections to hosts in the cluster"
+                },
+                "tcp_keepalive": {
+                    "properties": {
+                        "keepalive_probes": {
+                            "type": "integer",
+                            "description": "Maximum number of keepalive probes to send without response before deciding the connection is dead."
+                        },
+                        "keepalive_time": {
+                            "properties": {
+                                "seconds": {
+                                    "type": "string",
+                                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                },
+                                "nanos": {
+                                    "type": "integer",
+                                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "The number of seconds a connection needs to be idle before keep-alive probes start being sent. This is rounded up to the second."
+                        },
+                        "keepalive_interval": {
+                            "properties": {
+                                "seconds": {
+                                    "type": "string",
+                                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                },
+                                "nanos": {
+                                    "type": "integer",
+                                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "The number of seconds between keep-alive probes. This is rounded up to the second."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Configure OS-level tcp keepalive checks"
+                },
+                "per_connection_buffer_limit_bytes": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "Soft limit on size of the cluster’s connections read and write buffers. If unspecified, an implementation defined default is applied (1MiB).\n For more info, see the [envoy docs](https://www.envoyproxy.io/docs/envoy/v1.14.1/api-v2/api/v2/cluster.proto#cluster)"
+                },
+                "common_http_protocol_options": {
+                    "properties": {
+                        "idle_timeout": {
+                            "properties": {
+                                "seconds": {
+                                    "type": "string",
+                                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                },
+                                "nanos": {
+                                    "type": "integer",
+                                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "The idle timeout for connections. The idle timeout is defined as the\n period in which there are no active requests. When the\n idle timeout is reached the connection will be closed. If the connection is an HTTP/2\n downstream connection a drain sequence will occur prior to closing the connection, see\n :ref:`drain_timeout\n \u003cenvoy_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.drain_timeout\u003e`.\n Note that request based timeouts mean that HTTP/2 PINGs will not keep the connection alive.\n If not specified, this defaults to 1 hour. To disable idle timeouts explicitly set this to 0.\n\n .. warning::\n   Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP\n   FIN packets, etc."
+                        },
+                        "max_headers_count": {
+                            "type": "integer",
+                            "description": "Note: max_connection_duration is not included here because it is \"not implemented for upstream connections,\" per Envoy's documentation.\n\nThe maximum number of headers. If unconfigured, the default\n maximum number of request headers allowed is 100. Requests that exceed this limit will receive\n a 431 response for HTTP/1.x and cause a stream reset for HTTP/2."
+                        },
+                        "max_stream_duration": {
+                            "properties": {
+                                "seconds": {
+                                    "type": "string",
+                                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                },
+                                "nanos": {
+                                    "type": "integer",
+                                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Total duration to keep alive an HTTP request/response stream. If the time limit is reached the stream will be\n reset independent of any other timeouts. If not specified, this value is not set."
+                        },
+                        "headers_with_underscores_action": {
+                            "enum": [
+                                "ALLOW",
+                                0,
+                                "REJECT_REQUEST",
+                                1,
+                                "DROP_HEADER",
+                                2
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ],
+                            "description": "Action to take when a client request with a header name containing underscore characters is received.\n If this setting is not specified, the value defaults to ALLOW.\n Note: upstream responses are not affected by this setting."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Additional options when handling HTTP requests upstream. These options will be applicable to\n both HTTP1 and HTTP2 requests."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "health_checks": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "timeout": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "The time to wait for a health check response. If the timeout is reached the\n health check attempt will be considered a failure."
+                    },
+                    "interval": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "The interval between health checks."
+                    },
+                    "initial_jitter": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "An optional jitter amount in milliseconds. If specified, Envoy will start health\n checking after for a random time in ms between 0 and initial_jitter. This only\n applies to the first health check."
+                    },
+                    "interval_jitter": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "An optional jitter amount in milliseconds. If specified, during every\n interval Envoy will add interval_jitter to the wait time."
+                    },
+                    "interval_jitter_percent": {
+                        "type": "integer",
+                        "description": "An optional jitter amount as a percentage of interval_ms. If specified,\n during every interval Envoy will add interval_ms *\n interval_jitter_percent / 100 to the wait time.\n\n If interval_jitter_ms and interval_jitter_percent are both set, both of\n them will be used to increase the wait time."
+                    },
+                    "unhealthy_threshold": {
+                        "additionalProperties": true,
+                        "type": "integer",
+                        "description": "The number of unhealthy health checks required before a host is marked\n unhealthy. Note that for *http* health checking if a host responds with 503\n this threshold is ignored and the host is considered unhealthy immediately."
+                    },
+                    "healthy_threshold": {
+                        "additionalProperties": true,
+                        "type": "integer",
+                        "description": "The number of healthy health checks required before a host is marked\n healthy. Note that during startup, only a single successful health check is\n required to mark a host healthy."
+                    },
+                    "reuse_connection": {
+                        "additionalProperties": true,
+                        "type": "boolean",
+                        "description": "[#not-implemented-hide:] Non-serving port for health checking.\n    google.protobuf.UInt32Value alt_port = 6;\n\nReuse health check connection between health checks. Default is true."
+                    },
+                    "http_health_check": {
+                        "properties": {
+                            "host": {
+                                "type": "string",
+                                "description": "The value of the host header in the HTTP health check request. If\n left empty (default value), the name of the cluster this health check is associated\n with will be used."
+                            },
+                            "path": {
+                                "type": "string",
+                                "description": "Specifies the HTTP path that will be requested during health checking. For example\n */healthcheck*."
+                            },
+                            "service_name": {
+                                "type": "string",
+                                "description": "[#not-implemented-hide:] HTTP specific payload.\n        Payload send = 3;\n\n[#not-implemented-hide:] HTTP specific response.\n        Payload receive = 4;\n\nAn optional service name parameter which is used to validate the identity of\n the health checked cluster. See the `architecture overview\n (arch_overview_health_checking_identity)` for more information."
+                            },
+                            "request_headers_to_add": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "header": {
+                                            "properties": {
+                                                "key": {
+                                                    "type": "string",
+                                                    "description": "Header name."
+                                                },
+                                                "value": {
+                                                    "type": "string",
+                                                    "description": "Header value.\n\n The same `format specifier (config_access_log_format)` as used for\n `HTTP access logging (config_access_log)` applies here, however\n unknown header values are replaced with the empty string instead of `-`."
+                                                }
+                                            },
+                                            "additionalProperties": true,
+                                            "type": "object",
+                                            "description": "Explicitly specified header"
+                                        },
+                                        "header_secret_ref": {
+                                            "$ref": "#/definitions/core.solo.io.ResourceRef",
+                                            "additionalProperties": true,
+                                            "description": "Reference to header contained in a secret"
+                                        },
+                                        "append": {
+                                            "additionalProperties": true,
+                                            "type": "boolean",
+                                            "description": "Should the value be appended? If true (default), the value is appended to\n existing values."
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "Header name/value pair plus option to control append behavior."
+                                },
+                                "type": "array",
+                                "description": "Specifies a list of HTTP headers that should be added to each request that is sent to the\n health checked cluster. For more information, including details on header value syntax, see\n the documentation on `custom request headers\n (config_http_conn_man_headers_custom_request_headers)`."
+                            },
+                            "request_headers_to_remove": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array",
+                                "description": "Specifies a list of HTTP headers that should be removed from each request that is sent to the\n health checked cluster."
+                            },
+                            "use_http2": {
+                                "type": "boolean",
+                                "description": "If set, health checks will be made using http/2."
+                            },
+                            "expected_statuses": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "start": {
+                                            "type": "string",
+                                            "description": "start of the range (inclusive)"
+                                        },
+                                        "end": {
+                                            "type": "string",
+                                            "description": "end of the range (exclusive)"
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "[#protodoc-title: Range]\n\nSpecifies the int64 start and end of the range using half-open interval semantics [start,\n end)."
+                                },
+                                "type": "array",
+                                "description": "Specifies a list of HTTP response statuses considered healthy. If provided, replaces default\n 200-only policy - 200 must be included explicitly as needed. Ranges follow half-open\n semantics of `Int64Range (envoy_api_msg_type.Int64Range)`."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "HTTP health check."
+                    },
+                    "tcp_health_check": {
+                        "properties": {
+                            "send": {
+                                "$ref": "#/definitions/solo.io.envoy.api.v2.core.HealthCheck.Payload",
+                                "additionalProperties": true,
+                                "description": "Empty payloads imply a connect-only health check."
+                            },
+                            "receive": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "$ref": "#/definitions/solo.io.envoy.api.v2.core.HealthCheck.Payload"
+                                },
+                                "type": "array",
+                                "description": "When checking the response, “fuzzy” matching is performed such that each\n binary block must be found, and in the order specified, but not\n necessarily contiguous."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "TCP health check."
+                    },
+                    "grpc_health_check": {
+                        "properties": {
+                            "service_name": {
+                                "type": "string",
+                                "description": "An optional service name parameter which will be sent to gRPC service in\n `grpc.health.v1.HealthCheckRequest\n \u003chttps://github.com/grpc/grpc/blob/master/src/proto/grpc/health/v1/health.proto#L20\u003e`_.\n message. See `gRPC health-checking overview\n \u003chttps://github.com/grpc/grpc/blob/master/doc/health-checking.md\u003e`_ for more information."
+                            },
+                            "authority": {
+                                "type": "string",
+                                "description": "The value of the :authority header in the gRPC health check request. If\n left empty (default value), the name of the cluster this health check is associated\n with will be used."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "gRPC health check."
+                    },
+                    "custom_health_check": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The registered name of the custom health checker."
+                            },
+                            "config": {
+                                "properties": {
+                                    "fields": {
+                                        "additionalProperties": {
+                                            "additionalProperties": true,
+                                            "type": "object"
+                                        },
+                                        "type": "object",
+                                        "description": "Unordered map of dynamically typed values."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "typed_config": {
+                                "properties": {
+                                    "type_url": {
+                                        "type": "string",
+                                        "description": "A URL/resource name that uniquely identifies the type of the serialized\n protocol buffer message. This string must contain at least\n one \"/\" character. The last segment of the URL's path must represent\n the fully qualified name of the type (as in\n `path/google.protobuf.Duration`). The name should be in a canonical form\n (e.g., leading \".\" is not accepted).\n\n In practice, teams usually precompile into the binary all types that they\n expect it to use in the context of Any. However, for URLs which use the\n scheme `http`, `https`, or no scheme, one can optionally set up a type\n server that maps type URLs to message definitions as follows:\n\n * If no scheme is provided, `https` is assumed.\n * An HTTP GET on the URL must yield a [google.protobuf.Type][]\n   value in binary format, or produce an error.\n * Applications are allowed to cache lookup results based on the\n   URL, or have them precompiled into a binary to avoid any\n   lookup. Therefore, binary compatibility needs to be preserved\n   on changes to types. (Use versioned type names to manage\n   breaking changes.)\n\n Note: this functionality is not currently available in the official\n protobuf release, and it is not used for type URLs beginning with\n type.googleapis.com.\n\n Schemes other than `http`, `https` (or the empty scheme) might be\n used with implementation specific semantics."
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Must be a valid serialized protocol buffer of the above specified type.",
+                                        "format": "binary",
+                                        "binaryEncoding": "base64"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object"
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Custom health check."
+                    },
+                    "no_traffic_interval": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "The \"no traffic interval\" is a special health check interval that is used when a cluster has\n never had traffic routed to it. This lower interval allows cluster information to be kept up to\n date, without sending a potentially large amount of active health checking traffic for no\n reason. Once a cluster has been used for traffic routing, Envoy will shift back to using the\n standard health check interval that is defined. Note that this interval takes precedence over\n any other.\n\n The default value for \"no traffic interval\" is 60 seconds."
+                    },
+                    "unhealthy_interval": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "The \"unhealthy interval\" is a health check interval that is used for hosts that are marked as\n unhealthy. As soon as the host is marked as healthy, Envoy will shift back to using the\n standard health check interval that is defined.\n\n The default value for \"unhealthy interval\" is the same as \"interval\"."
+                    },
+                    "unhealthy_edge_interval": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "The \"unhealthy edge interval\" is a special health check interval that is used for the first\n health check right after a host is marked as unhealthy. For subsequent health checks\n Envoy will shift back to using either \"unhealthy interval\" if present or the standard health\n check interval that is defined.\n\n The default value for \"unhealthy edge interval\" is the same as \"unhealthy interval\"."
+                    },
+                    "healthy_edge_interval": {
+                        "properties": {
+                            "seconds": {
+                                "type": "string",
+                                "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                            },
+                            "nanos": {
+                                "type": "integer",
+                                "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "The \"healthy edge interval\" is a special health check interval that is used for the first\n health check right after a host is marked as healthy. For subsequent health checks\n Envoy will shift back to using the standard health check interval that is defined.\n\n The default value for \"healthy edge interval\" is the same as the default interval."
+                    },
+                    "event_log_path": {
+                        "type": "string",
+                        "description": "Specifies the path to the `health check event log (arch_overview_health_check_logging)`.\n If empty, no event log will be written."
+                    },
+                    "always_log_health_check_failures": {
+                        "type": "boolean",
+                        "description": "If set to true, health check failure events will always be logged. If set to false, only the\n initial health check failure event will be logged.\n The default value is false."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "[#protodoc-title: Health check]\n * Health checking `architecture overview (arch_overview_health_checking)`.\n * If health checking is configured for a cluster, additional statistics are emitted. They are\n   documented `here (config_cluster_manager_cluster_stats)`."
+            },
+            "type": "array"
+        },
+        "outlier_detection": {
+            "properties": {
+                "consecutive_5xx": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The number of consecutive 5xx responses or local origin errors that are mapped\n to 5xx error codes before a consecutive 5xx ejection\n occurs. Defaults to 5."
+                },
+                "interval": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "The time interval between ejection analysis sweeps. This can result in\n both new ejections as well as hosts being returned to service. Defaults\n to 10000ms or 10s."
+                },
+                "base_ejection_time": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "The base time that a host is ejected for. The real time is equal to the\n base time multiplied by the number of times the host has been ejected.\n Defaults to 30000ms or 30s."
+                },
+                "max_ejection_percent": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The maximum % of an upstream cluster that can be ejected due to outlier\n detection. Defaults to 10% but will eject at least one host regardless of the value."
+                },
+                "enforcing_consecutive_5xx": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The % chance that a host will be actually ejected when an outlier status\n is detected through consecutive 5xx. This setting can be used to disable\n ejection or to ramp it up slowly. Defaults to 100."
+                },
+                "enforcing_success_rate": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The % chance that a host will be actually ejected when an outlier status\n is detected through success rate statistics. This setting can be used to\n disable ejection or to ramp it up slowly. Defaults to 100."
+                },
+                "success_rate_minimum_hosts": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The number of hosts in a cluster that must have enough request volume to\n detect success rate outliers. If the number of hosts is less than this\n setting, outlier detection via success rate statistics is not performed\n for any host in the cluster. Defaults to 5."
+                },
+                "success_rate_request_volume": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The minimum number of total requests that must be collected in one\n interval (as defined by the interval duration above) to include this host\n in success rate based outlier detection. If the volume is lower than this\n setting, outlier detection via success rate statistics is not performed\n for that host. Defaults to 100."
+                },
+                "success_rate_stdev_factor": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "This factor is used to determine the ejection threshold for success rate\n outlier ejection. The ejection threshold is the difference between the\n mean success rate, and the product of this factor and the standard\n deviation of the mean success rate: mean - (stdev *\n success_rate_stdev_factor). This factor is divided by a thousand to get a\n double. That is, if the desired factor is 1.9, the runtime value should\n be 1900. Defaults to 1900."
+                },
+                "consecutive_gateway_failure": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The number of consecutive gateway failures (502, 503, 504 status codes)\n before a consecutive gateway failure ejection occurs. Defaults to 5."
+                },
+                "enforcing_consecutive_gateway_failure": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The % chance that a host will be actually ejected when an outlier status\n is detected through consecutive gateway failures. This setting can be\n used to disable ejection or to ramp it up slowly. Defaults to 0."
+                },
+                "split_external_local_origin_errors": {
+                    "type": "boolean",
+                    "description": "Determines whether to distinguish local origin failures from external errors. If set to true\n the following configuration parameters are taken into account:\n `consecutive_local_origin_failure (envoy_api_field_cluster.OutlierDetection.consecutive_local_origin_failure)`,\n `enforcing_consecutive_local_origin_failure (envoy_api_field_cluster.OutlierDetection.enforcing_consecutive_local_origin_failure)`\n and\n `enforcing_local_origin_success_rate (envoy_api_field_cluster.OutlierDetection.enforcing_local_origin_success_rate)`.\n Defaults to false."
+                },
+                "consecutive_local_origin_failure": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The number of consecutive locally originated failures before ejection\n occurs. Defaults to 5. Parameter takes effect only when\n `split_external_local_origin_errors (envoy_api_field_cluster.OutlierDetection.split_external_local_origin_errors)`\n is set to true."
+                },
+                "enforcing_consecutive_local_origin_failure": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The % chance that a host will be actually ejected when an outlier status\n is detected through consecutive locally originated failures. This setting can be\n used to disable ejection or to ramp it up slowly. Defaults to 100.\n Parameter takes effect only when\n `split_external_local_origin_errors (envoy_api_field_cluster.OutlierDetection.split_external_local_origin_errors)`\n is set to true."
+                },
+                "enforcing_local_origin_success_rate": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "The % chance that a host will be actually ejected when an outlier status\n is detected through success rate statistics for locally originated errors.\n This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.\n Parameter takes effect only when\n `split_external_local_origin_errors (envoy_api_field_cluster.OutlierDetection.split_external_local_origin_errors)`\n is set to true."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "use_http2": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Use http2 when communicating with this upstream\n this field is evaluated `true` for upstreams\n with a grpc service spec. otherwise defaults to `false`"
+        },
+        "kube": {
+            "properties": {
+                "service_name": {
+                    "type": "string",
+                    "description": "The name of the Kubernetes Service"
+                },
+                "service_namespace": {
+                    "type": "string",
+                    "description": "The namespace where the Service lives"
+                },
+                "service_port": {
+                    "type": "integer",
+                    "description": "The access port of the kubernetes service is listening. This port is used by Gloo to look up the corresponding\n port on the pod for routing."
+                },
+                "selector": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Allows finer-grained filtering of pods for the Upstream. Gloo will select pods based on their labels if\n any are provided here.\n (see [Kubernetes labels and selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)"
+                },
+                "service_spec": {
+                    "$ref": "#/definitions/options.gloo.solo.io.ServiceSpec",
+                    "additionalProperties": true,
+                    "description": "An optional Service Spec describing the service listening at this address"
+                },
+                "subset_spec": {
+                    "properties": {
+                        "selectors": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "keys": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Subset configuration. For discovery sources that has labels (like kubernetes). this \n configuration allows you to partition the upstream to a set of subsets.\n for each unique set of keys and values, a subset will be created."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "static": {
+            "properties": {
+                "hosts": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "addr": {
+                                "type": "string",
+                                "description": "Address (hostname or IP)"
+                            },
+                            "port": {
+                                "type": "integer",
+                                "description": "Port the instance is listening on"
+                            },
+                            "sni_addr": {
+                                "type": "string",
+                                "description": "Address to use for SNI if using ssl."
+                            },
+                            "health_check_config": {
+                                "properties": {
+                                    "path": {
+                                        "type": "string",
+                                        "description": "(Enterprise Only): Path to use when health checking this specific host."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "(Enterprise Only): Host specific health checking configuration."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Represents a single instance of an upstream"
+                    },
+                    "type": "array",
+                    "description": "A list of addresses and ports\n at least one must be specified"
+                },
+                "use_tls": {
+                    "type": "boolean",
+                    "description": "Attempt to use outbound TLS\n Gloo will automatically set this to true for port 443"
+                },
+                "service_spec": {
+                    "$ref": "#/definitions/options.gloo.solo.io.ServiceSpec",
+                    "additionalProperties": true,
+                    "description": "An optional Service Spec describing the service listening at this address"
+                },
+                "auto_sni_rewrite": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "When set, automatically set the sni address to use to the addr field.\n If both this and host.sni_addr are set, host.sni_addr has priority.\n defaults to \"true\"."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "pipe": {
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "The Unix Domain Socket path."
+                },
+                "service_spec": {
+                    "$ref": "#/definitions/options.gloo.solo.io.ServiceSpec",
+                    "additionalProperties": true,
+                    "description": "An optional Service Spec describing the service listening at this address"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "aws": {
+            "properties": {
+                "region": {
+                    "type": "string",
+                    "description": "The AWS Region where the desired Lambda Functions exist"
+                },
+                "secret_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "A [Gloo Secret Ref](https://gloo.solo.io/introduction/concepts/#Secrets) to an AWS Secret\n AWS Secrets can be created with `glooctl secret create aws ...`\n If the secret is created manually, it must conform to the following structure:\n  ```\n  access_key: \u003caws access key\u003e\n  secret_key: \u003caws secret key\u003e\n  session_token: \u003c(optional) aws session token\u003e\n  ```"
+                },
+                "lambda_functions": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "logical_name": {
+                                "type": "string",
+                                "description": "the logical name gloo should associate with this function. if left empty, it will default to\n lambda_function_name+qualifier"
+                            },
+                            "lambda_function_name": {
+                                "type": "string",
+                                "description": "The Name of the Lambda Function as it appears in the AWS Lambda Portal"
+                            },
+                            "qualifier": {
+                                "type": "string",
+                                "description": "The Qualifier for the Lambda Function. Qualifiers act as a kind of version\n for Lambda Functions. See https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html for more info."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Each Lambda Function Spec contains data necessary for Gloo to invoke Lambda functions:\n - name of the function\n - qualifier for the function"
+                    },
+                    "type": "array",
+                    "description": "The list of Lambda Functions contained within this region.\n This list will be automatically populated by Gloo if discovery is enabled for AWS Lambda Functions"
+                },
+                "role_arn": {
+                    "type": "string",
+                    "description": "(Optional): role_arn to use when assuming a role for a given request via STS.\n If set this role_arn will override the value found in AWS_ROLE_ARN\n This option will only be respected if STS credentials are enabled.\n To enable STS credential fetching see Settings.Gloo.AwsOptions in settings.proto."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "azure": {
+            "properties": {
+                "function_app_name": {
+                    "type": "string",
+                    "description": "The Name of the Azure Function App where the functions are grouped"
+                },
+                "secret_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "A [Gloo Secret Ref](https://gloo.solo.io/introduction/concepts/#Secrets) to an [Azure Publish Profile JSON file](https://azure.microsoft.com/en-us/downloads/publishing-profile-overview/).\n {{ hide_not_implemented \"Azure Secrets can be created with `glooctl secret create azure ...`\" }}\n Note that this secret is not required unless Function Discovery is enabled"
+                },
+                "functions": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "function_name": {
+                                "type": "string",
+                                "description": "The Name of the Azure Function as it appears in the Azure Functions Portal"
+                            },
+                            "auth_level": {
+                                "enum": [
+                                    "Anonymous",
+                                    0,
+                                    "Function",
+                                    1,
+                                    "Admin",
+                                    2
+                                ],
+                                "oneOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "integer"
+                                    }
+                                ],
+                                "description": "Auth Level can bve either \"anonymous\" \"function\" or \"admin\"\n See https://vincentlauzon.com/2017/12/04/azure-functions-http-authorization-levels/ for more details"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Function Spec for Functions on Azure Functions Upstreams\n The Function Spec contains data necessary for Gloo to invoke Azure functions"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "consul": {
+            "properties": {
+                "service_name": {
+                    "type": "string",
+                    "description": "The name of the Consul Service"
+                },
+                "service_tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Deprecated: This field was renamed to subset_tags. If subset_tags is used, this field is \n ignored. Otherwise, the behavior is the same as subset_tags field below."
+                },
+                "subset_tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Gloo will segment instances based off of these tags. This allows you to set routes that route\n to a subset of the instances of the service"
+                },
+                "instance_tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "The list of service tags Gloo should search for on a service instance\n before deciding whether or not to include the instance as part of this\n upstream. Empty list means that all service instances with the same service name will be\n included. When not empty, only service instances that match all of the tags (subset match) will be selected\n for this upstream."
+                },
+                "instance_blacklist_tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "The opposite of instanceTags, this is a list of service tags that gloo should ensure are not\n in a service instance before including it in an upstream."
+                },
+                "service_spec": {
+                    "$ref": "#/definitions/options.gloo.solo.io.ServiceSpec",
+                    "additionalProperties": true,
+                    "description": "An optional Service Spec describing the service listening at this address"
+                },
+                "connect_enabled": {
+                    "type": "boolean",
+                    "description": "Is this consul service connect enabled."
+                },
+                "data_centers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "The data centers in which the service instance represented by this upstream is registered."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "aws_ec2": {
+            "properties": {
+                "region": {
+                    "type": "string",
+                    "description": "The AWS Region where the desired EC2 instances exist"
+                },
+                "secret_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "Optional, if not set, Gloo will try to use the default AWS secret specified by environment variables.\n If a secret is not provided, the environment must specify both the AWS access key and secret.\n The environment variables used to indicate the AWS account can be:\n - for the access key: \"AWS_ACCESS_KEY_ID\" or \"AWS_ACCESS_KEY\"\n - for the secret: \"AWS_SECRET_ACCESS_KEY\" or \"AWS_SECRET_KEY\"\n If set, a [Gloo Secret Ref](https://gloo.solo.io/introduction/concepts/#Secrets) to an AWS Secret\n AWS Secrets can be created with `glooctl secret create aws ...`\n If the secret is created manually, it must conform to the following structure:\n  ```\n  access_key: \u003caws access key\u003e\n  secret_key: \u003caws secret key\u003e\n  ```\n Gloo will create an EC2 API client with this credential. You may choose to use a credential with limited access\n in conjunction with a list of Roles, specified by their Amazon Resource Number (ARN)."
+                },
+                "role_arn": {
+                    "type": "string",
+                    "description": "Optional, Amazon Resource Number (ARN) referring to IAM Role that should be assumed when the Upstream\n queries for eligible EC2 instances.\n If provided, Gloo will create an EC2 API client with the provided role. If not provided, Gloo will not assume\n a role."
+                },
+                "filters": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "key": {
+                                "type": "string",
+                                "description": "if set, only instances that have a tag with this key will be matched\n keys are not case-sensitive, as with AWS Condition Keys"
+                            },
+                            "kv_pair": {
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "keys are not case-sensitive, as with AWS Condition Keys"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "values are case-sensitive"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "if set, only instances that have a tag with this key and value"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "type": "array",
+                    "description": "List of tag filters for selecting instances\n An instance must match all the filters in order to be selected\n Filter keys are not case-sensitive"
+                },
+                "public_ip": {
+                    "type": "boolean",
+                    "description": "If set, will use the EC2 public IP address. Defaults to the private IP address."
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "If set, will use this port on EC2 instances. Defaults to port 80."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "failover": {
+            "properties": {
+                "prioritized_localities": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "locality_endpoints": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "locality": {
+                                            "properties": {
+                                                "region": {
+                                                    "type": "string",
+                                                    "description": "Region this zone belongs to."
+                                                },
+                                                "zone": {
+                                                    "type": "string",
+                                                    "description": "Defines the local service zone where Envoy is running. The meaning of zone\n is context dependent, e.g. `Availability Zone (AZ)\n \u003chttps://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html\u003e`_\n on AWS, `Zone \u003chttps://cloud.google.com/compute/docs/regions-zones/\u003e`_ on\n GCP, etc."
+                                                },
+                                                "sub_zone": {
+                                                    "type": "string",
+                                                    "description": "When used for locality of upstream hosts, this field further splits zone\n into smaller chunks of sub-zones so they can be load balanced\n independently."
+                                                }
+                                            },
+                                            "additionalProperties": true,
+                                            "type": "object",
+                                            "description": "Identifies where the parent upstream hosts run."
+                                        },
+                                        "lb_endpoints": {
+                                            "items": {
+                                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                                "properties": {
+                                                    "address": {
+                                                        "type": "string",
+                                                        "description": "Address (hostname or IP)"
+                                                    },
+                                                    "port": {
+                                                        "type": "integer",
+                                                        "description": "Port the instance is listening on"
+                                                    },
+                                                    "health_check_config": {
+                                                        "properties": {
+                                                            "port_value": {
+                                                                "type": "integer",
+                                                                "description": "Optional alternative health check port value.\n\n By default the health check address port of an upstream host is the same\n as the host's serving address port. This provides an alternative health\n check port. Setting this with a non-zero value allows an upstream host\n to have different health check address port."
+                                                            },
+                                                            "hostname": {
+                                                                "type": "string",
+                                                                "description": "By default, the host header for L7 health checks is controlled by cluster level configuration. Setting this\n to a non-empty value allows overriding the cluster level configuration for a specific endpoint."
+                                                            }
+                                                        },
+                                                        "additionalProperties": true,
+                                                        "type": "object",
+                                                        "description": "The optional health check configuration is used as configuration for the\n health checker to contact the health checked host.\n This takes into effect only for upstreams with active health checking enabled"
+                                                    },
+                                                    "upstream_ssl_config": {
+                                                        "$ref": "#/definitions/gloo.solo.io.UpstreamSslConfig",
+                                                        "additionalProperties": true
+                                                    },
+                                                    "load_balancing_weight": {
+                                                        "additionalProperties": true,
+                                                        "type": "integer",
+                                                        "description": "The optional load balancing weight of the upstream host; at least 1.\n Envoy uses the load balancing weight in some of the built in load\n balancers. The load balancing weight for an endpoint is divided by the sum\n of the weights of all endpoints in the endpoint's locality to produce a\n percentage of traffic for the endpoint. This percentage is then further\n weighted by the endpoint's locality's load balancing weight from\n LocalityLbEndpoints. If unspecified, each host is presumed to have equal\n weight in a locality."
+                                                    }
+                                                },
+                                                "additionalProperties": false,
+                                                "type": "object",
+                                                "description": "An Endpoint that Envoy can route traffic to."
+                                            },
+                                            "type": "array",
+                                            "description": "The group of endpoints belonging to the locality specified.\n Note: If any address is DNS resolvable than `lb_endpoints[].load_balancing_weight` is not allowed on any of\n this locality's endpoints."
+                                        },
+                                        "load_balancing_weight": {
+                                            "additionalProperties": true,
+                                            "type": "integer",
+                                            "description": "Optional: Per priority/region/zone/sub_zone weight; at least 1. The load\n balancing weight for a locality is divided by the sum of the weights of all\n localities at the same priority level to produce the effective percentage\n of traffic for the locality.\n To enable locality weighted load balancing, load_balancer_config.locality_weighted_lb_config must be set as well"
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "A group of endpoints belonging to a Locality.\n One can have multiple LocalityLbEndpoints for a locality, but this is\n generally only done if the different groups need to have different load\n balancing weights or different priorities."
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "type": "array",
+                    "description": "PrioritizedLocality is an implicitly prioritized list of lists of `LocalityLbEndpoints`. The priority of each\n list of `LocalityLbEndpoints` is determined by its index in the list."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Failover endpoints for this upstream. If omitted (the default) no failovers will be applied."
+        },
+        "initial_stream_window_size": {
+            "additionalProperties": true,
+            "type": "integer",
+            "description": "(UInt32Value) Initial stream-level flow-control window size.\n Valid values range from 65535 (2^16 - 1, HTTP/2 default) to 2147483647 (2^31 - 1, HTTP/2 maximum)\n and defaults to 268435456 (256 * 1024 * 1024).\n NOTE: 65535 is the initial window size from HTTP/2 spec.\n We only support increasing the default window size now, so it’s also the minimum.\n This field also acts as a soft limit on the number of bytes Envoy will buffer per-stream\n in the HTTP/2 codec buffers. Once the buffer reaches this pointer,\n watermark callbacks will fire to stop the flow of data to the codec buffers.\n Requires UseHttp2 to be true to be acknowledged."
+        },
+        "initial_connection_window_size": {
+            "additionalProperties": true,
+            "type": "integer",
+            "description": "(UInt32Value) Similar to initial_stream_window_size, but for connection-level flow-control window.\n Currently, this has the same minimum/maximum/default as initial_stream_window_size.\n Requires UseHttp2 to be true to be acknowledged."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Upstreams represent destination for routing HTTP requests. Upstreams can be compared to\n [clusters](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/cds.proto) in Envoy terminology.\n Each upstream in Gloo has a type. Supported types include `static`, `kubernetes`, `aws`, `consul`, and more.\n Each upstream type is handled by a corresponding Gloo plugin. (plugins currently need to be compiled into Gloo)",
+    "definitions": {
+        "core.solo.io.ResourceRef": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A way to reference resources across namespaces",
+            "id": "core.solo.io.ResourceRef"
+        },
+        "core.solo.io.Status": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "state": {
+                    "enum": [
+                        "Pending",
+                        0,
+                        "Accepted",
+                        1,
+                        "Rejected",
+                        2,
+                        "Warning",
+                        3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "description": "State is the enum indicating the state of the resource"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Reason is a description of the error for Rejected resources. If the resource is pending or accepted, this field will be empty"
+                },
+                "reported_by": {
+                    "type": "string",
+                    "description": "Reference to the reporter who wrote this status"
+                },
+                "subresource_statuses": {
+                    "additionalProperties": {
+                        "$ref": "#/definitions/core.solo.io.Status",
+                        "additionalProperties": true
+                    },
+                    "type": "object",
+                    "description": "Reference to statuses (by resource-ref string: \"Kind.Namespace.Name\") of subresources of the parent resource"
+                },
+                "details": {
+                    "properties": {
+                        "fields": {
+                            "additionalProperties": {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object",
+                            "description": "Unordered map of dynamically typed values."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Opaque details about status results"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "*\n Status indicates whether a resource has been (in)validated by a reporter in the system.\n Statuses are meant to be read-only by users",
+            "id": "core.solo.io.Status"
+        },
+        "envoy.api.v2.filter.http.InjaTemplate": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Defines an [Inja template](https://github.com/pantor/inja) that will be\n rendered by Gloo. In addition to the core template functions, the Gloo\n transformation filter defines the following custom functions:\n - header(header_name): returns the value of the header with the given name\n - extraction(extractor_name): returns the value of the extractor with the\n given name\n - env(env_var_name): returns the value of the environment variable with the\n given name\n - body(): returns the request/response body\n - context(): returns the base JSON context (allowing for example to range on\n a JSON body that is an array)",
+            "id": "envoy.api.v2.filter.http.InjaTemplate"
+        },
+        "gloo.solo.io.UpstreamSslConfig": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "secret_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "SecretRef contains the secret ref to a gloo tls secret or a kubernetes tls secret.\n gloo tls secret can contain a root ca as well if verification is needed."
+                },
+                "ssl_files": {
+                    "properties": {
+                        "tls_cert": {
+                            "type": "string"
+                        },
+                        "tls_key": {
+                            "type": "string"
+                        },
+                        "root_ca": {
+                            "type": "string",
+                            "description": "for client cert validation. optional"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "SSLFiles reference paths to certificates which are local to the proxy"
+                },
+                "sds": {
+                    "properties": {
+                        "target_uri": {
+                            "type": "string",
+                            "description": "Target uri for the sds channel. currently only a unix domain socket is supported."
+                        },
+                        "call_credentials": {
+                            "properties": {
+                                "file_credential_source": {
+                                    "properties": {
+                                        "token_file_name": {
+                                            "type": "string",
+                                            "description": "File containing auth token."
+                                        },
+                                        "header": {
+                                            "type": "string",
+                                            "description": "Header to carry the token."
+                                        }
+                                    },
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "description": "Call credentials are coming from a file,"
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Call credentials."
+                        },
+                        "cluster_name": {
+                            "type": "string",
+                            "description": "The name of the sds cluster in envoy"
+                        },
+                        "certificates_secret_name": {
+                            "type": "string",
+                            "description": "The name of the secret containing the certificate"
+                        },
+                        "validation_context_name": {
+                            "type": "string",
+                            "description": "The name of secret containing the validation context (i.e. root ca)"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use secret discovery service."
+                },
+                "sni": {
+                    "type": "string",
+                    "description": "optional. the SNI domains that should be considered for TLS connections"
+                },
+                "verify_subject_alt_name": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Verify that the Subject Alternative Name in the peer certificate is one of the specified values.\n note that a root_ca must be provided if this option is used."
+                },
+                "parameters": {
+                    "properties": {
+                        "minimum_protocol_version": {
+                            "enum": [
+                                "TLS_AUTO",
+                                0,
+                                "TLSv1_0",
+                                1,
+                                "TLSv1_1",
+                                2,
+                                "TLSv1_2",
+                                3,
+                                "TLSv1_3",
+                                4
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "maximum_protocol_version": {
+                            "enum": [
+                                "TLS_AUTO",
+                                0,
+                                "TLSv1_0",
+                                1,
+                                "TLSv1_1",
+                                2,
+                                "TLSv1_2",
+                                3,
+                                "TLSv1_3",
+                                4
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "cipher_suites": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "ecdh_curves": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "alpn_protocols": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Set Application Level Protocol Negotiation.\n If empty, it is not set."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "SslConfig contains the options necessary to configure a virtual host or listener to use TLS",
+            "id": "gloo.solo.io.UpstreamSslConfig"
+        },
+        "options.gloo.solo.io.ServiceSpec": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "rest": {
+                    "properties": {
+                        "transformations": {
+                            "additionalProperties": {
+                                "properties": {
+                                    "advanced_templates": {
+                                        "type": "boolean",
+                                        "description": "If set to true, use JSON pointer notation (e.g. \"time/start\") instead of\n dot notation (e.g. \"time.start\") to access JSON elements. Defaults to\n false.\n\n Please note that, if set to 'true', you will need to use the `extraction`\n function to access extractors in the template (e.g. '{{\n extraction(\"my_extractor\") }}'); if the default value of 'false' is used,\n extractors will simply be available by their name (e.g. '{{ my_extractor\n }}')."
+                                    },
+                                    "extractors": {
+                                        "additionalProperties": {
+                                            "properties": {
+                                                "header": {
+                                                    "type": "string",
+                                                    "description": "Extract information from headers"
+                                                },
+                                                "body": {
+                                                    "additionalProperties": true,
+                                                    "type": "object",
+                                                    "description": "Extract information from the request/response body"
+                                                },
+                                                "regex": {
+                                                    "type": "string",
+                                                    "description": "Only strings matching this regular expression will be part of the\n extraction. The most simple value for this field is '.*', which matches the\n whole source. The field is required. If extraction fails the result is an\n empty value."
+                                                },
+                                                "subgroup": {
+                                                    "type": "integer",
+                                                    "description": "If your regex contains capturing groups, use this field to determine which\n group should be selected."
+                                                }
+                                            },
+                                            "additionalProperties": true,
+                                            "type": "object"
+                                        },
+                                        "type": "object",
+                                        "description": "Use this attribute to extract information from the request. It consists of\n a map of strings to extractors. The extractor will defines which\n information will be extracted, while the string key will provide the\n extractor with a name. You can reference extractors by their name in\n templates, e.g. \"{{ my-extractor }}\" will render to the value of the\n \"my-extractor\" extractor."
+                                    },
+                                    "headers": {
+                                        "additionalProperties": {
+                                            "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                            "additionalProperties": true
+                                        },
+                                        "type": "object",
+                                        "description": "Use this attribute to transform request/response headers. It consists of a\n map of strings to templates. The string key determines the name of the\n resulting header, the rendered template will determine the value. Any existing\n headers with the same header name will be replaced by the transformed header.\n If a header name is included in `headers` and `headers_to_append`, it will first\n be replaced the template in `headers`, then additional header values will be appended\n by the templates defined in `headers_to_append`.\n For example, the following header transformation configuration:\n\n ```yaml\n    headers:\n      x-header-one: {\"text\": \"first {{inja}} template\"}\n      x-header-one: {\"text\": \"second {{inja}} template\"}\n    headersToAppend:\n      - key: x-header-one\n        value: {\"text\": \"first appended {{inja}} template\"}\n      - key: x-header-one\n        value: {\"text\": \"second appended {{inja}} template\"}\n ```\n will result in the following headers on the HTTP message:\n\n ```\n x-header-one: first inja template\n x-header-one: first appended inja template\n x-header-one: second appended inja template\n ```"
+                                    },
+                                    "headers_to_append": {
+                                        "items": {
+                                            "$schema": "http://json-schema.org/draft-04/schema#",
+                                            "properties": {
+                                                "key": {
+                                                    "type": "string",
+                                                    "description": "Header name"
+                                                },
+                                                "value": {
+                                                    "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                                    "additionalProperties": true,
+                                                    "description": "Apply a template to the header value"
+                                                }
+                                            },
+                                            "additionalProperties": false,
+                                            "type": "object",
+                                            "description": "Defines a header-template pair to be used in `headers_to_append`"
+                                        },
+                                        "type": "array",
+                                        "description": "Use this attribute to transform request/response headers. It consists of\n an array of string/template objects. Use this attribute to define multiple\n templates for a single header. Header template(s) defined here will be appended to any\n existing headers with the same header name, not replace existing ones.\n See `headers` documentation to see an example of usage."
+                                    },
+                                    "body": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "Apply a template to the body"
+                                    },
+                                    "passthrough": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "This will cause the transformation filter not to buffer the body.\n Use this setting if the response body is large and you don't need to\n transform nor extract information from it."
+                                    },
+                                    "merge_extractors_to_body": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Merge all defined extractors to the request/response body.\n If you want to nest elements inside the body, use dot separator in the\n extractor name."
+                                    },
+                                    "parse_body_behavior": {
+                                        "enum": [
+                                            "ParseAsJson",
+                                            0,
+                                            "DontParse",
+                                            1
+                                        ],
+                                        "oneOf": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "integer"
+                                            }
+                                        ]
+                                    },
+                                    "ignore_error_on_parse": {
+                                        "type": "boolean",
+                                        "description": "If set to true, Envoy will not throw an exception in case the body parsing\n fails."
+                                    },
+                                    "dynamic_metadata_values": {
+                                        "items": {
+                                            "$schema": "http://json-schema.org/draft-04/schema#",
+                                            "properties": {
+                                                "metadata_namespace": {
+                                                    "type": "string",
+                                                    "description": "The metadata namespace. Defaults to the filter namespace."
+                                                },
+                                                "key": {
+                                                    "type": "string",
+                                                    "description": "The metadata key."
+                                                },
+                                                "value": {
+                                                    "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                                    "additionalProperties": true,
+                                                    "description": "A template that determines the metadata value."
+                                                }
+                                            },
+                                            "additionalProperties": false,
+                                            "type": "object",
+                                            "description": "Defines an [Envoy Dynamic\n Metadata](https://www.envoyproxy.io/docs/envoy/latest/configuration/advanced/well_known_dynamic_metadata)\n entry."
+                                        },
+                                        "type": "array",
+                                        "description": "Use this field to set Dynamic Metadata."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object"
+                        },
+                        "swagger_info": {
+                            "properties": {
+                                "url": {
+                                    "type": "string"
+                                },
+                                "inline": {
+                                    "type": "string"
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "grpc": {
+                    "properties": {
+                        "descriptors": {
+                            "type": "string",
+                            "description": "Descriptors that contain information of the services listed below.\n this is a serialized google.protobuf.FileDescriptorSet",
+                            "format": "binary",
+                            "binaryEncoding": "base64"
+                        },
+                        "grpc_services": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "package_name": {
+                                        "type": "string",
+                                        "description": "The package of this service."
+                                    },
+                                    "service_name": {
+                                        "type": "string",
+                                        "description": "The service name of this service."
+                                    },
+                                    "function_names": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "The functions available in this service."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Describes a grpc service"
+                            },
+                            "type": "array",
+                            "description": "List of services used by this upstream. For a grpc upstream where you don't\n need to use Gloo's function routing, this can be an empty list. These\n services must be present in the descriptors."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Describes APIs and application-level information for services\n Gloo routes to. ServiceSpec is contained within the UpstreamSpec for certain types\n of upstreams, including Kubernetes, Consul, and Static.\n ServiceSpec configuration is opaque to Gloo and handled by Service Options.",
+            "id": "options.gloo.solo.io.ServiceSpec"
+        },
+        "solo.io.envoy.api.v2.core.HealthCheck.Payload": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": "Hex encoded payload. E.g., \"000000FF\"."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Describes the encoding of the payload bytes in the payload.",
+            "id": "solo.io.envoy.api.v2.core.HealthCheck.Payload"
+        }
+    }
+}

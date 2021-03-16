@@ -1,0 +1,141 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "xds_bind_addr": {
+            "type": "string",
+            "description": "Where the `gloo` xDS server should bind. Defaults to `0.0.0.0:9977`"
+        },
+        "validation_bind_addr": {
+            "type": "string",
+            "description": "Where the `gloo` validation server should bind. Defaults to `0.0.0.0:9988`"
+        },
+        "circuit_breakers": {
+            "properties": {
+                "max_connections": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                },
+                "max_pending_requests": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                },
+                "max_requests": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                },
+                "max_retries": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Default circuit breaker configuration to use for upstream requests,\n when not provided by specific upstream."
+        },
+        "endpoints_warming_timeout": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Timeout to get initial snapshot of resources. If set to zero, Gloo will not wait for initial\n snapshot - if nonzero and gloo could not fetch it's initial snapshot before the timeout\n reached, gloo will panic. If unset, Gloo defaults to 5 minutes."
+        },
+        "aws_options": {
+            "properties": {
+                "enable_credentials_discovey": {
+                    "type": "boolean",
+                    "description": "Enable credential discovery via IAM; when this is set, there's no need provide a secret\n on the upstream when running on AWS environment.\n\n Note: This should **ONLY** be enabled when running in an AWS environment, as the AWS\n code blocks the envoy main thread. This should be negligible when running inside AWS."
+                },
+                "service_account_credentials": {
+                    "properties": {
+                        "cluster": {
+                            "type": "string",
+                            "description": "The name of the envoy cluster which represents the desired aws sts endpoint"
+                        },
+                        "uri": {
+                            "type": "string",
+                            "description": "The full uri of the aws sts endpoint"
+                        },
+                        "timeout": {
+                            "properties": {
+                                "seconds": {
+                                    "type": "string",
+                                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                },
+                                "nanos": {
+                                    "type": "integer",
+                                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "timeout for the request"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use projected service account token, and role arn to create temporary\n credentials with which to authenticate lambda requests.\n This functionality is meant to work along side EKS service account to IAM\n binding functionality as outlined here:\n https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html\n\n If the following environment values are not present in the gateway-proxy, this option cannot be used.\n   1. AWS_WEB_IDENTITY_TOKEN_FILE\n   2. AWS_ROLE_ARN\n\n The role which will be assumed by the credentials will be the one specified by AWS_ROLE_ARN, however, this\n can also be overwritten in the AWS Upstream spec via the role_arn field\n\n If they are not specified envoy will NACK the config update, which will show up in the logs when running OS Gloo.\n When running Gloo enterprise it will be reflected in the prometheus stat: \"glooe.solo.io/xds/nack\"\n\n In order to specify the aws sts endpoint, both the cluster and uri must be set.\n This is due to an envoy limitation which cannot infer the host or path from the cluster,\n and therefore must be explicitly specified via the uri"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "invalid_config_policy": {
+            "properties": {
+                "replace_invalid_routes": {
+                    "type": "boolean",
+                    "description": "if set to `true`, Gloo removes any routes from the provided configuration\n which point to a missing destination. Routes that are removed in this way\n will instead return a configurable direct response to clients. When routes are replaced,\n Gloo will configure Envoy with a special listener which serves direct responses.\n\n Note: enabling this option allows Gloo to accept partially valid proxy configurations."
+                },
+                "invalid_route_response_code": {
+                    "type": "integer",
+                    "description": "replaced routes reply to clients with this response code.\n default is 404."
+                },
+                "invalid_route_response_body": {
+                    "type": "string",
+                    "description": "replaced routes reply to clients with this response body.\n default is 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.'"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "set these options to fine-tune the way Gloo handles invalid user configuration"
+        },
+        "disable_kubernetes_destinations": {
+            "type": "boolean",
+            "description": "Gloo allows you to directly reference a Kubernetes service as a routing destination. To enable this feature,\n Gloo scans the cluster for Kubernetes services and creates a special type of in-memory Upstream to represent them.\n If the cluster contains a lot of services and you do not restrict the namespaces Gloo is watching, this can result\n in significant overhead. If you do not plan on using this feature, you can use this flag to turn it off."
+        },
+        "disable_grpc_web": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Default policy for grpc-web.\n set to true if you do not wish grpc-web to be automatically enabled.\n set to false if you wish grpc-web enabled unless disabled on the listener level.\n If not specified, defaults to `false`."
+        },
+        "disable_proxy_garbage_collection": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Set this option to determine the state of the envoy configuration when a virtual service is deleted, resulting in a\n proxy with no configured routes.\n set to true if you wish to keep envoy serving the routes from the latest valid configuration.\n set to false if you wish to reset the envoy configuration to a clean slate with no routes.\n If not specified, defaults to `false`."
+        },
+        "regex_max_program_size": {
+            "additionalProperties": true,
+            "type": "integer",
+            "description": "Set this option to specify the default max program size for regexes. If not specified, \n defaults to 100."
+        },
+        "rest_xds_bind_addr": {
+            "type": "string",
+            "description": "Where the `gloo` REST xDS server should bind.\n Defaults to `0.0.0.0:9976`"
+        },
+        "enable_rest_eds": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "Whether or not to use rest xds for all EDS by default. \n Set to true by default in versions \u003e `v1.6.0`.\n This setting is meant to solve the bug which causes updated upstreams to dissapear, or have 0 endpoints. \n Some examples are:\n 1. https://github.com/solo-io/gloo/issues/3673\n 2. https://github.com/solo-io/gloo/issues/3710\n 3. https://github.com/solo-io/gloo/issues/3219\n Rest XDS, as opposed to grpc, uses http polling rather than streaming"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Settings specific to the gloo (Envoy xDS server) controller"
+}

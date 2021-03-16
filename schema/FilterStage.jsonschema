@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "stage": {
+            "enum": [
+                "FaultStage",
+                0,
+                "CorsStage",
+                1,
+                "WafStage",
+                2,
+                "AuthNStage",
+                3,
+                "AuthZStage",
+                4,
+                "RateLimitStage",
+                5,
+                "AcceptedStage",
+                6,
+                "OutAuthStage",
+                7,
+                "RouteStage",
+                8
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "stage of the filter chain in which the selected filter should be added"
+        },
+        "predicate": {
+            "enum": [
+                "During",
+                0,
+                "Before",
+                1,
+                "After",
+                2
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ],
+            "description": "How this filter should be placed relative to the stage"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

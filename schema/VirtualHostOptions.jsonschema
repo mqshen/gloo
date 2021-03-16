@@ -1,0 +1,1478 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "extensions": {
+            "properties": {
+                "configs": {
+                    "additionalProperties": {
+                        "properties": {
+                            "fields": {
+                                "additionalProperties": {
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                },
+                                "type": "object",
+                                "description": "Unordered map of dynamically typed values."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Extensions will be passed along from Listeners, Gateways, VirtualServices, Routes, and Route tables to the\n underlying Proxy, making them useful for controllers, validation tools, etc. which interact with kubernetes yaml.\n\n Some sample use cases:\n * controllers, deployment pipelines, helm charts, etc. which wish to use extensions as a kind of opaque metadata.\n * In the future, Gloo may support gRPC-based plugins which communicate with the Gloo translator out-of-process.\n Opaque Extensions enables development of out-of-process plugins without requiring recompiling \u0026 redeploying Gloo's API."
+        },
+        "retries": {
+            "properties": {
+                "retry_on": {
+                    "type": "string",
+                    "description": "Specifies the conditions under which retry takes place. These are the same\n conditions [documented for Envoy](https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/http/http_filters/router_filter#config-http-filters-router-x-envoy-retry-on)"
+                },
+                "num_retries": {
+                    "type": "integer",
+                    "description": "Specifies the allowed number of retries. This parameter is optional and\n defaults to 1. These are the same conditions [documented for Envoy](https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/http/http_filters/router_filter#config-http-filters-router-x-envoy-retry-on)"
+                },
+                "per_try_timeout": {
+                    "properties": {
+                        "seconds": {
+                            "type": "string",
+                            "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                        },
+                        "nanos": {
+                            "type": "integer",
+                            "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Specifies a non-zero upstream timeout per retry attempt. This parameter is optional."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "stats": {
+            "properties": {
+                "virtual_clusters": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the virtual cluster. This value will be used together with the virtual host name to\n compute the name of the statistics emitted by this virtual cluster. Statistics names will be in the form:\n vhost.\u003cvirtual host name\u003e.vcluster.\u003cvirtual cluster name\u003e.\u003cstat name\u003e.\n See [the official Envoy documentation](https://www.envoyproxy.io/docs/envoy/v1.5.0/configuration/http_filters/router_filter#config-http-filters-router-stats)\n for more information about the statistics emitted when virtual cluster configurations are specified.\n\n Note: This string should not contain any dots (\".\"), as this is a reserved character for Envoy statistics names.\n Any dot present in the virtual cluster name will be replaced with an underscore (\"_\") character by Gloo."
+                            },
+                            "pattern": {
+                                "type": "string",
+                                "description": "The regex pattern used by Envoy to decide whether to expose statistics for a particular request.\n Please note that **the entire path** of the request must match the regex (e.g. the regex `/rides/d+` matches\n the path `/rides/0`, but not `/rides/123/456`).\n The regex grammar used is defined [here](https://en.cppreference.com/w/cpp/regex/ecmascript)."
+                            },
+                            "method": {
+                                "type": "string",
+                                "description": "If specified, statistics will be exposed only for requests matching the given HTTP method."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Virtual clusters allow you to expose statistics for virtual host traffic that matches certain criteria.\n This is useful because what the application considers to be an endpoint does often not map directly to\n the routing configuration, so Envoy does not emit per endpoint statistics. Using virtual clusters you can define\n logical endpoints and have Envoy emit dedicated statistics for any matching request. Virtual cluster statistics\n are emitted on the downstream side and thus include network level failures.\n\n Please note that virtual clusters add overhead to the processing of each requests and should not be overused."
+                    },
+                    "type": "array",
+                    "description": "Virtual clusters allow exposing additional statistics for traffic served by a Virtual Host."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        },
+        "header_manipulation": {
+            "properties": {
+                "request_headers_to_add": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "header": {
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "Header name."
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Header value.\n\n The same `format specifier (config_access_log_format)` as used for\n `HTTP access logging (config_access_log)` applies here, however\n unknown header values are replaced with the empty string instead of `-`."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Explicitly specified header"
+                            },
+                            "header_secret_ref": {
+                                "$ref": "#/definitions/core.solo.io.ResourceRef",
+                                "additionalProperties": true,
+                                "description": "Reference to header contained in a secret"
+                            },
+                            "append": {
+                                "additionalProperties": true,
+                                "type": "boolean",
+                                "description": "Should the value be appended? If true (default), the value is appended to\n existing values."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Header name/value pair plus option to control append behavior."
+                    },
+                    "type": "array",
+                    "description": "Specifies a list of HTTP headers that should be added to each request\n handled by this route or virtual host. For more information, including\n details on header value syntax, see the\n [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers#config-http-conn-man-headers-custom-request-headers) ."
+                },
+                "request_headers_to_remove": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies a list of HTTP headers that should be removed from each request\n handled by this route or virtual host."
+                },
+                "response_headers_to_add": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "header": {
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "Header name."
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Header value."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Header name/value pair that this option applies to."
+                            },
+                            "append": {
+                                "additionalProperties": true,
+                                "type": "boolean",
+                                "description": "Should the value be appended? If true (default), the value is appended to\n existing values."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Header name/value pair plus option to control append behavior."
+                    },
+                    "type": "array",
+                    "description": "Specifies a list of HTTP headers that should be added to each response\n handled by this route or host. For more information, including\n details on header value syntax, see the\n [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers#config-http-conn-man-headers-custom-request-headers) ."
+                },
+                "response_headers_to_remove": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies a list of HTTP headers that should be removed from each response\n handled by this route or virtual host."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Append/Remove headers on Requests or Responses on all routes contained in this Virtual Host"
+        },
+        "cors": {
+            "properties": {
+                "allow_origin": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies the origins that will be allowed to make CORS requests.\n\n An origin is allowed if either allow_origin or allow_origin_regex match."
+                },
+                "allow_origin_regex": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies regex patterns that match origins that will be allowed to make\n CORS requests.\n\n An origin is allowed if either allow_origin or allow_origin_regex match."
+                },
+                "allow_methods": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies the content for the *access-control-allow-methods* header."
+                },
+                "allow_headers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies the content for the *access-control-allow-headers* header."
+                },
+                "expose_headers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Specifies the content for the *access-control-expose-headers* header."
+                },
+                "max_age": {
+                    "type": "string",
+                    "description": "Specifies the content for the *access-control-max-age* header."
+                },
+                "allow_credentials": {
+                    "type": "boolean",
+                    "description": "Specifies whether the resource allows credentials."
+                },
+                "disable_for_route": {
+                    "type": "boolean",
+                    "description": "Optional, only applies to route-specific CORS Policies, defaults to false.\n If set, the CORS Policy (specified on the virtual host) will be disabled for this route."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Defines a CORS policy for the virtual host\n If a CORS policy is also defined on the route matched by the request, the policies are merged."
+        },
+        "transformations": {
+            "properties": {
+                "request_transformation": {
+                    "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                    "additionalProperties": true,
+                    "description": "Apply a transformation to requests."
+                },
+                "clear_route_cache": {
+                    "type": "boolean",
+                    "description": "Clear the route cache if the request transformation was applied."
+                },
+                "response_transformation": {
+                    "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                    "additionalProperties": true,
+                    "description": "Apply a transformation to responses."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Transformations to apply. Note: this field is superseded by `staged_transformations`.\n If `staged_transformations.regular` is set, this field will be ignored."
+        },
+        "ratelimit_basic": {
+            "properties": {
+                "authorized_limits": {
+                    "$ref": "#/definitions/ratelimit.api.solo.io.RateLimit",
+                    "additionalProperties": true
+                },
+                "anonymous_limits": {
+                    "$ref": "#/definitions/ratelimit.api.solo.io.RateLimit",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Config for GlooE rate-limiting using simplified (gloo-specific) API"
+        },
+        "ratelimit": {
+            "properties": {
+                "rate_limits": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "actions": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "$ref": "#/definitions/ratelimit.api.solo.io.Action"
+                                },
+                                "type": "array"
+                            },
+                            "set_actions": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "$ref": "#/definitions/ratelimit.api.solo.io.Action"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "Each action and setAction in the lists maps part of the request (or its context) to a descriptor. The tuple or set of descriptors\n generated by the provided actions is sent to the rate limit server and matched against rate limit rules.\n Order matters on provided actions but not on setActions, e.g. the following actions:\n - actions:\n   - requestHeaders:\n      descriptorKey: account_id\n      headerName: x-account-id\n   - requestHeaders:\n      descriptorKey: plan\n      headerName: x-plan\n define an ordered descriptor tuple like so: ('account_id', '\u003cx-account-id value\u003e'), ('plan', '\u003cx-plan value\u003e')\n\n While the current form matches, the same tuple in reverse order would not match the following descriptor:\n\n descriptors:\n - key: account_id\n   descriptors:\n   - key: plan\n     value: BASIC\n     rateLimit:\n       requestsPerUnit: 1\n       unit: MINUTE\n  - key: plan\n    value: PLUS\n    rateLimit:\n      requestsPerUnit: 20\n      unit: MINUTE\n\n Similarly, the following setActions:\n - setActions:\n   - requestHeaders:\n      descriptorKey: account_id\n      headerName: x-account-id\n   - requestHeaders:\n      descriptorKey: plan\n      headerName: x-plan\n define an unordered descriptor set like so: {('account_id', '\u003cx-account-id value\u003e'), ('plan', '\u003cx-plan value\u003e')}\n\n This set would match the following setDescriptor:\n\n setDescriptors:\n - simpleDescriptors:\n   - key: plan\n     value: BASIC\n   - key: account_id\n  rateLimit:\n    requestsPerUnit: 20\n    unit: MINUTE\n\n It would also match the following setDescriptor which includes only a subset of the setActions enumerated:\n\n setDescriptors:\n - simpleDescriptors:\n   - key: account_id\n  rateLimit:\n    requestsPerUnit: 20\n    unit: MINUTE\n\n It would even match the following setDescriptor.\n Any setActions list would match this setDescriptor which has simpleDescriptors omitted entirely:\n\n setDescriptors:\n - rateLimit:\n    requestsPerUnit: 20\n    unit: MINUTE"
+                    },
+                    "type": "array",
+                    "description": "Define individual rate limits here. Each rate limit will be evaluated, if any rate limit\n would be throttled, the entire request returns a 429 (gets throttled)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Partial config for GlooE rate-limiting based on Envoy's rate-limit service;\n supports Envoy's rate-limit service API. (reference here: https://github.com/lyft/ratelimit#configuration)\n Configure rate-limit *actions* here, which define how request characteristics get translated into\n descriptors used by the rate-limit service for rate-limiting. Configure rate-limit *descriptors* and\n their associated limits on the Gloo settings.\n Only one of `ratelimit` or `rate_limit_configs` can be set."
+        },
+        "rate_limit_configs": {
+            "properties": {
+                "refs": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "namespace": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "A reference to a `RateLimitConfig` resource."
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "References to RateLimitConfig resources. This is used to configure the GlooE rate limit server.\n Only one of `ratelimit` or `rate_limit_configs` can be set."
+        },
+        "waf": {
+            "properties": {
+                "disabled": {
+                    "type": "boolean",
+                    "description": "Disable waf on this resource (if omitted defaults to false).\n If a route/virtual host is configured with WAF, you must explicitly disable its WAF,\n i.e., it will not inherit the disabled status of its parent"
+                },
+                "custom_intervention_message": {
+                    "type": "string",
+                    "description": "Custom massage to display if an intervention occurs."
+                },
+                "core_rule_set": {
+                    "properties": {
+                        "custom_settings_string": {
+                            "type": "string",
+                            "description": "String representing the core rule set custom config options"
+                        },
+                        "custom_settings_file": {
+                            "type": "string",
+                            "description": "String representing the core rule set custom config options"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Add OWASP core rule set\n if nil will not be added"
+                },
+                "rule_sets": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "rule_str": {
+                                "type": "string",
+                                "description": "String of rules which are added directly"
+                            },
+                            "files": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array",
+                                "description": "Array of files to include"
+                            },
+                            "directory": {
+                                "type": "string",
+                                "description": "A directory to include. all *.conf files in this directory will be\n included. sub directories will NOT be checked."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "type": "array",
+                    "description": "Custom rule sets rules to add"
+                },
+                "audit_logging": {
+                    "properties": {
+                        "action": {
+                            "enum": [
+                                "NEVER",
+                                0,
+                                "RELEVANT_ONLY",
+                                1,
+                                "ALWAYS",
+                                2
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "location": {
+                            "enum": [
+                                "FILTER_STATE",
+                                0,
+                                "DYNAMIC_METADATA",
+                                1
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Audit Log settings"
+                },
+                "request_headers_only": {
+                    "type": "boolean",
+                    "description": "Only process request headers, not buffering the request body"
+                },
+                "response_headers_only": {
+                    "type": "boolean",
+                    "description": "Only process response headers, not buffering the response body"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Config for Web Application Firewall (WAF), supporting\n the popular ModSecurity 3.0 ruleset"
+        },
+        "jwt": {
+            "$ref": "#/definitions/jwt.options.gloo.solo.io.VhostExtension",
+            "additionalProperties": true,
+            "description": "Enterprise-only: Config for reading and verifying JWTs. Copy verifiable information from JWTs into other\n headers to make routing decisions or combine with RBAC for fine-grained access control.\n This has been deprecated in favor of staged jwt. The same configuration can be achieved through staged jwt\n using AfterExtAuth."
+        },
+        "jwt_staged": {
+            "properties": {
+                "before_ext_auth": {
+                    "$ref": "#/definitions/jwt.options.gloo.solo.io.VhostExtension",
+                    "additionalProperties": true,
+                    "description": "JWT Virtual host config for the JWT filter that runs before the extauth filter."
+                },
+                "after_ext_auth": {
+                    "$ref": "#/definitions/jwt.options.gloo.solo.io.VhostExtension",
+                    "additionalProperties": true,
+                    "description": "JWT Virtual host config for the JWT filter that runs after the extauth filter."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Config for reading and verifying JWTs. Copy verifiable information from JWTs into other\n headers to make routing decisions or combine with RBAC for fine-grained access control.\n JWT configuration has stages \"BeforeExtAuth\" and \"AfterExtAuth\". BeforeExtAuth JWT\n validation runs before the external authentication service. This is useful when JWT\n is used in conjunction with other auth mechanisms specified in the [boolean expression Extauth API](https://docs.solo.io/gloo-edge/latest/reference/api/github.com/solo-io/gloo/projects/gloo/api/v1/enterprise/options/extauth/v1/extauth.proto.sk/#authconfig).\n AfterExtAuth validation runs after external authentication service, which is useful for verifying\n JWTs obtained during extauth (e.g. oauth/oidc)"
+        },
+        "rbac": {
+            "properties": {
+                "disable": {
+                    "type": "boolean",
+                    "description": "Disable RBAC checks on this resource (default false). This is useful to allow access to static resources/login page without RBAC checks.\n If provided on a route, all route settings override any vhost settings"
+                },
+                "policies": {
+                    "additionalProperties": {
+                        "properties": {
+                            "principals": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "jwt_principal": {
+                                            "properties": {
+                                                "claims": {
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": "object",
+                                                    "description": "Set of claims that make up this principal. Commonly, the 'iss' and 'sub' or 'email' claims are used.\n all claims must be present on the JWT."
+                                                },
+                                                "provider": {
+                                                    "type": "string",
+                                                    "description": "Verify that the JWT came from a specific provider. This usually can be left empty\n and a provider will be chosen automatically."
+                                                }
+                                            },
+                                            "additionalProperties": true,
+                                            "type": "object"
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "An RBAC principal - the identity entity (usually a user or a service account)."
+                                },
+                                "type": "array",
+                                "description": "Principals in this policy."
+                            },
+                            "permissions": {
+                                "properties": {
+                                    "path_prefix": {
+                                        "type": "string",
+                                        "description": "Paths that have this prefix will be allowed."
+                                    },
+                                    "methods": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "What http methods (GET, POST, ...) are allowed."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Permissions granted to the principals."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object",
+                    "description": "Named policies to apply."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Config for RBAC (currently only supports RBAC based on JWT claims)"
+        },
+        "extauth": {
+            "properties": {
+                "disable": {
+                    "type": "boolean",
+                    "description": "Set to true to disable auth on the virtual host/route."
+                },
+                "config_ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "A reference to an AuthConfig. This is used to configure the GlooE extauth server."
+                },
+                "custom_auth": {
+                    "properties": {
+                        "context_extensions": {
+                            "additionalProperties": {
+                                "type": "string"
+                            },
+                            "type": "object",
+                            "description": "When a request matches the virtual host, route, or weighted destination on which this configuration is defined,\n Gloo will add the given context_extensions to the request that is sent to the external authorization server.\n This allows the server to base the auth decision on metadata that you define on the source of the request.\n\n This attribute is analogous to Envoy's config.filter.http.ext_authz.v2.CheckSettings. See the official\n [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/http/ext_authz/v2/ext_authz.proto.html?highlight=ext_authz#config-filter-http-ext-authz-v2-checksettings)\n for more details."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Use this field if you are running your own custom extauth server."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Authentication configuration"
+        },
+        "dlp": {
+            "properties": {
+                "actions": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "action_type": {
+                                "enum": [
+                                    "CUSTOM",
+                                    0,
+                                    "SSN",
+                                    1,
+                                    "MASTERCARD",
+                                    2,
+                                    "VISA",
+                                    3,
+                                    "AMEX",
+                                    4,
+                                    "DISCOVER",
+                                    5,
+                                    "JCB",
+                                    6,
+                                    "DINERS_CLUB",
+                                    7,
+                                    "CREDIT_CARD_TRACKERS",
+                                    8,
+                                    "ALL_CREDIT_CARDS",
+                                    9
+                                ],
+                                "oneOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "integer"
+                                    }
+                                ],
+                                "description": "The action type to implement."
+                            },
+                            "custom_action": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the custom action.\n This name is used for logging and debugging purposes."
+                                    },
+                                    "regex": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "The list of regex strings which will be applied in order."
+                                    },
+                                    "mask_char": {
+                                        "type": "string",
+                                        "description": "The masking character for the sensitive data.\n default value: X"
+                                    },
+                                    "percent": {
+                                        "properties": {
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "The percent of the string which will be masked by the mask_char\n default value: 75%\n rounds ratio (percent/100) by std::round http://www.cplusplus.com/reference/cmath/round/"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "The custom user action to be applied.\n This field will only be used if the custom action type is specified above."
+                            },
+                            "shadow": {
+                                "type": "boolean",
+                                "description": "Shadow represents whether the action should be taken, or just recorded."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "A single action meant to mask sensitive data.\nThe action type represents a set of pre configured actions,\nas well as the ability to create custom actions.\nThese actions can also be shadowed, a shadowed action will be recorded\nin the statistics, and debug logs, but not actually committed in the response body.\n\nTo use a pre-made action simply set the action type to anything other than `CUSTOM`\n\n``` yaml\nactionType: VISA\n```\n\nTo create a custom action set the custom action field. The default enum value\nis custom, so that can be left empty.\n\n``` yaml\ncustomAction:\nname: test\nregex:\n- \"hello\"\n- \"world\"\nmaskChar: Y\npercent: 60\n```"
+                    },
+                    "type": "array",
+                    "description": "List of data loss prevention actions to be applied.\n These actions will be applied in order, one at a time."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Enterprise-only: Config for data loss prevention"
+        },
+        "buffer_per_route": {
+            "properties": {
+                "disabled": {
+                    "type": "boolean",
+                    "description": "Disable the buffer filter for this particular vhost or route."
+                },
+                "buffer": {
+                    "properties": {
+                        "max_request_bytes": {
+                            "additionalProperties": true,
+                            "type": "integer",
+                            "description": "The maximum request size that the filter will buffer before the connection\n manager will stop buffering and return a 413 response."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Override the global configuration of the buffer filter with this new config.\n Note: If you have not set a global config (at the gateway level), this\n override will not do anything by itself."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "BufferPerRoute can be used to set the maximum request size\n that the filter will buffer before the connection\n manager will stop buffering and return a 413 response.\n Note: If you have not set a global config (at the gateway level), this\n override will not do anything by itself."
+        },
+        "csrf": {
+            "properties": {
+                "filter_enabled": {
+                    "$ref": "#/definitions/solo.io.envoy.config.core.v3.RuntimeFractionalPercent",
+                    "additionalProperties": true,
+                    "description": "Specifies the % of requests for which the CSRF filter is enabled.\n\n If :ref:`runtime_key \u003cenvoy_api_field_config.core.v3.RuntimeFractionalPercent.runtime_key\u003e` is specified,\n Envoy will lookup the runtime key to get the percentage of requests to filter.\n\n .. note::\n\n   This field defaults to 100/:ref:`HUNDRED\n   \u003cenvoy_api_enum_type.v3.FractionalPercent.DenominatorType\u003e`."
+                },
+                "shadow_enabled": {
+                    "$ref": "#/definitions/solo.io.envoy.config.core.v3.RuntimeFractionalPercent",
+                    "additionalProperties": true,
+                    "description": "Specifies that CSRF policies will be evaluated and tracked, but not enforced.\n\n This is intended to be used when ``filter_enabled`` is off and will be ignored otherwise.\n\n If :ref:`runtime_key \u003cenvoy_api_field_config.core.v3.RuntimeFractionalPercent.runtime_key\u003e` is specified,\n Envoy will lookup the runtime key to get the percentage of requests for which it will evaluate\n and track the request's *Origin* and *Destination* to determine if it's valid, but will not\n enforce any policies."
+                },
+                "additional_origins": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "exact": {
+                                "type": "string",
+                                "description": "The input string must match exactly the string specified here.\n\n Examples:\n\n * *abc* only matches the value *abc*."
+                            },
+                            "prefix": {
+                                "type": "string",
+                                "description": "The input string must have the prefix specified here.\n Note: empty prefix is not allowed, please use regex instead.\n\n Examples:\n\n * *abc* matches the value *abc.xyz*"
+                            },
+                            "suffix": {
+                                "type": "string",
+                                "description": "The input string must have the suffix specified here.\n Note: empty prefix is not allowed, please use regex instead.\n\n Examples:\n\n * *abc* matches the value *xyz.abc*"
+                            },
+                            "safe_regex": {
+                                "properties": {
+                                    "google_re2": {
+                                        "properties": {
+                                            "max_program_size": {
+                                                "additionalProperties": true,
+                                                "type": "integer",
+                                                "description": "This field controls the RE2 \"program size\" which is a rough estimate of how complex a\n compiled regex is to evaluate. A regex that has a program size greater than the configured\n value will fail to compile. In this case, the configured max program size can be increased\n or the regex can be simplified. If not specified, the default is 100.\n\n This field is deprecated; regexp validation should be performed on the management server\n instead of being done by each individual client."
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Google's RE2 regex engine."
+                                    },
+                                    "regex": {
+                                        "type": "string",
+                                        "description": "The regex match string. The string must be supported by the configured engine."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "The input string must match the regular expression specified here."
+                            },
+                            "ignore_case": {
+                                "type": "boolean",
+                                "description": "If true, indicates the exact/prefix/suffix matching should be case insensitive. This has no\n effect for the safe_regex match.\n For example, the matcher *data* will match both input string *Data* and *data* if set to true."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object",
+                        "description": "[#protodoc-title: String matcher]\n\nSpecifies the way to match a string.\n [#next-free-field: 7]"
+                    },
+                    "type": "array",
+                    "description": "Specifies additional source origins that will be allowed in addition to\n the destination origin.\n\n More information on how this can be configured via runtime can be found\n :ref:`here \u003ccsrf-configuration\u003e`."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode\n where policies will be evaluated and tracked, but not enforced and add additional source origins\n that will be allowed in addition to the destination origin.\n For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/http/csrf/v2/csrf.proto"
+        },
+        "include_request_attempt_count": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "IncludeRequestAttemptCount decides whether the x-envoy-attempt-count header\n should be included in the upstream request.\n Setting this option will cause it to override any existing header value,\n so in the case of two Envoys on the request path with this option enabled,\n the upstream will see the attempt count as perceived by the second Envoy.\n Defaults to false."
+        },
+        "include_attempt_count_in_response": {
+            "additionalProperties": true,
+            "type": "boolean",
+            "description": "IncludeAttemptCountInResponse decides whether the x-envoy-attempt-count header\n should be included in the downstream response.\n Setting this option will cause the router to override any existing header value,\n so in the case of two Envoys on the request path with this option enabled,\n the downstream will see the attempt count as perceived by the Envoy closest upstream from itself.\n Defaults to false."
+        },
+        "staged_transformations": {
+            "properties": {
+                "early": {
+                    "$ref": "#/definitions/transformation.options.gloo.solo.io.RequestResponseTransformations",
+                    "additionalProperties": true,
+                    "description": "Early transformations happen before most other options (Like Auth and Rate Limit)."
+                },
+                "regular": {
+                    "$ref": "#/definitions/transformation.options.gloo.solo.io.RequestResponseTransformations",
+                    "additionalProperties": true,
+                    "description": "Regular transformations happen after Auth and Rate limit decisions has been made."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Early transformations stage. These transformations run before most other options are processed.\n If the `regular` field is set in here, the `transformations` field is ignored."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Optional, feature-specific configuration that lives on virtual hosts.\n Each VirtualHostPlugin object contains configuration for a specific feature.\n Note to developers: new Virtual Host plugins must be added to this struct\n to be usable by Gloo. (plugins currently need to be compiled into Gloo)",
+    "definitions": {
+        "core.solo.io.ResourceRef": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A way to reference resources across namespaces",
+            "id": "core.solo.io.ResourceRef"
+        },
+        "envoy.api.v2.filter.http.InjaTemplate": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Defines an [Inja template](https://github.com/pantor/inja) that will be\n rendered by Gloo. In addition to the core template functions, the Gloo\n transformation filter defines the following custom functions:\n - header(header_name): returns the value of the header with the given name\n - extraction(extractor_name): returns the value of the extractor with the\n given name\n - env(env_var_name): returns the value of the environment variable with the\n given name\n - body(): returns the request/response body\n - context(): returns the base JSON context (allowing for example to range on\n a JSON body that is an array)",
+            "id": "envoy.api.v2.filter.http.InjaTemplate"
+        },
+        "envoy.api.v2.filter.http.Transformation": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "transformation_template": {
+                    "properties": {
+                        "advanced_templates": {
+                            "type": "boolean",
+                            "description": "If set to true, use JSON pointer notation (e.g. \"time/start\") instead of\n dot notation (e.g. \"time.start\") to access JSON elements. Defaults to\n false.\n\n Please note that, if set to 'true', you will need to use the `extraction`\n function to access extractors in the template (e.g. '{{\n extraction(\"my_extractor\") }}'); if the default value of 'false' is used,\n extractors will simply be available by their name (e.g. '{{ my_extractor\n }}')."
+                        },
+                        "extractors": {
+                            "additionalProperties": {
+                                "properties": {
+                                    "header": {
+                                        "type": "string",
+                                        "description": "Extract information from headers"
+                                    },
+                                    "body": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Extract information from the request/response body"
+                                    },
+                                    "regex": {
+                                        "type": "string",
+                                        "description": "Only strings matching this regular expression will be part of the\n extraction. The most simple value for this field is '.*', which matches the\n whole source. The field is required. If extraction fails the result is an\n empty value."
+                                    },
+                                    "subgroup": {
+                                        "type": "integer",
+                                        "description": "If your regex contains capturing groups, use this field to determine which\n group should be selected."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object",
+                            "description": "Use this attribute to extract information from the request. It consists of\n a map of strings to extractors. The extractor will defines which\n information will be extracted, while the string key will provide the\n extractor with a name. You can reference extractors by their name in\n templates, e.g. \"{{ my-extractor }}\" will render to the value of the\n \"my-extractor\" extractor."
+                        },
+                        "headers": {
+                            "additionalProperties": {
+                                "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                "additionalProperties": true
+                            },
+                            "type": "object",
+                            "description": "Use this attribute to transform request/response headers. It consists of a\n map of strings to templates. The string key determines the name of the\n resulting header, the rendered template will determine the value. Any existing\n headers with the same header name will be replaced by the transformed header.\n If a header name is included in `headers` and `headers_to_append`, it will first\n be replaced the template in `headers`, then additional header values will be appended\n by the templates defined in `headers_to_append`.\n For example, the following header transformation configuration:\n\n ```yaml\n    headers:\n      x-header-one: {\"text\": \"first {{inja}} template\"}\n      x-header-one: {\"text\": \"second {{inja}} template\"}\n    headersToAppend:\n      - key: x-header-one\n        value: {\"text\": \"first appended {{inja}} template\"}\n      - key: x-header-one\n        value: {\"text\": \"second appended {{inja}} template\"}\n ```\n will result in the following headers on the HTTP message:\n\n ```\n x-header-one: first inja template\n x-header-one: first appended inja template\n x-header-one: second appended inja template\n ```"
+                        },
+                        "headers_to_append": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "Header name"
+                                    },
+                                    "value": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "Apply a template to the header value"
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Defines a header-template pair to be used in `headers_to_append`"
+                            },
+                            "type": "array",
+                            "description": "Use this attribute to transform request/response headers. It consists of\n an array of string/template objects. Use this attribute to define multiple\n templates for a single header. Header template(s) defined here will be appended to any\n existing headers with the same header name, not replace existing ones.\n See `headers` documentation to see an example of usage."
+                        },
+                        "body": {
+                            "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                            "additionalProperties": true,
+                            "description": "Apply a template to the body"
+                        },
+                        "passthrough": {
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "This will cause the transformation filter not to buffer the body.\n Use this setting if the response body is large and you don't need to\n transform nor extract information from it."
+                        },
+                        "merge_extractors_to_body": {
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Merge all defined extractors to the request/response body.\n If you want to nest elements inside the body, use dot separator in the\n extractor name."
+                        },
+                        "parse_body_behavior": {
+                            "enum": [
+                                "ParseAsJson",
+                                0,
+                                "DontParse",
+                                1
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "ignore_error_on_parse": {
+                            "type": "boolean",
+                            "description": "If set to true, Envoy will not throw an exception in case the body parsing\n fails."
+                        },
+                        "dynamic_metadata_values": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "metadata_namespace": {
+                                        "type": "string",
+                                        "description": "The metadata namespace. Defaults to the filter namespace."
+                                    },
+                                    "key": {
+                                        "type": "string",
+                                        "description": "The metadata key."
+                                    },
+                                    "value": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "A template that determines the metadata value."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Defines an [Envoy Dynamic\n Metadata](https://www.envoyproxy.io/docs/envoy/latest/configuration/advanced/well_known_dynamic_metadata)\n entry."
+                            },
+                            "type": "array",
+                            "description": "Use this field to set Dynamic Metadata."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Apply transformation templates."
+                },
+                "header_body_transform": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "This type of transformation will make all the headers available in the\n response body. The resulting JSON body will consist of two attributes:\n 'headers', containing the headers, and 'body', containing the original\n body."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "This message defines a transformation.",
+            "id": "envoy.api.v2.filter.http.Transformation"
+        },
+        "jwt.options.gloo.solo.io.VhostExtension": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "providers": {
+                    "additionalProperties": {
+                        "properties": {
+                            "jwks": {
+                                "properties": {
+                                    "remote": {
+                                        "properties": {
+                                            "url": {
+                                                "type": "string",
+                                                "description": "The url used when accessing the upstream for Json Web Key Set.\n This is used to set the host and path in the request"
+                                            },
+                                            "upstream_ref": {
+                                                "$ref": "#/definitions/core.solo.io.ResourceRef",
+                                                "additionalProperties": true,
+                                                "description": "The Upstream representing the Json Web Key Set server"
+                                            },
+                                            "cache_duration": {
+                                                "properties": {
+                                                    "seconds": {
+                                                        "type": "string",
+                                                        "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                                                    },
+                                                    "nanos": {
+                                                        "type": "integer",
+                                                        "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                                                    }
+                                                },
+                                                "additionalProperties": true,
+                                                "type": "object",
+                                                "description": "Duration after which the cached JWKS should be expired. \n If not specified, default cache duration is 5 minutes."
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Use a remote JWKS server"
+                                    },
+                                    "local": {
+                                        "properties": {
+                                            "key": {
+                                                "type": "string",
+                                                "description": "Inline key. this can be json web key, key-set or PEM format."
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Use an inline JWKS"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "The source for the keys to validate JWTs."
+                            },
+                            "audiences": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array",
+                                "description": "An incoming JWT must have an 'aud' claim and it must be in this list."
+                            },
+                            "issuer": {
+                                "type": "string",
+                                "description": "Issuer of the JWT. the 'iss' claim of the JWT must match this."
+                            },
+                            "token_source": {
+                                "properties": {
+                                    "headers": {
+                                        "items": {
+                                            "$schema": "http://json-schema.org/draft-04/schema#",
+                                            "properties": {
+                                                "header": {
+                                                    "type": "string",
+                                                    "description": "The name of the header. for example, \"authorization\""
+                                                },
+                                                "prefix": {
+                                                    "type": "string",
+                                                    "description": "Prefix before the token. for example, \"Bearer \""
+                                                }
+                                            },
+                                            "additionalProperties": false,
+                                            "type": "object",
+                                            "description": "Describes how to retrieve a JWT from a header"
+                                        },
+                                        "type": "array",
+                                        "description": "Try to retrieve token from these headers"
+                                    },
+                                    "query_params": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "Try to retrieve token from these query params"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Where to find the JWT of the current provider."
+                            },
+                            "keep_token": {
+                                "type": "boolean",
+                                "description": "Should the token forwarded upstream. if false, the header containing the token will be removed."
+                            },
+                            "claims_to_headers": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "properties": {
+                                        "claim": {
+                                            "type": "string",
+                                            "description": "Claim name. for example, \"sub\""
+                                        },
+                                        "header": {
+                                            "type": "string",
+                                            "description": "The header the claim will be copied to. for example, \"x-sub\"."
+                                        },
+                                        "append": {
+                                            "type": "boolean",
+                                            "description": "If the header exists, append to it (true), or overwrite it (false)."
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "description": "Allows copying verified claims to headers sent upstream"
+                                },
+                                "type": "array",
+                                "description": "What claims should be copied to upstream headers."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object",
+                    "description": "Auth providers can be used instead of the fields above where more than one is required.\n if this list is provided the fields above are ignored."
+                },
+                "allow_missing_or_failed_jwt": {
+                    "type": "boolean",
+                    "description": "Allow pass through of JWT requests for this virtual host, even if JWT token is missing or JWT auth failed.\n If this is false (default false), requests that fail JWT authentication will fail authorization immediately.\n For example, if a request requires either JWT auth OR another auth method, this can be enabled to allow a failed JWT auth request to pass through to the other auth method."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "id": "jwt.options.gloo.solo.io.VhostExtension"
+        },
+        "matchers.core.gloo.solo.io.HeaderMatcher": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Specifies the name of the header in the request."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Specifies the value of the header. If the value is absent a request that\n has the name header will match, regardless of the header’s value."
+                },
+                "regex": {
+                    "type": "boolean",
+                    "description": "Specifies whether the header value should be treated as regex or not."
+                },
+                "invert_match": {
+                    "type": "boolean",
+                    "description": "If set to true, the result of the match will be inverted. Defaults to false.\n\n Examples:\n * name=foo, invert_match=true: matches if no header named `foo` is present\n * name=foo, value=bar, invert_match=true: matches if no header named `foo` with value `bar` is present\n * name=foo, value=``\\d{3}``, regex=true, invert_match=true: matches if no header named `foo` with a value consisting of three integers is present"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Internally, Gloo always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host* header.\n Thus, if attempting to match on *Host*, match on *:authority* instead.",
+            "id": "matchers.core.gloo.solo.io.HeaderMatcher"
+        },
+        "ratelimit.api.solo.io.Action": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "source_cluster": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on source cluster."
+                },
+                "destination_cluster": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on destination cluster."
+                },
+                "request_headers": {
+                    "properties": {
+                        "header_name": {
+                            "type": "string",
+                            "description": "The header name to be queried from the request headers. The header’s\n value is used to populate the value of the descriptor entry for the\n descriptor_key.\n\n[(validate.rules).string.min_bytes = 1];"
+                        },
+                        "descriptor_key": {
+                            "type": "string",
+                            "description": "The key to use in the descriptor entry.\n\n[(validate.rules).string.min_bytes = 1];"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on request headers."
+                },
+                "remote_address": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on remote address."
+                },
+                "generic_key": {
+                    "properties": {
+                        "descriptor_value": {
+                            "type": "string",
+                            "description": "The value to use in the descriptor entry.\n\n[(validate.rules).string.min_bytes = 1];"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on a generic key."
+                },
+                "header_value_match": {
+                    "properties": {
+                        "descriptor_value": {
+                            "type": "string",
+                            "description": "The value to use in the descriptor entry.\n\n[(validate.rules).string.min_bytes = 1];"
+                        },
+                        "expect_match": {
+                            "additionalProperties": true,
+                            "type": "boolean",
+                            "description": "If set to true, the action will append a descriptor entry when the\n request matches the headers. If set to false, the action will append a\n descriptor entry when the request does not match the headers. The\n default value is true."
+                        },
+                        "headers": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Specifies the name of the header in the request.\n\n[(validate.rules).string.min_bytes = 1];"
+                                    },
+                                    "exact_match": {
+                                        "type": "string",
+                                        "description": "If specified, header match will be performed based on the value of the header."
+                                    },
+                                    "regex_match": {
+                                        "type": "string",
+                                        "description": "If specified, this regex string is a regular expression rule which implies the entire request\n header value must match the regex. The rule will not match if only a subsequence of the\n request header value matches the regex. The regex grammar used in the value field is defined\n `(here)[https://en.cppreference.com/w/cpp/regex/ecmascript]`.\n\n Examples:\n\n * The regex *\\d{3}* matches the value *123*\n * The regex *\\d{3}* does not match the value *1234*\n * The regex *\\d{3}* does not match the value *123.456*\n\n[(validate.rules).string.max_bytes = 1024];"
+                                    },
+                                    "range_match": {
+                                        "properties": {
+                                            "start": {
+                                                "type": "string",
+                                                "description": "start of the range (inclusive)"
+                                            },
+                                            "end": {
+                                                "type": "string",
+                                                "description": "end of the range (exclusive)"
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "If specified, header match will be performed based on range.\n The rule will match if the request header value is within this range.\n The entire request header value must represent an integer in base 10 notation: consisting of\n an optional plus or minus sign followed by a sequence of digits. The rule will not match if\n the header value does not represent an integer. Match will fail for empty values, floating\n point numbers or if only a subsequence of the header value is an integer.\n\n Examples:\n\n * For range [-10,0), route will match for header value -1, but not for 0, \"somestring\", 10.9,\n   \"-1somestring\""
+                                    },
+                                    "present_match": {
+                                        "type": "boolean",
+                                        "description": "If specified, header match will be performed based on whether the header is in the\n request."
+                                    },
+                                    "prefix_match": {
+                                        "type": "string",
+                                        "description": "If specified, header match will be performed based on the prefix of the header value.\n Note: empty prefix is not allowed, please use present_match instead.\n\n Examples:\n\n * The prefix *abcd* matches the value *abcdxyz*, but not for *abcxyz*.\n\n[(validate.rules).string.min_bytes = 1];"
+                                    },
+                                    "suffix_match": {
+                                        "type": "string",
+                                        "description": "If specified, header match will be performed based on the suffix of the header value.\n Note: empty suffix is not allowed, please use present_match instead.\n\n Examples:\n\n * The suffix *abcd* matches the value *xyzabcd*, but not for *xyzbcd*.\n\n[(validate.rules).string.min_bytes = 1];"
+                                    },
+                                    "invert_match": {
+                                        "type": "boolean",
+                                        "description": "If specified, the match result will be inverted before checking. Defaults to false.\n\n Examples:\n\n * The regex *\\d{3}* does not match the value *1234*, so it will match when inverted.\n * The range [-10,0) will match the value -1, so it will not match when inverted."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object"
+                            },
+                            "type": "array",
+                            "description": "Specifies a set of headers that the rate limit action should match\n on. The action will check the request’s headers against all the\n specified headers in the config. A match will happen if all the\n headers in the config are present in the request with the same values\n (or based on presence if the value field is not in the config).\n\n[(validate.rules).repeated .min_items = 1];"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on the existence of request headers."
+                },
+                "metadata": {
+                    "properties": {
+                        "descriptor_key": {
+                            "type": "string",
+                            "description": "Required. The key to use in the descriptor entry.\n\n[(validate.rules).string = {min_len: 1}];"
+                        },
+                        "metadata_key": {
+                            "properties": {
+                                "key": {
+                                    "type": "string",
+                                    "description": "Required. The key name of Metadata to retrieve the Struct from the metadata.\n Typically, it represents a builtin subsystem or custom extension.\n\n[(validate.rules).string = {min_len: 1}];"
+                                },
+                                "path": {
+                                    "items": {
+                                        "$schema": "http://json-schema.org/draft-04/schema#",
+                                        "properties": {
+                                            "key": {
+                                                "type": "string",
+                                                "description": "Required. If specified, use the key to retrieve the value in a Struct.\n\n[(validate.rules).string = {min_len: 1}];"
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "type": "object",
+                                        "description": "Specifies the segment in a path to retrieve value from Metadata.\n Currently it is only supported to specify the key, i.e. field name, as one segment of a path."
+                                    },
+                                    "type": "array",
+                                    "description": "Must have at least one element. The path to retrieve the Value from the Struct. It can be a prefix or a full path,\n e.g. ``[prop, xyz]`` for a struct or ``[prop, foo]`` for a string in the example,\n which depends on the particular scenario.\n\n Note: Due to that only the key type segment is supported, the path can not specify a list\n unless the list is the last segment.\n\n[(validate.rules).repeated = {min_items: 1}];"
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Required. Metadata struct that defines the key and path to retrieve the string value. A match will\n only happen if the value in the metadata is of type string.\n\n[(validate.rules).message = {required: true}];"
+                        },
+                        "default_value": {
+                            "type": "string",
+                            "description": "An optional value to use if *metadata_key* is empty. If not set and\n no value is present under the metadata_key then no descriptor is generated."
+                        },
+                        "source": {
+                            "enum": [
+                                "DYNAMIC",
+                                0,
+                                "ROUTE_ENTRY",
+                                1
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ],
+                            "description": "Source of metadata\n\n[(validate.rules).enum = {defined_only: true}];"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Rate limit on metadata."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Copied directly from envoy\n https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/route/v3/route_components.proto#envoy-v3-api-msg-config-route-v3-ratelimit-action",
+            "id": "ratelimit.api.solo.io.Action"
+        },
+        "ratelimit.api.solo.io.RateLimit": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "unit": {
+                    "enum": [
+                        "UNKNOWN",
+                        0,
+                        "SECOND",
+                        1,
+                        "MINUTE",
+                        2,
+                        "HOUR",
+                        3,
+                        "DAY",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "requests_per_unit": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A `RateLimit` specifies the actual rate limit that will be used when there is a match.",
+            "id": "ratelimit.api.solo.io.RateLimit"
+        },
+        "solo.io.envoy.config.core.v3.RuntimeFractionalPercent": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "default_value": {
+                    "properties": {
+                        "numerator": {
+                            "type": "integer",
+                            "description": "Specifies the numerator. Defaults to 0."
+                        },
+                        "denominator": {
+                            "enum": [
+                                "HUNDRED",
+                                0,
+                                "TEN_THOUSAND",
+                                1,
+                                "MILLION",
+                                2
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ],
+                            "description": "Specifies the denominator. If the denominator specified is less than the numerator, the final\n fractional percentage is capped at 1 (100%)."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Default value if the runtime value's for the numerator/denominator keys are not available."
+                },
+                "runtime_key": {
+                    "type": "string",
+                    "description": "Runtime key for a YAML representation of a FractionalPercent."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Runtime derived FractionalPercent with defaults for when the numerator or denominator is not\n specified via a runtime key.\n\n .. note::\n\n   Parsing of the runtime key's data is implemented such that it may be represented as a\n   :ref:`FractionalPercent \u003cenvoy_api_msg_type.v3.FractionalPercent\u003e` proto represented as JSON/YAML\n   and may also be represented as an integer with the assumption that the value is an integral\n   percentage out of 100. For instance, a runtime key lookup returning the value \"42\" would parse\n   as a `FractionalPercent` whose numerator is 42 and denominator is HUNDRED.",
+            "id": "solo.io.envoy.config.core.v3.RuntimeFractionalPercent"
+        },
+        "transformation.options.gloo.solo.io.RequestResponseTransformations": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "request_transforms": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "matcher": {
+                                "properties": {
+                                    "prefix": {
+                                        "type": "string",
+                                        "description": "If specified, the route is a prefix rule meaning that the prefix must\n match the beginning of the *:path* header."
+                                    },
+                                    "exact": {
+                                        "type": "string",
+                                        "description": "If specified, the route is an exact path rule meaning that the path must\n exactly match the *:path* header once the query string is removed."
+                                    },
+                                    "regex": {
+                                        "type": "string",
+                                        "description": "If specified, the route is a regular expression rule meaning that the\n regex must match the *:path* header once the query string is removed. The entire path\n (without the query string) must match the regex. The rule will not match if only a\n sub-sequence of the *:path* header matches the regex. The regex grammar is defined `here\n \u003chttp://en.cppreference.com/w/cpp/regex/ecmascript\u003e`_.\n\n Examples:\u003cbr/\u003e\n\n * The regex */b[io]t* matches the path */bit*\u003cbr/\u003e\n * The regex */b[io]t* matches the path */bot*\u003cbr/\u003e\n * The regex */b[io]t* does not match the path */bite*\u003cbr/\u003e\n * The regex */b[io]t* does not match the path */bit/bot*\u003cbr/\u003e\u003cbr/\u003e\n\n Note that the complexity of the regex is constrained by the regex engine's \"program size\" setting.\n If your regex is too complex, you may need to adjust the `regexMaxProgramSize` field\n in the `GlooOptions` section of your `Settings` resource"
+                                    },
+                                    "case_sensitive": {
+                                        "additionalProperties": true,
+                                        "type": "boolean",
+                                        "description": "Indicates that prefix/path matching should be case sensitive. The default is true."
+                                    },
+                                    "headers": {
+                                        "items": {
+                                            "$schema": "http://json-schema.org/draft-04/schema#",
+                                            "$ref": "#/definitions/matchers.core.gloo.solo.io.HeaderMatcher"
+                                        },
+                                        "type": "array",
+                                        "description": "Specifies a set of headers that the route should match on. The router will\n check the request’s headers against all the specified headers in the route\n config. A match will happen if all the headers in the route are present in\n the request with the same values (or based on presence if the value field\n is not in the config)."
+                                    },
+                                    "query_parameters": {
+                                        "items": {
+                                            "$schema": "http://json-schema.org/draft-04/schema#",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Specifies the name of a key that must be present in the requested\n *path*'s query string."
+                                                },
+                                                "value": {
+                                                    "type": "string",
+                                                    "description": "Specifies the value of the key. If the value is absent, a request\n that contains the key in its query string will match, whether the\n key appears with a value (e.g., \"?debug=true\") or not (e.g., \"?debug\")"
+                                                },
+                                                "regex": {
+                                                    "type": "boolean",
+                                                    "description": "Specifies whether the query parameter value is a regular expression.\n Defaults to false. The entire query parameter value (i.e., the part to\n the right of the equals sign in \"key=value\") must match the regex.\n E.g., the regex \"\\d+$\" will match \"123\" but not \"a123\" or \"123a\"."
+                                                }
+                                            },
+                                            "additionalProperties": false,
+                                            "type": "object",
+                                            "description": "Query parameter matching treats the query string of a request's :path header\n as an ampersand-separated list of keys and/or key=value elements."
+                                        },
+                                        "type": "array",
+                                        "description": "Specifies a set of URL query parameters on which the route should\n match. The router will check the query string from the *path* header\n against all the specified query parameters. If the number of specified\n query parameters is nonzero, they all must match the *path* header's\n query string for a match to occur."
+                                    },
+                                    "methods": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array",
+                                        "description": "HTTP Method/Verb(s) to match on. If none specified, the matcher will ignore the HTTP Method"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object",
+                                "description": "Matches on the request properties."
+                            },
+                            "clear_route_cache": {
+                                "type": "boolean",
+                                "description": "Should we clear the route cache if a transformation was matched."
+                            },
+                            "request_transformation": {
+                                "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                                "additionalProperties": true,
+                                "description": "Transformation to apply on the request."
+                            },
+                            "response_transformation": {
+                                "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                                "additionalProperties": true,
+                                "description": "Transformation to apply on the response."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "type": "array",
+                    "description": "Transformations to apply on the request. The first request that matches will apply."
+                },
+                "response_transforms": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "matchers": {
+                                "items": {
+                                    "$schema": "http://json-schema.org/draft-04/schema#",
+                                    "$ref": "#/definitions/matchers.core.gloo.solo.io.HeaderMatcher"
+                                },
+                                "type": "array",
+                                "description": "Response headers to match on."
+                            },
+                            "response_code_details": {
+                                "type": "string",
+                                "description": "Response code detail to match on. To see the response code details for your usecase,\n you can use the envoy access log %RESPONSE_CODE_DETAILS% formatter to log it."
+                            },
+                            "response_transformation": {
+                                "$ref": "#/definitions/envoy.api.v2.filter.http.Transformation",
+                                "additionalProperties": true,
+                                "description": "Transformation to apply on the response."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "type": "array",
+                    "description": "Transformations to apply on the response. This field is only consulted if there is no\n response transformation in the matched `request_transforms`. i.e. Only one response transformation\n will be executed. The first response transformation that matches will\n apply."
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "id": "transformation.options.gloo.solo.io.RequestResponseTransformations"
+        }
+    }
+}

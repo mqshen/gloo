@@ -1,6 +1,8 @@
 package translator
 
 import (
+	"strconv"
+
 	envoy_config_core_v3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	envoy_config_endpoint_v3 "github.com/envoyproxy/go-control-plane/envoy/config/endpoint/v3"
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -8,7 +10,6 @@ import (
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins"
 	"github.com/solo-io/solo-kit/pkg/api/v2/reporter"
 	"go.opencensus.io/trace"
-	"strconv"
 
 	v1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 )

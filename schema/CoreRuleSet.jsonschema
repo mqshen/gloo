@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "custom_settings_string": {
+            "type": "string",
+            "description": "String representing the core rule set custom config options"
+        },
+        "custom_settings_file": {
+            "type": "string",
+            "description": "String representing the core rule set custom config options"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

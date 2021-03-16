@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "id_token_header": {
+            "type": "string",
+            "description": "If set, the id token will be forward upstream using this header name."
+        },
+        "access_token_header": {
+            "type": "string",
+            "description": "If set, the access token will be forward upstream using this header name."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

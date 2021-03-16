@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "action": {
+            "enum": [
+                "NEVER",
+                0,
+                "RELEVANT_ONLY",
+                1,
+                "ALWAYS",
+                2
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ]
+        },
+        "location": {
+            "enum": [
+                "FILTER_STATE",
+                0,
+                "DYNAMIC_METADATA",
+                1
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

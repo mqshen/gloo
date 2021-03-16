@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "path": {
+            "type": "string",
+            "description": "match health check requests using this exact path"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Add this config to a Listener/Gateway to Enable Envoy Health Checks on that port"
+}

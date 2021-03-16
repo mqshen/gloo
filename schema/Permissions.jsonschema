@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "path_prefix": {
+            "type": "string",
+            "description": "Paths that have this prefix will be allowed."
+        },
+        "methods": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "What http methods (GET, POST, ...) are allowed."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "What permissions should be granted. An empty field means allow-all.\n If more than one field is added, all of them need to match."
+}

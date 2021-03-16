@@ -1,0 +1,326 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "upstream": {
+            "$ref": "#/definitions/core.solo.io.ResourceRef",
+            "additionalProperties": true,
+            "description": "Route requests to a Gloo upstream"
+        },
+        "kube": {
+            "properties": {
+                "ref": {
+                    "$ref": "#/definitions/core.solo.io.ResourceRef",
+                    "additionalProperties": true,
+                    "description": "The target service"
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "The port attribute of the service"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Route requests to a kubernetes service"
+        },
+        "consul": {
+            "properties": {
+                "service_name": {
+                    "type": "string",
+                    "description": "The name of the target service. This field is required."
+                },
+                "tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "If provided, load balance traffic only between services matching all the given tags."
+                },
+                "data_centers": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "If provided, load balance traffic only between services running in the given\n [data centers](https://www.consul.io/docs/internals/architecture.html)."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Route requests to a consul service"
+        },
+        "destination_spec": {
+            "properties": {
+                "aws": {
+                    "properties": {
+                        "logical_name": {
+                            "type": "string",
+                            "description": "The Logical Name of the LambdaFunctionSpec to be invoked."
+                        },
+                        "invocation_style": {
+                            "enum": [
+                                "SYNC",
+                                0,
+                                "ASYNC",
+                                1
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ],
+                            "description": "Can be either Sync or Async."
+                        },
+                        "response_transformation": {
+                            "type": "boolean",
+                            "description": "de-jsonify response bodies returned from aws lambda"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "azure": {
+                    "properties": {
+                        "function_name": {
+                            "type": "string",
+                            "description": "The Function Name of the FunctionSpec to be invoked."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "rest": {
+                    "properties": {
+                        "function_name": {
+                            "type": "string"
+                        },
+                        "parameters": {
+                            "$ref": "#/definitions/transformation.options.gloo.solo.io.Parameters",
+                            "additionalProperties": true
+                        },
+                        "response_transformation": {
+                            "properties": {
+                                "advanced_templates": {
+                                    "type": "boolean",
+                                    "description": "If set to true, use JSON pointer notation (e.g. \"time/start\") instead of\n dot notation (e.g. \"time.start\") to access JSON elements. Defaults to\n false.\n\n Please note that, if set to 'true', you will need to use the `extraction`\n function to access extractors in the template (e.g. '{{\n extraction(\"my_extractor\") }}'); if the default value of 'false' is used,\n extractors will simply be available by their name (e.g. '{{ my_extractor\n }}')."
+                                },
+                                "extractors": {
+                                    "additionalProperties": {
+                                        "properties": {
+                                            "header": {
+                                                "type": "string",
+                                                "description": "Extract information from headers"
+                                            },
+                                            "body": {
+                                                "additionalProperties": true,
+                                                "type": "object",
+                                                "description": "Extract information from the request/response body"
+                                            },
+                                            "regex": {
+                                                "type": "string",
+                                                "description": "Only strings matching this regular expression will be part of the\n extraction. The most simple value for this field is '.*', which matches the\n whole source. The field is required. If extraction fails the result is an\n empty value."
+                                            },
+                                            "subgroup": {
+                                                "type": "integer",
+                                                "description": "If your regex contains capturing groups, use this field to determine which\n group should be selected."
+                                            }
+                                        },
+                                        "additionalProperties": true,
+                                        "type": "object"
+                                    },
+                                    "type": "object",
+                                    "description": "Use this attribute to extract information from the request. It consists of\n a map of strings to extractors. The extractor will defines which\n information will be extracted, while the string key will provide the\n extractor with a name. You can reference extractors by their name in\n templates, e.g. \"{{ my-extractor }}\" will render to the value of the\n \"my-extractor\" extractor."
+                                },
+                                "headers": {
+                                    "additionalProperties": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true
+                                    },
+                                    "type": "object",
+                                    "description": "Use this attribute to transform request/response headers. It consists of a\n map of strings to templates. The string key determines the name of the\n resulting header, the rendered template will determine the value. Any existing\n headers with the same header name will be replaced by the transformed header.\n If a header name is included in `headers` and `headers_to_append`, it will first\n be replaced the template in `headers`, then additional header values will be appended\n by the templates defined in `headers_to_append`.\n For example, the following header transformation configuration:\n\n ```yaml\n    headers:\n      x-header-one: {\"text\": \"first {{inja}} template\"}\n      x-header-one: {\"text\": \"second {{inja}} template\"}\n    headersToAppend:\n      - key: x-header-one\n        value: {\"text\": \"first appended {{inja}} template\"}\n      - key: x-header-one\n        value: {\"text\": \"second appended {{inja}} template\"}\n ```\n will result in the following headers on the HTTP message:\n\n ```\n x-header-one: first inja template\n x-header-one: first appended inja template\n x-header-one: second appended inja template\n ```"
+                                },
+                                "headers_to_append": {
+                                    "items": {
+                                        "$schema": "http://json-schema.org/draft-04/schema#",
+                                        "properties": {
+                                            "key": {
+                                                "type": "string",
+                                                "description": "Header name"
+                                            },
+                                            "value": {
+                                                "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                                "additionalProperties": true,
+                                                "description": "Apply a template to the header value"
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "type": "object",
+                                        "description": "Defines a header-template pair to be used in `headers_to_append`"
+                                    },
+                                    "type": "array",
+                                    "description": "Use this attribute to transform request/response headers. It consists of\n an array of string/template objects. Use this attribute to define multiple\n templates for a single header. Header template(s) defined here will be appended to any\n existing headers with the same header name, not replace existing ones.\n See `headers` documentation to see an example of usage."
+                                },
+                                "body": {
+                                    "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                    "additionalProperties": true,
+                                    "description": "Apply a template to the body"
+                                },
+                                "passthrough": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "description": "This will cause the transformation filter not to buffer the body.\n Use this setting if the response body is large and you don't need to\n transform nor extract information from it."
+                                },
+                                "merge_extractors_to_body": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "description": "Merge all defined extractors to the request/response body.\n If you want to nest elements inside the body, use dot separator in the\n extractor name."
+                                },
+                                "parse_body_behavior": {
+                                    "enum": [
+                                        "ParseAsJson",
+                                        0,
+                                        "DontParse",
+                                        1
+                                    ],
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "integer"
+                                        }
+                                    ]
+                                },
+                                "ignore_error_on_parse": {
+                                    "type": "boolean",
+                                    "description": "If set to true, Envoy will not throw an exception in case the body parsing\n fails."
+                                },
+                                "dynamic_metadata_values": {
+                                    "items": {
+                                        "$schema": "http://json-schema.org/draft-04/schema#",
+                                        "properties": {
+                                            "metadata_namespace": {
+                                                "type": "string",
+                                                "description": "The metadata namespace. Defaults to the filter namespace."
+                                            },
+                                            "key": {
+                                                "type": "string",
+                                                "description": "The metadata key."
+                                            },
+                                            "value": {
+                                                "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                                "additionalProperties": true,
+                                                "description": "A template that determines the metadata value."
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "type": "object",
+                                        "description": "Defines an [Envoy Dynamic\n Metadata](https://www.envoyproxy.io/docs/envoy/latest/configuration/advanced/well_known_dynamic_metadata)\n entry."
+                                    },
+                                    "type": "array",
+                                    "description": "Use this field to set Dynamic Metadata."
+                                }
+                            },
+                            "additionalProperties": true,
+                            "type": "object"
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                },
+                "grpc": {
+                    "properties": {
+                        "package": {
+                            "type": "string",
+                            "description": "The proto package of the function."
+                        },
+                        "service": {
+                            "type": "string",
+                            "description": "The name of the service of the function."
+                        },
+                        "function": {
+                            "type": "string",
+                            "description": "The name of the function."
+                        },
+                        "parameters": {
+                            "$ref": "#/definitions/transformation.options.gloo.solo.io.Parameters",
+                            "additionalProperties": true,
+                            "description": "Parameters describe how to extract the function parameters from the\n request."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Note: When in the context of a TCP gateway the below 2 fields will be ignored\n\nSome upstreams utilize options which require or permit additional configuration on routes targeting them.\n gRPC upstreams, for example, allow specifying REST-style parameters for JSON-to-gRPC transcoding in the\n destination config. If the destination config is required for the upstream and not provided by the user,\n Gloo will invalidate the destination and its parent resources."
+        },
+        "subset": {
+            "properties": {
+                "values": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "If specified, traffic will only be routed to a subset of the upstream. If upstream doesn't\n contain the specified subset, we will fallback to normal upstream routing."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Destinations define routable destinations for proxied requests.",
+    "definitions": {
+        "core.solo.io.ResourceRef": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A way to reference resources across namespaces",
+            "id": "core.solo.io.ResourceRef"
+        },
+        "envoy.api.v2.filter.http.InjaTemplate": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Defines an [Inja template](https://github.com/pantor/inja) that will be\n rendered by Gloo. In addition to the core template functions, the Gloo\n transformation filter defines the following custom functions:\n - header(header_name): returns the value of the header with the given name\n - extraction(extractor_name): returns the value of the extractor with the\n given name\n - env(env_var_name): returns the value of the environment variable with the\n given name\n - body(): returns the request/response body\n - context(): returns the base JSON context (allowing for example to range on\n a JSON body that is an array)",
+            "id": "envoy.api.v2.filter.http.InjaTemplate"
+        },
+        "transformation.options.gloo.solo.io.Parameters": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "headers": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "headers that will be used to extract data for processing output templates\n Gloo will search for parameters by their name in header value strings, enclosed in single\n curly braces\n Example:\n   extensions:\n     parameters:\n         headers:\n           x-user-id: '{userId}'"
+                },
+                "path": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "part of the (or the entire) path that will be used extract data for processing output templates\n Gloo will search for parameters by their name in header value strings, enclosed in single\n curly braces\n Example:\n   extensions:\n     parameters:\n         path: /users/{ userId }"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "id": "transformation.options.gloo.solo.io.Parameters"
+        }
+    }
+}

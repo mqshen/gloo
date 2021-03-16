@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "log_name": {
+            "type": "string",
+            "description": "name of log stream"
+        },
+        "static_cluster_name": {
+            "type": "string"
+        },
+        "additional_request_headers_to_log": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "additional_response_headers_to_log": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "additional_response_trailers_to_log": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "claim": {
+            "type": "string",
+            "description": "Claim name. for example, \"sub\""
+        },
+        "header": {
+            "type": "string",
+            "description": "The header the claim will be copied to. for example, \"x-sub\"."
+        },
+        "append": {
+            "type": "boolean",
+            "description": "If the header exists, append to it (true), or overwrite it (false)."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Allows copying verified claims to headers sent upstream"
+}

@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of the plugin"
+        },
+        "plugin_file_name": {
+            "type": "string",
+            "description": "Name of the compiled plugin file. If not specified, GlooE will look for an \".so\" file with same name as the plugin."
+        },
+        "exported_symbol_name": {
+            "type": "string",
+            "description": "Name of the exported symbol that implements the plugin interface in the plugin.\n If not specified, defaults to the name of the plugin"
+        },
+        "config": {
+            "properties": {
+                "fields": {
+                    "additionalProperties": {
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object",
+                    "description": "Unordered map of dynamically typed values."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

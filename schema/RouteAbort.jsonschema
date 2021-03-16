@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "percentage": {
+            "type": "number",
+            "description": "Percentage of requests that should be aborted, defaulting to 0.\n This should be a value between 0.0 and 100.0, with up to 6 significant digits."
+        },
+        "http_status": {
+            "type": "integer",
+            "description": "This should be a standard HTTP status, i.e. 503. Defaults to 0."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

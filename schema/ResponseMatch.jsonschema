@@ -1,0 +1,192 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "matchers": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Specifies the name of the header in the request."
+                    },
+                    "value": {
+                        "type": "string",
+                        "description": "Specifies the value of the header. If the value is absent a request that\n has the name header will match, regardless of the header’s value."
+                    },
+                    "regex": {
+                        "type": "boolean",
+                        "description": "Specifies whether the header value should be treated as regex or not."
+                    },
+                    "invert_match": {
+                        "type": "boolean",
+                        "description": "If set to true, the result of the match will be inverted. Defaults to false.\n\n Examples:\n * name=foo, invert_match=true: matches if no header named `foo` is present\n * name=foo, value=bar, invert_match=true: matches if no header named `foo` with value `bar` is present\n * name=foo, value=``\\d{3}``, regex=true, invert_match=true: matches if no header named `foo` with a value consisting of three integers is present"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "Internally, Gloo always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host* header.\n Thus, if attempting to match on *Host*, match on *:authority* instead."
+            },
+            "type": "array",
+            "description": "Response headers to match on."
+        },
+        "response_code_details": {
+            "type": "string",
+            "description": "Response code detail to match on. To see the response code details for your usecase,\n you can use the envoy access log %RESPONSE_CODE_DETAILS% formatter to log it."
+        },
+        "response_transformation": {
+            "properties": {
+                "transformation_template": {
+                    "properties": {
+                        "advanced_templates": {
+                            "type": "boolean",
+                            "description": "If set to true, use JSON pointer notation (e.g. \"time/start\") instead of\n dot notation (e.g. \"time.start\") to access JSON elements. Defaults to\n false.\n\n Please note that, if set to 'true', you will need to use the `extraction`\n function to access extractors in the template (e.g. '{{\n extraction(\"my_extractor\") }}'); if the default value of 'false' is used,\n extractors will simply be available by their name (e.g. '{{ my_extractor\n }}')."
+                        },
+                        "extractors": {
+                            "additionalProperties": {
+                                "properties": {
+                                    "header": {
+                                        "type": "string",
+                                        "description": "Extract information from headers"
+                                    },
+                                    "body": {
+                                        "additionalProperties": true,
+                                        "type": "object",
+                                        "description": "Extract information from the request/response body"
+                                    },
+                                    "regex": {
+                                        "type": "string",
+                                        "description": "Only strings matching this regular expression will be part of the\n extraction. The most simple value for this field is '.*', which matches the\n whole source. The field is required. If extraction fails the result is an\n empty value."
+                                    },
+                                    "subgroup": {
+                                        "type": "integer",
+                                        "description": "If your regex contains capturing groups, use this field to determine which\n group should be selected."
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object",
+                            "description": "Use this attribute to extract information from the request. It consists of\n a map of strings to extractors. The extractor will defines which\n information will be extracted, while the string key will provide the\n extractor with a name. You can reference extractors by their name in\n templates, e.g. \"{{ my-extractor }}\" will render to the value of the\n \"my-extractor\" extractor."
+                        },
+                        "headers": {
+                            "additionalProperties": {
+                                "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                "additionalProperties": true
+                            },
+                            "type": "object",
+                            "description": "Use this attribute to transform request/response headers. It consists of a\n map of strings to templates. The string key determines the name of the\n resulting header, the rendered template will determine the value. Any existing\n headers with the same header name will be replaced by the transformed header.\n If a header name is included in `headers` and `headers_to_append`, it will first\n be replaced the template in `headers`, then additional header values will be appended\n by the templates defined in `headers_to_append`.\n For example, the following header transformation configuration:\n\n ```yaml\n    headers:\n      x-header-one: {\"text\": \"first {{inja}} template\"}\n      x-header-one: {\"text\": \"second {{inja}} template\"}\n    headersToAppend:\n      - key: x-header-one\n        value: {\"text\": \"first appended {{inja}} template\"}\n      - key: x-header-one\n        value: {\"text\": \"second appended {{inja}} template\"}\n ```\n will result in the following headers on the HTTP message:\n\n ```\n x-header-one: first inja template\n x-header-one: first appended inja template\n x-header-one: second appended inja template\n ```"
+                        },
+                        "headers_to_append": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "Header name"
+                                    },
+                                    "value": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "Apply a template to the header value"
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Defines a header-template pair to be used in `headers_to_append`"
+                            },
+                            "type": "array",
+                            "description": "Use this attribute to transform request/response headers. It consists of\n an array of string/template objects. Use this attribute to define multiple\n templates for a single header. Header template(s) defined here will be appended to any\n existing headers with the same header name, not replace existing ones.\n See `headers` documentation to see an example of usage."
+                        },
+                        "body": {
+                            "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                            "additionalProperties": true,
+                            "description": "Apply a template to the body"
+                        },
+                        "passthrough": {
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "This will cause the transformation filter not to buffer the body.\n Use this setting if the response body is large and you don't need to\n transform nor extract information from it."
+                        },
+                        "merge_extractors_to_body": {
+                            "additionalProperties": true,
+                            "type": "object",
+                            "description": "Merge all defined extractors to the request/response body.\n If you want to nest elements inside the body, use dot separator in the\n extractor name."
+                        },
+                        "parse_body_behavior": {
+                            "enum": [
+                                "ParseAsJson",
+                                0,
+                                "DontParse",
+                                1
+                            ],
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "ignore_error_on_parse": {
+                            "type": "boolean",
+                            "description": "If set to true, Envoy will not throw an exception in case the body parsing\n fails."
+                        },
+                        "dynamic_metadata_values": {
+                            "items": {
+                                "$schema": "http://json-schema.org/draft-04/schema#",
+                                "properties": {
+                                    "metadata_namespace": {
+                                        "type": "string",
+                                        "description": "The metadata namespace. Defaults to the filter namespace."
+                                    },
+                                    "key": {
+                                        "type": "string",
+                                        "description": "The metadata key."
+                                    },
+                                    "value": {
+                                        "$ref": "#/definitions/envoy.api.v2.filter.http.InjaTemplate",
+                                        "additionalProperties": true,
+                                        "description": "A template that determines the metadata value."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "type": "object",
+                                "description": "Defines an [Envoy Dynamic\n Metadata](https://www.envoyproxy.io/docs/envoy/latest/configuration/advanced/well_known_dynamic_metadata)\n entry."
+                            },
+                            "type": "array",
+                            "description": "Use this field to set Dynamic Metadata."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Apply transformation templates."
+                },
+                "header_body_transform": {
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "This type of transformation will make all the headers available in the\n response body. The resulting JSON body will consist of two attributes:\n 'headers', containing the headers, and 'body', containing the original\n body."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Transformation to apply on the response."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "definitions": {
+        "envoy.api.v2.filter.http.InjaTemplate": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "Defines an [Inja template](https://github.com/pantor/inja) that will be\n rendered by Gloo. In addition to the core template functions, the Gloo\n transformation filter defines the following custom functions:\n - header(header_name): returns the value of the header with the given name\n - extraction(extractor_name): returns the value of the extractor with the\n given name\n - env(env_var_name): returns the value of the environment variable with the\n given name\n - body(): returns the request/response body\n - context(): returns the base JSON context (allowing for example to range on\n a JSON body that is an array)",
+            "id": "envoy.api.v2.filter.http.InjaTemplate"
+        }
+    }
+}

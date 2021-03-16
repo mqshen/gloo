@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "move_to_package": {
+            "type": "string",
+            "description": "Move all types in the file to another package, this implies changing proto\n file path."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

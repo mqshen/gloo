@@ -19,5 +19,5 @@ ratelimitServer:
     name: ratelimiter
     namespace: gloo-system
   requestTimeout: 30s
-  denyOnFail: false
+  denyOnFail: true
   rateLimitBeforeAuth: true

@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "modules": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "namespace": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "A way to reference resources across namespaces"
+            },
+            "type": "array",
+            "description": "An optional resource reference to config maps containing modules to assist in the resolution of `query`."
+        },
+        "query": {
+            "type": "string",
+            "description": "The query that determines the auth decision. The result of this query must be either a boolean\n or an array with boolean as the first element. A boolean `true` value means that the request\n will be authorized. Any other value, or error, means that the request will be denied."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

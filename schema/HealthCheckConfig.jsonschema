@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "hostname": {
+            "type": "string",
+            "description": "hostname to use for the endpoint health checks if provided."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

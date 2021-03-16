@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "validation_server_addr": {
+            "type": "string",
+            "description": "Address of the `gloo` config validation server. Defaults to `gloo:9988`."
+        },
+        "validation": {
+            "properties": {
+                "proxy_validation_server_addr": {
+                    "type": "string",
+                    "description": "Address of the `gloo` proxy validation grpc server. Defaults to `gloo:9988`.\n This field is required in order to enable fine-grained admission control."
+                },
+                "validation_webhook_tls_cert": {
+                    "type": "string",
+                    "description": "Path to TLS Certificate for Kubernetes Validating webhook. Defaults to `/etc/gateway/validation-certs/tls.crt`."
+                },
+                "validation_webhook_tls_key": {
+                    "type": "string",
+                    "description": "Path to TLS Private Key for Kubernetes Validating webhook. Defaults to `/etc/gateway/validation-certs/tls.key`."
+                },
+                "ignore_gloo_validation_failure": {
+                    "type": "boolean",
+                    "description": "When Gateway cannot communicate with Gloo (e.g. Gloo is offline)\n resources will be rejected by default.\n Enable the `ignoreGlooValidationFailure` to prevent the Validation server from rejecting\n resources due to network errors."
+                },
+                "always_accept": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Always accept resources even if validation produced an error.\n Validation will still log the error and increment the validation.gateway.solo.io/resources_rejected stat.\n Currently defaults to true - must be set to `false` to prevent writing invalid resources to storage."
+                },
+                "allow_warnings": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Accept resources if validation produced a warning (defaults to true).\n By setting to false, this means that validation will start rejecting resources that would result\n in warnings, rather than just those that would result in errors."
+                },
+                "warn_route_short_circuiting": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "Write a warning to route resources if validation produced a route ordering warning (defaults to false).\n By setting to true, this means that Gloo will start assigning warnings to resources that would result\n in route short-circuiting within a virtual host, for example:\n   - prefix routes that make later routes unreachable\n   - regex routes that make later routes unreachable\n   - duplicate matchers"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "If provided, the Gateway will perform [Dynamic Admission Control](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/)\n of Gateways, Virtual Services, and Route Tables when running in Kubernetes."
+        },
+        "read_gateways_from_all_namespaces": {
+            "type": "boolean",
+            "description": "When true, the Gateway controller will consume Gateway custom resources from all watch namespaces, rather\n than just the Gateway CRDs in its own namespace."
+        },
+        "always_sort_route_table_routes": {
+            "type": "boolean",
+            "description": "Deprecated.\n This setting is ignored. Maintained for backwards compatibility with settings exposed on 1.2.x branch of Gloo."
+        },
+        "compressed_proxy_spec": {
+            "type": "boolean",
+            "description": "If set, compresses proxy space. This can help make the Proxy CRD smaller to fit in etcd.\n This is an advanced option. Use with care."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Settings specific to the Gateway controller"
+}

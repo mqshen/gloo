@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "path": {
+            "type": "string",
+            "description": "the file path to which the file access logging service will sink"
+        },
+        "string_format": {
+            "type": "string",
+            "description": "the format string by which envoy will format the log lines\n https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/observability/access_log#config-access-log-format-strings"
+        },
+        "json_format": {
+            "properties": {
+                "fields": {
+                    "additionalProperties": {
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "type": "object",
+                    "description": "Unordered map of dynamically typed values."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "the format object by which to envoy will emit the logs in a structured way.\n https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/observability/access_log#format-dictionaries"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "request_headers_to_add": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "header": {
+                        "properties": {
+                            "key": {
+                                "type": "string",
+                                "description": "Header name."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Header value.\n\n The same `format specifier (config_access_log_format)` as used for\n `HTTP access logging (config_access_log)` applies here, however\n unknown header values are replaced with the empty string instead of `-`."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Explicitly specified header"
+                    },
+                    "header_secret_ref": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "namespace": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Reference to header contained in a secret"
+                    },
+                    "append": {
+                        "additionalProperties": true,
+                        "type": "boolean",
+                        "description": "Should the value be appended? If true (default), the value is appended to\n existing values."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "Header name/value pair plus option to control append behavior."
+            },
+            "type": "array",
+            "description": "Specifies a list of HTTP headers that should be added to each request\n handled by this route or virtual host. For more information, including\n details on header value syntax, see the\n [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers#config-http-conn-man-headers-custom-request-headers) ."
+        },
+        "request_headers_to_remove": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Specifies a list of HTTP headers that should be removed from each request\n handled by this route or virtual host."
+        },
+        "response_headers_to_add": {
+            "items": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "properties": {
+                    "header": {
+                        "properties": {
+                            "key": {
+                                "type": "string",
+                                "description": "Header name."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Header value."
+                            }
+                        },
+                        "additionalProperties": true,
+                        "type": "object",
+                        "description": "Header name/value pair that this option applies to."
+                    },
+                    "append": {
+                        "additionalProperties": true,
+                        "type": "boolean",
+                        "description": "Should the value be appended? If true (default), the value is appended to\n existing values."
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object",
+                "description": "Header name/value pair plus option to control append behavior."
+            },
+            "type": "array",
+            "description": "Specifies a list of HTTP headers that should be added to each response\n handled by this route or host. For more information, including\n details on header value syntax, see the\n [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers#config-http-conn-man-headers-custom-request-headers) ."
+        },
+        "response_headers_to_remove": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Specifies a list of HTTP headers that should be removed from each response\n handled by this route or virtual host."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "This plugin provides configuration options to append and remove headers from\n requests and responses\n HeaderManipulation can be specified on routes, virtual hosts, or weighted destinations"
+}

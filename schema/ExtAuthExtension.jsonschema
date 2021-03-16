@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "disable": {
+            "type": "boolean",
+            "description": "Set to true to disable auth on the virtual host/route."
+        },
+        "config_ref": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "A reference to an AuthConfig. This is used to configure the GlooE extauth server."
+        },
+        "custom_auth": {
+            "properties": {
+                "context_extensions": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "When a request matches the virtual host, route, or weighted destination on which this configuration is defined,\n Gloo will add the given context_extensions to the request that is sent to the external authorization server.\n This allows the server to base the auth decision on metadata that you define on the source of the request.\n\n This attribute is analogous to Envoy's config.filter.http.ext_authz.v2.CheckSettings. See the official\n [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/http/ext_authz/v2/ext_authz.proto.html?highlight=ext_authz#config-filter-http-ext-authz-v2-checksettings)\n for more details."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use this field if you are running your own custom extauth server."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Auth configurations defined on virtual hosts, routes, and weighted destinations will be unmarshalled to this message."
+}

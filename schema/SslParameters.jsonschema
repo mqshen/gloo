@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "minimum_protocol_version": {
+            "enum": [
+                "TLS_AUTO",
+                0,
+                "TLSv1_0",
+                1,
+                "TLSv1_1",
+                2,
+                "TLSv1_2",
+                3,
+                "TLSv1_3",
+                4
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ]
+        },
+        "maximum_protocol_version": {
+            "enum": [
+                "TLS_AUTO",
+                0,
+                "TLSv1_0",
+                1,
+                "TLSv1_1",
+                2,
+                "TLSv1_2",
+                3,
+                "TLSv1_3",
+                4
+            ],
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer"
+                }
+            ]
+        },
+        "cipher_suites": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "ecdh_curves": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "General TLS parameters. See the [envoy docs](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/auth/cert.proto#envoy-api-enum-auth-tlsparameters-tlsprotocol)\n for more information on the meaning of these values."
+}

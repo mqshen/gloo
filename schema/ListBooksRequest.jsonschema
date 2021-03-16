@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "shelf": {
+            "type": "string",
+            "description": "ID of the shelf which books to list."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Request message for ListBooks method."
+}

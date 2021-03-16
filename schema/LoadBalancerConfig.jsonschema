@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "healthy_panic_threshold": {
+            "additionalProperties": true,
+            "type": "number",
+            "description": "Configures envoy's panic threshold Percent between 0-100. Once the number of non health hosts\n reaches this percentage, envoy disregards health information.\n see more info [here](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/panic_threshold.html)."
+        },
+        "update_merge_window": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Signed seconds of the span of time. Must be from -315,576,000,000\n to +315,576,000,000 inclusive. Note: these bounds are computed from:\n 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Signed fractions of a second at nanosecond resolution of the span\n of time. Durations less than one second are represented with a 0\n `seconds` field and a positive or negative `nanos` field. For durations\n of one second or more, a non-zero value for the `nanos` field must be\n of the same sign as the `seconds` field. Must be from -999,999,999\n to +999,999,999 inclusive."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "This allows batch updates of endpoints health/weight/metadata that happen during a time window.\n this help lower cpu usage when endpoint change rate is high. defaults to 1 second.\n Set to 0 to disable and have changes applied immediately."
+        },
+        "round_robin": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use round robin for load balancing."
+        },
+        "least_request": {
+            "properties": {
+                "choice_count": {
+                    "type": "integer",
+                    "description": "How many choices to take into account. defaults to 2."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use least request for load balancing."
+        },
+        "random": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use random for load balancing."
+        },
+        "ring_hash": {
+            "properties": {
+                "ring_hash_config": {
+                    "properties": {
+                        "minimum_ring_size": {
+                            "type": "string",
+                            "description": "Minimum hash ring size. The larger the ring is (that is, the more hashes there are for each provided host)\n the better the request distribution will reflect the desired weights. Defaults to 1024 entries, and limited\n to 8M entries."
+                        },
+                        "maximum_ring_size": {
+                            "type": "string",
+                            "description": "Maximum hash ring size. Defaults to 8M entries, and limited to 8M entries, but can be lowered to further\n constrain resource use."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "Optional, customizes the parameters used in the hashing algorithm"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use ring hash for load balancing."
+        },
+        "maglev": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Use maglev for load balancing."
+        },
+        "locality_weighted_lb_config": {
+            "additionalProperties": true,
+            "type": "object",
+            "description": "(Enterprise Only)\n https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/locality_weight#locality-weighted-load-balancing\n Locality weighted load balancing enables weighting assignments across different zones and geographical locations by using explicit weights.\n This field is required to enable locality weighted load balancing"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "LoadBalancerConfig is the settings for the load balancer used to send request to the Upstream \n endpoints."
+}

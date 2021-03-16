@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "A unique book id."
+        },
+        "author": {
+            "type": "string",
+            "description": "An author of the book."
+        },
+        "title": {
+            "type": "string",
+            "description": "A book title."
+        },
+        "quotes": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array",
+            "description": "Quotes from the book."
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "A book resource."
+}

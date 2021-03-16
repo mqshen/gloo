@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "authorized_limits": {
+            "$ref": "#/definitions/ratelimit.api.solo.io.RateLimit",
+            "additionalProperties": true
+        },
+        "anonymous_limits": {
+            "$ref": "#/definitions/ratelimit.api.solo.io.RateLimit",
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "description": "Basic rate-limiting API",
+    "definitions": {
+        "ratelimit.api.solo.io.RateLimit": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "properties": {
+                "unit": {
+                    "enum": [
+                        "UNKNOWN",
+                        0,
+                        "SECOND",
+                        1,
+                        "MINUTE",
+                        2,
+                        "HOUR",
+                        3,
+                        "DAY",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "requests_per_unit": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "description": "A `RateLimit` specifies the actual rate limit that will be used when there is a match.",
+            "id": "ratelimit.api.solo.io.RateLimit"
+        }
+    }
+}

@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "file_sink": {
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "the file path to which the file access logging service will sink"
+                },
+                "string_format": {
+                    "type": "string",
+                    "description": "the format string by which envoy will format the log lines\n https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/observability/access_log#config-access-log-format-strings"
+                },
+                "json_format": {
+                    "properties": {
+                        "fields": {
+                            "additionalProperties": {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            "type": "object",
+                            "description": "Unordered map of dynamically typed values."
+                        }
+                    },
+                    "additionalProperties": true,
+                    "type": "object",
+                    "description": "the format object by which to envoy will emit the logs in a structured way.\n https://www.envoyproxy.io/docs/envoy/v1.14.1/configuration/observability/access_log#format-dictionaries"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Output access logs to local file"
+        },
+        "grpc_service": {
+            "properties": {
+                "log_name": {
+                    "type": "string",
+                    "description": "name of log stream"
+                },
+                "static_cluster_name": {
+                    "type": "string"
+                },
+                "additional_request_headers_to_log": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "additional_response_headers_to_log": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "additional_response_trailers_to_log": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "Send access logs to gRPC service"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

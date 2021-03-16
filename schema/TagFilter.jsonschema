@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "key": {
+            "type": "string",
+            "description": "if set, only instances that have a tag with this key will be matched\n keys are not case-sensitive, as with AWS Condition Keys"
+        },
+        "kv_pair": {
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "description": "keys are not case-sensitive, as with AWS Condition Keys"
+                },
+                "value": {
+                    "type": "string",
+                    "description": "values are case-sensitive"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "description": "if set, only instances that have a tag with this key and value"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object"
+}
