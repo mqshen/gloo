@@ -38,6 +38,7 @@ Parameters for matching routes to requests received by a Gloo-managed proxy
 "headers": []matchers.core.gloo.solo.io.HeaderMatcher
 "queryParameters": []matchers.core.gloo.solo.io.QueryParameterMatcher
 "methods": []string
+"runtimeFraction": .solo.io.envoy.config.core.v3.RuntimeFractionalPercent
 
 ```
 
@@ -50,6 +51,7 @@ Parameters for matching routes to requests received by a Gloo-managed proxy
 | `headers` | [[]matchers.core.gloo.solo.io.HeaderMatcher](../matchers.proto.sk/#headermatcher) | Specifies a set of headers that the route should match on. The router will check the request’s headers against all the specified headers in the route config. A match will happen if all the headers in the route are present in the request with the same values (or based on presence if the value field is not in the config). |
 | `queryParameters` | [[]matchers.core.gloo.solo.io.QueryParameterMatcher](../matchers.proto.sk/#queryparametermatcher) | Specifies a set of URL query parameters on which the route should match. The router will check the query string from the *path* header against all the specified query parameters. If the number of specified query parameters is nonzero, they all must match the *path* header's query string for a match to occur. |
 | `methods` | `[]string` | HTTP Method/Verb(s) to match on. If none specified, the matcher will ignore the HTTP Method. |
+| `runtimeFraction` | [.solo.io.envoy.config.core.v3.RuntimeFractionalPercent](../../../../external/envoy/config/core/v3/base.proto.sk/#runtimefractionalpercent) |  |
 
 
 

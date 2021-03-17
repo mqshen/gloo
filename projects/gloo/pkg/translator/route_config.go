@@ -3,6 +3,8 @@ package translator
 import (
 	"context"
 	"fmt"
+	envoy_type_v3 "github.com/envoyproxy/go-control-plane/envoy/type/v3"
+	gloo_config_core_v3 "github.com/solo-io/gloo/projects/gloo/pkg/api/external/envoy/config/core/v3"
 	"strings"
 	"unicode"
 
@@ -205,6 +207,7 @@ func GlooMatcherToEnvoyMatcher(ctx context.Context, matcher *matchers.Matcher) e
 	match := envoy_config_route_v3.RouteMatch{
 		Headers:         envoyHeaderMatcher(ctx, matcher.GetHeaders()),
 		QueryParameters: envoyQueryMatcher(ctx, matcher.GetQueryParameters()),
+		RuntimeFraction: envoyRuntimeFraction(ctx, matcher.GetRuntimeFraction()),
 	}
 	if len(matcher.GetMethods()) > 0 {
 		match.Headers = append(match.Headers, &envoy_config_route_v3.HeaderMatcher{
@@ -596,6 +599,20 @@ func envoyQueryMatcher(ctx context.Context, in []*matchers.QueryParameterMatcher
 	}
 	return out
 }
+
+func envoyRuntimeFraction(ctx context.Context, fraction *gloo_config_core_v3.RuntimeFractionalPercent) *envoy_config_core_v3.RuntimeFractionalPercent {
+	if fraction != nil {
+		return &envoy_config_core_v3.RuntimeFractionalPercent{
+			DefaultValue: &envoy_type_v3.FractionalPercent{
+				Numerator:   fraction.DefaultValue.Numerator,
+				Denominator: envoy_type_v3.FractionalPercent_DenominatorType(fraction.DefaultValue.Denominator),
+			},
+			RuntimeKey: fraction.RuntimeKey,
+		}
+	}
+	return nil
+}
+
 
 // returns an error if any of the virtualhost domains overlap
 // Visible for testing

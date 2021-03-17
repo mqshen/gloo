@@ -227,16 +227,6 @@ func (m *Route) Equal(that interface{}) bool {
 		return false
 	}
 
-	if h, ok := interface{}(m.GetRuntimeFraction()).(equality.Equalizer); ok {
-		if !h.Equal(target.GetRuntimeFraction()) {
-			return false
-		}
-	} else {
-		if !proto.Equal(m.GetRuntimeFraction(), target.GetRuntimeFraction()) {
-			return false
-		}
-	}
-
 	switch m.Action.(type) {
 
 	case *Route_RouteAction:
