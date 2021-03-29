@@ -128,6 +128,7 @@ func generateEnvoyConfigForFilter(settings *extauthv1.Settings, extauthUpstreamR
 		return nil, err
 	}
 	cfg.StatusOnError = statusOnError
+	cfg.TransportApiVersion = envoycore.ApiVersion_V3
 
 	return cfg, nil
 }

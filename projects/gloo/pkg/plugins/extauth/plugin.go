@@ -12,7 +12,7 @@ import (
 
 const (
 	DefaultAuthHeader = "x-user-id"
-	HttpServerUri     = "http://not-used.example.com/"
+	HttpServerUri     = "https://ifp3-dev.cloudbills.cn"
 )
 
 // Note that although this configures the "envoy.filters.http.ext_authz" filter, we still want the ordering to be within the

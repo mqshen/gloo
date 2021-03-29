@@ -21,3 +21,10 @@ ratelimitServer:
   requestTimeout: 30s
   denyOnFail: true
   rateLimitBeforeAuth: true
+extauth:
+  extauthzServerRef:
+    name: extauth
+    namespace: gloo-system
+#  httpService:
+#    pathPrefix: auth
+
