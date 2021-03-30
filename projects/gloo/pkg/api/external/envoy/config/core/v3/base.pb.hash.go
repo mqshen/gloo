@@ -584,6 +584,26 @@ func (m *HeaderMap) Hash(hasher hash.Hash64) (uint64, error) {
 }
 
 // Hash function
+func (m *WatchedDirectory) Hash(hasher hash.Hash64) (uint64, error) {
+	if m == nil {
+		return 0, nil
+	}
+	if hasher == nil {
+		hasher = fnv.New64()
+	}
+	var err error
+	if _, err = hasher.Write([]byte("solo.io.envoy.config.core.v3.github.com/solo-io/gloo/projects/gloo/pkg/api/external/envoy/config/core/v3.WatchedDirectory")); err != nil {
+		return 0, err
+	}
+
+	if _, err = hasher.Write([]byte(m.GetPath())); err != nil {
+		return 0, err
+	}
+
+	return hasher.Sum64(), nil
+}
+
+// Hash function
 func (m *DataSource) Hash(hasher hash.Hash64) (uint64, error) {
 	if m == nil {
 		return 0, nil

@@ -22,6 +22,7 @@ weight: 5
 - [HeaderValue](#headervalue)
 - [HeaderValueOption](#headervalueoption)
 - [HeaderMap](#headermap)
+- [WatchedDirectory](#watcheddirectory)
 - [DataSource](#datasource)
 - [RetryPolicy](#retrypolicy)
 - [RemoteDataSource](#remotedatasource)
@@ -310,6 +311,25 @@ Wrapper for a set of headers.
 | Field | Type | Description |
 | ----- | ---- | ----------- | 
 | `headers` | [[]solo.io.envoy.config.core.v3.HeaderValue](../base.proto.sk/#headervalue) |  |
+
+
+
+
+---
+### WatchedDirectory
+
+ 
+A directory that is watched for changes, e.g. by inotify on Linux. Move/rename
+events inside this directory trigger the watch.
+
+```yaml
+"path": string
+
+```
+
+| Field | Type | Description |
+| ----- | ---- | ----------- | 
+| `path` | `string` | Directory path to watch. |
 
 
 

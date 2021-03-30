@@ -1007,6 +1007,12 @@ apis:
   solo.io.envoy.config.core.v3.Address:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/address.proto.sk/#Address
     package: solo.io.envoy.config.core.v3
+  solo.io.envoy.config.core.v3.AggregatedConfigSource:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/config_source.proto.sk/#AggregatedConfigSource
+    package: solo.io.envoy.config.core.v3
+  solo.io.envoy.config.core.v3.ApiConfigSource:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/config_source.proto.sk/#ApiConfigSource
+    package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.core.v3.AsyncDataSource:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto.sk/#AsyncDataSource
     package: solo.io.envoy.config.core.v3
@@ -1021,6 +1027,9 @@ apis:
     package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.core.v3.CidrRange:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/address.proto.sk/#CidrRange
+    package: solo.io.envoy.config.core.v3
+  solo.io.envoy.config.core.v3.ConfigSource:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/config_source.proto.sk/#ConfigSource
     package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.core.v3.ControlPlane:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto.sk/#ControlPlane
@@ -1067,6 +1076,9 @@ apis:
   solo.io.envoy.config.core.v3.ProxyProtocolConfig:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/proxy_protocol.proto.sk/#ProxyProtocolConfig
     package: solo.io.envoy.config.core.v3
+  solo.io.envoy.config.core.v3.RateLimitSettings:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/config_source.proto.sk/#RateLimitSettings
+    package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.core.v3.RemoteDataSource:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto.sk/#RemoteDataSource
     package: solo.io.envoy.config.core.v3
@@ -1085,6 +1097,9 @@ apis:
   solo.io.envoy.config.core.v3.RuntimeUInt32:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto.sk/#RuntimeUInt32
     package: solo.io.envoy.config.core.v3
+  solo.io.envoy.config.core.v3.SelfConfigSource:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/config_source.proto.sk/#SelfConfigSource
+    package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.core.v3.SocketAddress:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/address.proto.sk/#SocketAddress
     package: solo.io.envoy.config.core.v3
@@ -1099,6 +1114,9 @@ apis:
     package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.core.v3.TypedExtensionConfig:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/extension.proto.sk/#TypedExtensionConfig
+    package: solo.io.envoy.config.core.v3
+  solo.io.envoy.config.core.v3.WatchedDirectory:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto.sk/#WatchedDirectory
     package: solo.io.envoy.config.core.v3
   solo.io.envoy.config.filter.http.gzip.v2.Gzip:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/filter/http/gzip/v2/gzip.proto.sk/#Gzip
@@ -1205,9 +1223,42 @@ apis:
   solo.io.envoy.extensions.filters.http.jwt_authn.v3.RequirementRule:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/jwt_authn/v3/config.proto.sk/#RequirementRule
     package: solo.io.envoy.extensions.filters.http.jwt_authn.v3
+  solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/oauth2/v3alpha/oauth.proto.sk/#OAuth2
+    package: solo.io.envoy.extensions.filters.http.oauth2.v3alpha
+  solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2Config:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/oauth2/v3alpha/oauth.proto.sk/#OAuth2Config
+    package: solo.io.envoy.extensions.filters.http.oauth2.v3alpha
+  solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2Credentials:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/oauth2/v3alpha/oauth.proto.sk/#OAuth2Credentials
+    package: solo.io.envoy.extensions.filters.http.oauth2.v3alpha
   solo.io.envoy.extensions.filters.http.wasm.v3.Wasm:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/wasm/v3/wasm.proto.sk/#Wasm
     package: solo.io.envoy.extensions.filters.http.wasm.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.CertificateValidationContext:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/common.proto.sk/#CertificateValidationContext
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.GenericSecret:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/secret.proto.sk/#GenericSecret
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.PrivateKeyProvider:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/common.proto.sk/#PrivateKeyProvider
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.SdsSecretConfig:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/secret.proto.sk/#SdsSecretConfig
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.Secret:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/secret.proto.sk/#Secret
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.TlsCertificate:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/common.proto.sk/#TlsCertificate
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.TlsParameters:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/common.proto.sk/#TlsParameters
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
+  solo.io.envoy.extensions.transport_sockets.tls.v3.TlsSessionTicketKeys:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transport_sockets/tls/v3/common.proto.sk/#TlsSessionTicketKeys
+    package: solo.io.envoy.extensions.transport_sockets.tls.v3
   solo.io.envoy.extensions.wasm.v3.PluginConfig:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/wasm/v3/wasm.proto.sk/#PluginConfig
     package: solo.io.envoy.extensions.wasm.v3
@@ -1231,6 +1282,9 @@ apis:
     package: solo.io.envoy.type
   solo.io.envoy.type.matcher.v3.ListStringMatcher:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/type/matcher/v3/string.proto.sk/#ListStringMatcher
+    package: solo.io.envoy.type.matcher.v3
+  solo.io.envoy.type.matcher.v3.PathMatcher:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/type/matcher/v3/path.proto.sk/#PathMatcher
     package: solo.io.envoy.type.matcher.v3
   solo.io.envoy.type.matcher.v3.RegexMatchAndSubstitute:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/envoy/type/matcher/v3/regex.proto.sk/#RegexMatchAndSubstitute
@@ -1409,3 +1463,6 @@ apis:
   wasm.options.gloo.solo.io.WasmFilter:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/v1/options/wasm/wasm.proto.sk/#WasmFilter
     package: wasm.options.gloo.solo.io
+  xds.core.v3.Authority:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/xds/core/v3/authority.proto.sk/#Authority
+    package: xds.core.v3

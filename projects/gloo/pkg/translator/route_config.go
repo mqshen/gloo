@@ -3,10 +3,11 @@ package translator
 import (
 	"context"
 	"fmt"
-	envoy_type_v3 "github.com/envoyproxy/go-control-plane/envoy/type/v3"
-	gloo_config_core_v3 "github.com/solo-io/gloo/projects/gloo/pkg/api/external/envoy/config/core/v3"
 	"strings"
 	"unicode"
+
+	envoy_type_v3 "github.com/envoyproxy/go-control-plane/envoy/type/v3"
+	gloo_config_core_v3 "github.com/solo-io/gloo/projects/gloo/pkg/api/external/envoy/config/core/v3"
 
 	envoy_config_core_v3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	envoy_config_route_v3 "github.com/envoyproxy/go-control-plane/envoy/config/route/v3"
@@ -612,7 +613,6 @@ func envoyRuntimeFraction(ctx context.Context, fraction *gloo_config_core_v3.Run
 	}
 	return nil
 }
-
 
 // returns an error if any of the virtualhost domains overlap
 // Visible for testing

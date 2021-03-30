@@ -34,6 +34,7 @@ import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/tran
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/proxylatency/proxylatency.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/buffer/v3/buffer.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/csrf/v3/csrf.proto";
+import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/oauth2/v3alpha/oauth.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/filter/http/gzip/v2/gzip.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto";
 
@@ -130,6 +131,12 @@ message HttpListenerOptions {
     // this option will sanitize that header from downstream traffic.
     // Defaults to false
     google.protobuf.BoolValue sanitize_cluster_header = 14;
+
+    // Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode
+    // where policies will be evaluated and tracked, but not enforced and add additional source origins
+    // that will be allowed in addition to the destination origin.
+    // For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/oauth2/v3alpha/oauth.proto
+    .solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2 oauth = 16;
 }
 
 // Optional, feature-specific configuration that lives on tcp listeners

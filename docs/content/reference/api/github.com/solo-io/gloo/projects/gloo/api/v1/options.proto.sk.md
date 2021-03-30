@@ -75,6 +75,7 @@ Optional, feature-specific configuration that lives on http listeners
 "csrf": .solo.io.envoy.extensions.filters.http.csrf.v3.CsrfPolicy
 "grpcJsonTranscoder": .grpc_json.options.gloo.solo.io.GrpcJsonTranscoder
 "sanitizeClusterHeader": .google.protobuf.BoolValue
+"oauth": .solo.io.envoy.extensions.filters.http.csrf.v3.CsrfPolicy
 
 ```
 
@@ -95,6 +96,7 @@ Optional, feature-specific configuration that lives on http listeners
 | `csrf` | [.solo.io.envoy.extensions.filters.http.csrf.v3.CsrfPolicy](../../external/envoy/extensions/filters/http/csrf/v3/csrf.proto.sk/#csrfpolicy) | Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode where policies will be evaluated and tracked, but not enforced and add additional source origins that will be allowed in addition to the destination origin. For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/http/csrf/v2/csrf.proto. |
 | `grpcJsonTranscoder` | [.grpc_json.options.gloo.solo.io.GrpcJsonTranscoder](../options/grpc_json/grpc_json.proto.sk/#grpcjsontranscoder) | Exposed envoy config for the gRPC to JSON transcoding filter, envoy.filters.http.grpc_json_transcoder. For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/grpc_json_transcoder/v3/transcoder.proto. |
 | `sanitizeClusterHeader` | [.google.protobuf.BoolValue](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/bool-value) | Enterprise-only: If using the HTTP header specified by cluster_header to direct traffic to a cluster, this option will sanitize that header from downstream traffic. Defaults to false. |
+| `oauth` | [.solo.io.envoy.extensions.filters.http.csrf.v3.CsrfPolicy](../../external/envoy/extensions/filters/http/csrf/v3/csrf.proto.sk/#csrfpolicy) | Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode where policies will be evaluated and tracked, but not enforced and add additional source origins that will be allowed in addition to the destination origin. For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/oauth2/v3alpha/oauth.proto. |
 
 
 

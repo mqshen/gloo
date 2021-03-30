@@ -539,6 +539,34 @@ func (m *HeaderMap) Equal(that interface{}) bool {
 }
 
 // Equal function
+func (m *WatchedDirectory) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*WatchedDirectory)
+	if !ok {
+		that2, ok := that.(WatchedDirectory)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if strings.Compare(m.GetPath(), target.GetPath()) != 0 {
+		return false
+	}
+
+	return true
+}
+
+// Equal function
 func (m *DataSource) Equal(that interface{}) bool {
 	if that == nil {
 		return m == nil
