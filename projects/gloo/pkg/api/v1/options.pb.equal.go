@@ -250,16 +250,6 @@ func (m *HttpListenerOptions) Equal(that interface{}) bool {
 		}
 	}
 
-	if h, ok := interface{}(m.GetOauth()).(equality.Equalizer); ok {
-		if !h.Equal(target.GetOauth()) {
-			return false
-		}
-	} else {
-		if !proto.Equal(m.GetOauth(), target.GetOauth()) {
-			return false
-		}
-	}
-
 	return true
 }
 
@@ -780,6 +770,16 @@ func (m *RouteOptions) Equal(that interface{}) bool {
 			}
 		}
 
+	}
+
+	if h, ok := interface{}(m.GetOauth()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetOauth()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetOauth(), target.GetOauth()) {
+			return false
+		}
 	}
 
 	switch m.HostRewriteType.(type) {

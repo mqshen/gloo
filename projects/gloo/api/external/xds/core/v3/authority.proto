@@ -19,3 +19,5 @@ message Authority {
   // .. space reserved for additional authority addressing information, e.g. for
   // resource signing, items such as CA trust chain, cert pinning may be added.
 }
+
+option go_package = "github.com/solo-io/gloo/projects/gloo/pkg/api/external/xds/core/v3";

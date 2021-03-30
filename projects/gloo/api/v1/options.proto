@@ -132,11 +132,6 @@ message HttpListenerOptions {
     // Defaults to false
     google.protobuf.BoolValue sanitize_cluster_header = 14;
 
-    // Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode
-    // where policies will be evaluated and tracked, but not enforced and add additional source origins
-    // that will be allowed in addition to the destination origin.
-    // For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/oauth2/v3alpha/oauth.proto
-    .solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2 oauth = 16;
 }
 
 // Optional, feature-specific configuration that lives on tcp listeners
@@ -366,6 +361,12 @@ message RouteOptions {
     // Please refer to the [Envoy documentation](https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/route/v3/route_components.proto#config-route-v3-route)
     // for more details about the `metadata` attribute.
     map<string, google.protobuf.Struct> envoy_metadata = 26;
+
+    // Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode
+    // where policies will be evaluated and tracked, but not enforced and add additional source origins
+    // that will be allowed in addition to the destination origin.
+    // For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/oauth2/v3alpha/oauth.proto
+    .solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2 oauth = 27;
 }
 
 // Configuration for Destinations that are tied to the UpstreamSpec or ServiceSpec on that destination

@@ -158,7 +158,7 @@ inotify for updates.
 [#next-free-field: 8]
 
 ```yaml
-"authorities": []xds.core.v3.Authority
+"authorities": []solo.io.xds.core.v3.Authority
 "path": string
 "apiConfigSource": .solo.io.envoy.config.core.v3.ApiConfigSource
 "ads": .solo.io.envoy.config.core.v3.AggregatedConfigSource
@@ -170,7 +170,7 @@ inotify for updates.
 
 | Field | Type | Description |
 | ----- | ---- | ----------- | 
-| `authorities` | [[]xds.core.v3.Authority](../../../../../xds/core/v3/authority.proto.sk/#authority) | Authorities that this config source may be used for. An authority specified in a xdstp:// URL is resolved to a *ConfigSource* prior to configuration fetch. This field provides the association between authority name and configuration source. [#not-implemented-hide:]. |
+| `authorities` | [[]solo.io.xds.core.v3.Authority](../../../../../xds/core/v3/authority.proto.sk/#authority) | Authorities that this config source may be used for. An authority specified in a xdstp:// URL is resolved to a *ConfigSource* prior to configuration fetch. This field provides the association between authority name and configuration source. [#not-implemented-hide:]. |
 | `path` | `string` | Path on the filesystem to source and watch for configuration updates. When sourcing configuration for :ref:`secret <envoy_api_msg_extensions.transport_sockets.tls.v3.Secret>`, the certificate and key files are also watched for updates. .. note:: The path to the source must exist at config load time. .. note:: Envoy will only watch the file path for *moves.* This is because in general only moves are atomic. The same method of swapping files as is demonstrated in the :ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be used here also. Only one of `path`, `apiConfigSource`, or `self` can be set. |
 | `apiConfigSource` | [.solo.io.envoy.config.core.v3.ApiConfigSource](../config_source.proto.sk/#apiconfigsource) | API configuration source. Only one of `apiConfigSource`, `path`, or `self` can be set. |
 | `ads` | [.solo.io.envoy.config.core.v3.AggregatedConfigSource](../config_source.proto.sk/#aggregatedconfigsource) | When set, ADS will be used to fetch resources. The ADS API configuration source in the bootstrap configuration is used. Only one of `ads`, `path`, or `self` can be set. |

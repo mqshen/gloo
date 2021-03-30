@@ -8,7 +8,7 @@ import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/
 import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
 
-import "xds/core/v3/authority.proto";
+import "github.com/solo-io/gloo/projects/gloo/api/external/xds/core/v3/authority.proto";
 
 import "envoy/annotations/deprecation.proto";
 import "udpa/annotations/status.proto";

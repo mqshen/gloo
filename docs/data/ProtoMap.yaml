@@ -1337,6 +1337,9 @@ apis:
   solo.io.udpa.annotations.VersioningAnnotation:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/udpa/annotations/versioning.proto.sk/#VersioningAnnotation
     package: solo.io.udpa.annotations
+  solo.io.xds.core.v3.Authority:
+    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/xds/core/v3/authority.proto.sk/#Authority
+    package: solo.io.xds.core.v3
   static.options.gloo.solo.io.Host:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/v1/options/static/static.proto.sk/#Host
     package: static.options.gloo.solo.io
@@ -1463,6 +1466,3 @@ apis:
   wasm.options.gloo.solo.io.WasmFilter:
     relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/v1/options/wasm/wasm.proto.sk/#WasmFilter
     package: wasm.options.gloo.solo.io
-  xds.core.v3.Authority:
-    relativepath: reference/api/github.com/solo-io/gloo/projects/gloo/api/external/xds/core/v3/authority.proto.sk/#Authority
-    package: xds.core.v3
