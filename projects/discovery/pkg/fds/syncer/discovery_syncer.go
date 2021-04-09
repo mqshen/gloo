@@ -138,8 +138,9 @@ func selectUpstreamsWhitelist(upstreams v1.UpstreamList, whitelistedNamespaces, 
 		shouldIncludeAwsUpstream := us.GetAws() != nil && shouldIncludeUpstreamInBlacklistMode(us, blacklistedNamespaces)
 		shouldIncludeNonAwsUpstream := us.GetAws() == nil && ((inWhitelistedNamespace && !blacklisted) || whitelisted)
 		var shouldIncludeConsulUpstream = us.GetConsul() != nil && containsOpenAPI(us.GetConsul().ServiceTags)
+		var shouldIncludeStaticUpstream = us.GetStatic() != nil && containsMapOpenAPI(us.GetMetadata().GetLabels())
 
-		if shouldIncludeAwsUpstream || shouldIncludeNonAwsUpstream || shouldIncludeConsulUpstream {
+		if shouldIncludeAwsUpstream || shouldIncludeNonAwsUpstream || shouldIncludeConsulUpstream || shouldIncludeStaticUpstream {
 			selected = append(selected, us)
 		}
 	}
@@ -162,4 +163,9 @@ func containsOpenAPI(array []string) bool {
 		}
 	}
 	return false
+}
+
+func containsMapOpenAPI(labels map[string]string) bool {
+	var _, found = labels["openapi"]
+	return found
 }
