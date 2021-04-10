@@ -76,6 +76,23 @@ func (m *ListenerOptions) Equal(that interface{}) bool {
 		}
 	}
 
+	if len(m.GetSocketOptions()) != len(target.GetSocketOptions()) {
+		return false
+	}
+	for idx, v := range m.GetSocketOptions() {
+
+		if h, ok := interface{}(v).(equality.Equalizer); ok {
+			if !h.Equal(target.GetSocketOptions()[idx]) {
+				return false
+			}
+		} else {
+			if !proto.Equal(v, target.GetSocketOptions()[idx]) {
+				return false
+			}
+		}
+
+	}
+
 	return true
 }
 
@@ -246,6 +263,16 @@ func (m *HttpListenerOptions) Equal(that interface{}) bool {
 		}
 	} else {
 		if !proto.Equal(m.GetSanitizeClusterHeader(), target.GetSanitizeClusterHeader()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetLeftmostXffAddress()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetLeftmostXffAddress()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetLeftmostXffAddress(), target.GetLeftmostXffAddress()) {
 			return false
 		}
 	}
@@ -770,6 +797,16 @@ func (m *RouteOptions) Equal(that interface{}) bool {
 			}
 		}
 
+	}
+
+	if h, ok := interface{}(m.GetRegexRewrite()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetRegexRewrite()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetRegexRewrite(), target.GetRegexRewrite()) {
+			return false
+		}
 	}
 
 	if h, ok := interface{}(m.GetOauth()).(equality.Equalizer); ok {

@@ -33,7 +33,7 @@ import (
 var (
 	NoDestinationSpecifiedError = errors.New("must specify at least one weighted destination for multi destination routes")
 
-	SubsetsMisconfiguredErr = errors.New("route has a subset config, but the upstream does not.")
+	SubsetsMisconfiguredErr = errors.New("route has a subset config, but the upstream does not")
 )
 
 func (t *translatorInstance) computeRouteConfig(
@@ -114,7 +114,8 @@ func (t *translatorInstance) computeVirtualHost(
 			VirtualHost:       virtualHost,
 		}
 		routeReport := vhostReport.RouteReports[i]
-		computedRoutes := t.envoyRoutes(routeParams, routeReport, route)
+		generatedName := fmt.Sprintf("%s-route-%d", virtualHost.Name, i)
+		computedRoutes := t.envoyRoutes(routeParams, routeReport, route, generatedName)
 		envoyRoutes = append(envoyRoutes, computedRoutes...)
 	}
 	domains := virtualHost.Domains
@@ -155,9 +156,10 @@ func (t *translatorInstance) envoyRoutes(
 	params plugins.RouteParams,
 	routeReport *validationapi.RouteReport,
 	in *v1.Route,
+	generatedName string,
 ) []*envoy_config_route_v3.Route {
 
-	out := initRoutes(params, in, routeReport)
+	out := initRoutes(params, in, routeReport, generatedName)
 
 	for i := range out {
 		t.setAction(params, routeReport, in, out[i])
@@ -171,6 +173,7 @@ func initRoutes(
 	params plugins.RouteParams,
 	in *v1.Route,
 	routeReport *validationapi.RouteReport,
+	generatedName string,
 ) []*envoy_config_route_v3.Route {
 	out := make([]*envoy_config_route_v3.Route, len(in.Matchers))
 
@@ -189,6 +192,7 @@ func initRoutes(
 			validation.AppendRouteError(routeReport,
 				validationapi.RouteReport_Error_InvalidMatcherError,
 				"no path specifier provided",
+				generatedName,
 			)
 		}
 		match := GlooMatcherToEnvoyMatcher(params.Params.Ctx, matcher)
@@ -196,7 +200,9 @@ func initRoutes(
 			Match: &match,
 		}
 		if in.Name != "" {
-			out[i].Name = fmt.Sprintf("%s-%d", in.Name, i)
+			out[i].Name = fmt.Sprintf("%s-%s-matcher-%d", generatedName, in.Name, i)
+		} else {
+			out[i].Name = fmt.Sprintf("%s-matcher-%d", generatedName, i)
 		}
 	}
 
@@ -243,7 +249,7 @@ func (t *translatorInstance) setAction(
 		out.Action = &envoy_config_route_v3.Route_Route{
 			Route: &envoy_config_route_v3.RouteAction{},
 		}
-		if err := t.setRouteAction(params, action.RouteAction, out.Action.(*envoy_config_route_v3.Route_Route).Route, routeReport); err != nil {
+		if err := t.setRouteAction(params, action.RouteAction, out.Action.(*envoy_config_route_v3.Route_Route).Route, routeReport, out.Name); err != nil {
 			if isWarningErr(err) {
 				validation.AppendRouteWarning(routeReport,
 					validationapi.RouteReport_Warning_InvalidDestinationWarning,
@@ -253,6 +259,7 @@ func (t *translatorInstance) setAction(
 				validation.AppendRouteError(routeReport,
 					validationapi.RouteReport_Error_ProcessingError,
 					err.Error(),
+					out.Name,
 				)
 			}
 		}
@@ -273,6 +280,7 @@ func (t *translatorInstance) setAction(
 				validation.AppendRouteError(routeReport,
 					validationapi.RouteReport_Error_ProcessingError,
 					fmt.Sprintf("%T: %v", routePlugin, err.Error()),
+					out.Name,
 				)
 			}
 		}
@@ -295,6 +303,7 @@ func (t *translatorInstance) setAction(
 				validation.AppendRouteError(routeReport,
 					validationapi.RouteReport_Error_ProcessingError,
 					err.Error(),
+					out.Name,
 				)
 			}
 		}
@@ -321,6 +330,7 @@ func (t *translatorInstance) setAction(
 				validation.AppendRouteError(routeReport,
 					validationapi.RouteReport_Error_ProcessingError,
 					fmt.Sprintf("%T: %v", routePlugin, err.Error()),
+					out.Name,
 				)
 			}
 		}
@@ -348,7 +358,7 @@ func (t *translatorInstance) setAction(
 	}
 }
 
-func (t *translatorInstance) setRouteAction(params plugins.RouteParams, in *v1.RouteAction, out *envoy_config_route_v3.RouteAction, routeReport *validationapi.RouteReport) error {
+func (t *translatorInstance) setRouteAction(params plugins.RouteParams, in *v1.RouteAction, out *envoy_config_route_v3.RouteAction, routeReport *validationapi.RouteReport, routeName string) error {
 	switch dest := in.Destination.(type) {
 	case *v1.RouteAction_Single:
 		usRef, err := usconversion.DestinationToUpstreamRef(dest.Single)
@@ -364,7 +374,7 @@ func (t *translatorInstance) setRouteAction(params plugins.RouteParams, in *v1.R
 		//return checkThatSubsetMatchesUpstream(params.Params, dest.Single)
 		return nil
 	case *v1.RouteAction_Multi:
-		return t.setWeightedClusters(params, dest.Multi, out, routeReport)
+		return t.setWeightedClusters(params, dest.Multi, out, routeReport, routeName)
 	case *v1.RouteAction_UpstreamGroup:
 		upstreamGroupRef := dest.UpstreamGroup
 		upstreamGroup, err := params.Snapshot.UpstreamGroups.Find(upstreamGroupRef.Namespace, upstreamGroupRef.Name)
@@ -378,7 +388,7 @@ func (t *translatorInstance) setRouteAction(params plugins.RouteParams, in *v1.R
 		md := &v1.MultiDestination{
 			Destinations: upstreamGroup.Destinations,
 		}
-		return t.setWeightedClusters(params, md, out, routeReport)
+		return t.setWeightedClusters(params, md, out, routeReport, routeName)
 	case *v1.RouteAction_ClusterHeader:
 		// ClusterHeader must use the naming convention {{namespace}}_{{clustername}}
 		out.ClusterSpecifier = &envoy_config_route_v3.RouteAction_ClusterHeader{
@@ -389,7 +399,7 @@ func (t *translatorInstance) setRouteAction(params plugins.RouteParams, in *v1.R
 	return errors.Errorf("unknown upstream destination type")
 }
 
-func (t *translatorInstance) setWeightedClusters(params plugins.RouteParams, multiDest *v1.MultiDestination, out *envoy_config_route_v3.RouteAction, routeReport *validationapi.RouteReport) error {
+func (t *translatorInstance) setWeightedClusters(params plugins.RouteParams, multiDest *v1.MultiDestination, out *envoy_config_route_v3.RouteAction, routeReport *validationapi.RouteReport, routeName string) error {
 	if len(multiDest.Destinations) == 0 {
 		return NoDestinationSpecifiedError
 	}
@@ -424,6 +434,7 @@ func (t *translatorInstance) setWeightedClusters(params plugins.RouteParams, mul
 				validation.AppendRouteError(routeReport,
 					validationapi.RouteReport_Error_ProcessingError,
 					err.Error(),
+					routeName,
 				)
 			}
 		}
@@ -499,7 +510,7 @@ Outerloop:
 	}
 
 	if !found {
-		return errors.Errorf("route has a subset config, but none of the subsets in the upstream match it.")
+		return errors.Errorf("route has a subset config, but none of the subsets in the upstream match it")
 
 	}
 	return nil

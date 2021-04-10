@@ -30,13 +30,12 @@ import "github.com/solo-io/gloo/projects/gloo/api/v1/options/azure/azure.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/v1/options/healthcheck/healthcheck.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/v1/options/protocol_upgrade/protocol_upgrade.proto";
 
-import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/transformation/transformation.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/proxylatency/proxylatency.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/buffer/v3/buffer.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/csrf/v3/csrf.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/extensions/filters/http/oauth2/v3alpha/oauth.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/filter/http/gzip/v2/gzip.proto";
-import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/config/core/v3/base.proto";
+import "github.com/solo-io/gloo/projects/gloo/api/external/envoy/type/matcher/v3/regex.proto";
 
 import "github.com/solo-io/gloo/projects/gloo/api/v1/enterprise/options/extauth/v1/extauth.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/v1/enterprise/options/jwt/jwt.proto";
@@ -45,6 +44,8 @@ import "github.com/solo-io/gloo/projects/gloo/api/v1/enterprise/options/rbac/rba
 import "github.com/solo-io/gloo/projects/gloo/api/v1/enterprise/options/waf/waf.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/v1/enterprise/options/dlp/dlp.proto";
 import "github.com/solo-io/gloo/projects/gloo/api/v1/options/transformation/transformation.proto";
+
+import "github.com/solo-io/solo-kit/api/external/envoy/api/v2/core/base.proto";
 
 import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
@@ -68,6 +69,10 @@ message ListenerOptions {
     // Soft limit on size of the listener's new connection read and write buffers. If unspecified, defaults to 1MiB
     // For more info, check out the [Envoy docs](https://www.envoyproxy.io/docs/envoy/v1.14.1/api-v2/api/v2/listener.proto)
     google.protobuf.UInt32Value per_connection_buffer_limit_bytes = 3;
+
+    // Additional socket options that may not be present in Envoy source code or
+    // precompiled binaries.
+    repeated .solo.io.envoy.api.v2.core.SocketOption socket_options = 4;
 }
 
 // Optional, feature-specific configuration that lives on http listeners
@@ -132,6 +137,11 @@ message HttpListenerOptions {
     // Defaults to false
     google.protobuf.BoolValue sanitize_cluster_header = 14;
 
+    // Enterprise-only: Setting this value to true will grab the leftmost IP address from
+    // the x-forwarded-for header and set it as the downstream address.
+    // It is worth noting that the x-forwarded-for header can be tampered with by clients
+    // and should therefore be sanitized by any preceding proxies / load balancers if this option is to be used.
+    google.protobuf.BoolValue leftmost_xff_address = 16;
 }
 
 // Optional, feature-specific configuration that lives on tcp listeners
@@ -362,11 +372,16 @@ message RouteOptions {
     // for more details about the `metadata` attribute.
     map<string, google.protobuf.Struct> envoy_metadata = 26;
 
+    // For requests matched on this route, rewrite the HTTP request path according to the provided regex pattern before forwarding upstream
+    // Please refer to the [Envoy documentation](https://www.envoyproxy.io/docs/envoy/v1.14.1/api-v3/config/route/v3/route_components.proto#envoy-v3-api-field-config-route-v3-routeaction-regex-rewrite)
+    // for more details about the `regex_rewrite` attribute
+     .solo.io.envoy.type.matcher.v3.RegexMatchAndSubstitute regex_rewrite = 27;
+
     // Csrf can be used to set percent of requests for which the CSRF filter is enabled, enable shadow-only mode
     // where policies will be evaluated and tracked, but not enforced and add additional source origins
     // that will be allowed in addition to the destination origin.
     // For more, see https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/oauth2/v3alpha/oauth.proto
-    .solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2 oauth = 27;
+    .solo.io.envoy.extensions.filters.http.oauth2.v3alpha.OAuth2 oauth = 28;
 }
 
 // Configuration for Destinations that are tied to the UpstreamSpec or ServiceSpec on that destination

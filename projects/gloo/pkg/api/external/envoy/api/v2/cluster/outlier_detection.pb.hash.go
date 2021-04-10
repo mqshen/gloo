@@ -323,5 +323,125 @@ func (m *OutlierDetection) Hash(hasher hash.Hash64) (uint64, error) {
 		}
 	}
 
+	if h, ok := interface{}(m.GetFailurePercentageThreshold()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("FailurePercentageThreshold")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetFailurePercentageThreshold(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("FailurePercentageThreshold")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetEnforcingFailurePercentage()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("EnforcingFailurePercentage")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetEnforcingFailurePercentage(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("EnforcingFailurePercentage")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetEnforcingFailurePercentageLocalOrigin()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("EnforcingFailurePercentageLocalOrigin")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetEnforcingFailurePercentageLocalOrigin(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("EnforcingFailurePercentageLocalOrigin")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetFailurePercentageMinimumHosts()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("FailurePercentageMinimumHosts")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetFailurePercentageMinimumHosts(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("FailurePercentageMinimumHosts")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetFailurePercentageRequestVolume()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("FailurePercentageRequestVolume")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetFailurePercentageRequestVolume(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("FailurePercentageRequestVolume")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if h, ok := interface{}(m.GetMaxEjectionTime()).(safe_hasher.SafeHasher); ok {
+		if _, err = hasher.Write([]byte("MaxEjectionTime")); err != nil {
+			return 0, err
+		}
+		if _, err = h.Hash(hasher); err != nil {
+			return 0, err
+		}
+	} else {
+		if fieldValue, err := hashstructure.Hash(m.GetMaxEjectionTime(), nil); err != nil {
+			return 0, err
+		} else {
+			if _, err = hasher.Write([]byte("MaxEjectionTime")); err != nil {
+				return 0, err
+			}
+			if err := binary.Write(hasher, binary.LittleEndian, fieldValue); err != nil {
+				return 0, err
+			}
+		}
+	}
+
 	return hasher.Sum64(), nil
 }

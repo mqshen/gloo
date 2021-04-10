@@ -229,6 +229,16 @@ func (m *Settings) Equal(that interface{}) bool {
 		}
 	}
 
+	if h, ok := interface{}(m.GetUpstreamOptions()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetUpstreamOptions()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetUpstreamOptions(), target.GetUpstreamOptions()) {
+			return false
+		}
+	}
+
 	switch m.ConfigSource.(type) {
 
 	case *Settings_KubernetesConfigSource:
@@ -347,6 +357,40 @@ func (m *Settings) Equal(that interface{}) bool {
 			}
 		}
 
+	}
+
+	return true
+}
+
+// Equal function
+func (m *UpstreamOptions) Equal(that interface{}) bool {
+	if that == nil {
+		return m == nil
+	}
+
+	target, ok := that.(*UpstreamOptions)
+	if !ok {
+		that2, ok := that.(UpstreamOptions)
+		if ok {
+			target = &that2
+		} else {
+			return false
+		}
+	}
+	if target == nil {
+		return m == nil
+	} else if m == nil {
+		return false
+	}
+
+	if h, ok := interface{}(m.GetSslParameters()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetSslParameters()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetSslParameters(), target.GetSslParameters()) {
+			return false
+		}
 	}
 
 	return true
@@ -1248,6 +1292,16 @@ func (m *GatewayOptions_ValidationOptions) Equal(that interface{}) bool {
 		}
 	} else {
 		if !proto.Equal(m.GetWarnRouteShortCircuiting(), target.GetWarnRouteShortCircuiting()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetDisableTransformationValidation()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetDisableTransformationValidation()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetDisableTransformationValidation(), target.GetDisableTransformationValidation()) {
 			return false
 		}
 	}

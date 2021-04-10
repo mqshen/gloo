@@ -190,5 +190,65 @@ func (m *OutlierDetection) Equal(that interface{}) bool {
 		}
 	}
 
+	if h, ok := interface{}(m.GetFailurePercentageThreshold()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetFailurePercentageThreshold()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetFailurePercentageThreshold(), target.GetFailurePercentageThreshold()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetEnforcingFailurePercentage()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetEnforcingFailurePercentage()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetEnforcingFailurePercentage(), target.GetEnforcingFailurePercentage()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetEnforcingFailurePercentageLocalOrigin()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetEnforcingFailurePercentageLocalOrigin()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetEnforcingFailurePercentageLocalOrigin(), target.GetEnforcingFailurePercentageLocalOrigin()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetFailurePercentageMinimumHosts()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetFailurePercentageMinimumHosts()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetFailurePercentageMinimumHosts(), target.GetFailurePercentageMinimumHosts()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetFailurePercentageRequestVolume()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetFailurePercentageRequestVolume()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetFailurePercentageRequestVolume(), target.GetFailurePercentageRequestVolume()) {
+			return false
+		}
+	}
+
+	if h, ok := interface{}(m.GetMaxEjectionTime()).(equality.Equalizer); ok {
+		if !h.Equal(target.GetMaxEjectionTime()) {
+			return false
+		}
+	} else {
+		if !proto.Equal(m.GetMaxEjectionTime(), target.GetMaxEjectionTime()) {
+			return false
+		}
+	}
+
 	return true
 }

@@ -12,7 +12,6 @@ import (
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/consul"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/cors"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/csrf"
-	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/oauth"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/extauth"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/faultinjection"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/grpc"
@@ -27,6 +26,7 @@ import (
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/listener"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/loadbalancer"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/metadata"
+	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/oauth"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/pipe"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/protocoloptions"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/ratelimit"
@@ -35,8 +35,10 @@ import (
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/static"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/stats"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/tcp"
+	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/tls_inspector"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/tracing"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/transformation"
+	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/tunneling"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/upstreamconn"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/virtualhost"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/wasm"
@@ -60,6 +62,7 @@ var globalRegistry = func(opts bootstrap.Opts, pluginExtensions ...func() plugin
 		rest.NewPlugin(&transformationPlugin.RequireTransformationFilter),
 		hcmPlugin,
 		als.NewPlugin(),
+		tls_inspector.NewPlugin(),
 		pipe.NewPlugin(),
 		tcp.NewPlugin(utils.NewSslConfigTranslator()),
 		static.NewPlugin(),
@@ -89,6 +92,7 @@ var globalRegistry = func(opts bootstrap.Opts, pluginExtensions ...func() plugin
 		protocoloptions.NewPlugin(),
 		grpcjson.NewPlugin(),
 		metadata.NewPlugin(),
+		tunneling.NewPlugin(),
 	)
 	if opts.KubeClient != nil {
 		reg.plugins = append(reg.plugins, kubernetes.NewPlugin(opts.KubeClient, opts.KubeCoreCache))

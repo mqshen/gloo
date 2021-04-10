@@ -45,6 +45,12 @@ more information on outlier detection.
 "consecutiveLocalOriginFailure": .google.protobuf.UInt32Value
 "enforcingConsecutiveLocalOriginFailure": .google.protobuf.UInt32Value
 "enforcingLocalOriginSuccessRate": .google.protobuf.UInt32Value
+"failurePercentageThreshold": .google.protobuf.UInt32Value
+"enforcingFailurePercentage": .google.protobuf.UInt32Value
+"enforcingFailurePercentageLocalOrigin": .google.protobuf.UInt32Value
+"failurePercentageMinimumHosts": .google.protobuf.UInt32Value
+"failurePercentageRequestVolume": .google.protobuf.UInt32Value
+"maxEjectionTime": .google.protobuf.Duration
 
 ```
 
@@ -65,6 +71,12 @@ more information on outlier detection.
 | `consecutiveLocalOriginFailure` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The number of consecutive locally originated failures before ejection occurs. Defaults to 5. Parameter takes effect only when `split_external_local_origin_errors (envoy_api_field_cluster.OutlierDetection.split_external_local_origin_errors)` is set to true. |
 | `enforcingConsecutiveLocalOriginFailure` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The % chance that a host will be actually ejected when an outlier status is detected through consecutive locally originated failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100. Parameter takes effect only when `split_external_local_origin_errors (envoy_api_field_cluster.OutlierDetection.split_external_local_origin_errors)` is set to true. |
 | `enforcingLocalOriginSuccessRate` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The % chance that a host will be actually ejected when an outlier status is detected through success rate statistics for locally originated errors. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100. Parameter takes effect only when `split_external_local_origin_errors (envoy_api_field_cluster.OutlierDetection.split_external_local_origin_errors)` is set to true. |
+| `failurePercentageThreshold` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The failure percentage to use when determining failure percentage-based outlier detection. If the failure percentage of a given host is greater than or equal to this value, it will be ejected. Defaults to 85. |
+| `enforcingFailurePercentage` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The % chance that a host will be actually ejected when an outlier status is detected through failure percentage statistics. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0. [#next-major-version: setting this without setting failure_percentage_threshold should be invalid in v4.]. |
+| `enforcingFailurePercentageLocalOrigin` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The % chance that a host will be actually ejected when an outlier status is detected through local-origin failure percentage statistics. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0. |
+| `failurePercentageMinimumHosts` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The minimum number of hosts in a cluster in order to perform failure percentage-based ejection. If the total number of hosts in the cluster is less than this value, failure percentage-based ejection will not be performed. Defaults to 5. |
+| `failurePercentageRequestVolume` | [.google.protobuf.UInt32Value](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/u-int-32-value) | The minimum number of total requests that must be collected in one interval (as defined by the interval duration above) to perform failure percentage-based ejection for this host. If the volume is lower than this setting, failure percentage-based ejection will not be performed for this host. Defaults to 50. |
+| `maxEjectionTime` | [.google.protobuf.Duration](https://developers.google.com/protocol-buffers/docs/reference/csharp/class/google/protobuf/well-known-types/duration) | The maximum time that a host is ejected for. See :ref:`base_ejection_time<envoy_api_field_config.cluster.v3.OutlierDetection.base_ejection_time>` for more information. If not specified, the default value (300000ms or 300s) or :ref:`base_ejection_time<envoy_api_field_config.cluster.v3.OutlierDetection.base_ejection_time>` value is applied, whatever is larger. |
 
 
 
