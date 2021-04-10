@@ -21,7 +21,8 @@ func IsConsulUpstream(upstreamName string) bool {
 func DestinationToUpstreamRef(consulDest *v1.ConsulServiceDestination) *core.ResourceRef {
 	return &core.ResourceRef{
 		Namespace: defaults.GlooSystem,
-		Name:      fakeUpstreamName(consulDest.ServiceName),
+		//Name:      fakeUpstreamName(consulDest.ServiceName),
+		Name: consulDest.ServiceName,
 	}
 }
 
